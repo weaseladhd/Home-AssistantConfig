@@ -6,20 +6,36 @@ default_config:
 tts:
   - platform: google_translate
 
+# Include
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 light: !include lights.yaml
 
-#themes
+# Themes
 frontend:
   themes: !include_dir_merge_named themes
 
-#sensors
+# Sensors
 sensor:
   - platform: afvalwijzer
     provider: afvalstoffendienstkalender
     zipcode: !secret house_zipcode
     housenumber: !secret house_number
     count_today: true
+
+# Unifi
+unifiprotect:
+  host: !secret unifi_host
+  username: !secret unifi_username
+  password: !secret unifi_password
+  port: !secret unifi_port
+
+# Camera
+camera:
+  - platform: unifiprotect
+
+#Binary sensor
+binary_sensor:
+  - platform: unifiprotect
