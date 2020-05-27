@@ -18,12 +18,7 @@ frontend:
   themes: !include_dir_merge_named themes
 
 # Sensors
-sensor:
-  - platform: afvalwijzer
-    provider: afvalstoffendienstkalender
-    zipcode: !secret house_zipcode
-    housenumber: !secret house_number
-    count_today: true
+sensor: !include sensors.yaml
 
 # Unifi
 unifiprotect:
@@ -35,7 +30,28 @@ unifiprotect:
 # Camera
 camera:
   - platform: unifiprotect
+  - platform: badnest
 
 #Binary sensor
 binary_sensor:
   - platform: unifiprotect
+
+#Nest
+badnest:
+  user_id: !secret nest_user_id
+  access_token: !secret nest_access_token
+  region: eu
+
+climate:
+  - platform: badnest
+    scan_interval: 10
+
+#spotify
+spotify:
+  client_id: !secret spotify_client_id
+  client_secret: !secret spotify_client_secret
+
+#=== Database Purging
+recorder:
+  purge_keep_days: 30
+  purge_interval: 1

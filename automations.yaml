@@ -1,1 +1,45 @@
-[]
+- id: '1590530154677'
+  alias: Lights on at sunset
+  description: ''
+  trigger:
+  - event: sunset
+    offset: '15'
+    platform: sun
+  condition: []
+  action:
+  - brightness_pct: 48
+    device_id: 93adff630b844210b0b8ea68c0c9679c
+    domain: light
+    entity_id: light.hue_white_lamp_outside_back
+    type: turn_on
+  - brightness_pct: 48
+    device_id: 26595601e81f4395a9f8ff759da7e29f
+    domain: light
+    entity_id: light.hue_white_lamp_outside_front
+    type: turn_on
+  - brightness_pct: 3
+    device_id: 378200d368944c1abd869ac4b1b25802
+    domain: light
+    entity_id: light.hue_ambiance_spot_hall
+    type: turn_on
+- id: '1590530381304'
+  alias: Lights off at sunrise
+  description: ''
+  trigger:
+  - event: sunrise
+    offset: '15'
+    platform: sun
+  condition: []
+  action:
+  - device_id: 93adff630b844210b0b8ea68c0c9679c
+    domain: light
+    entity_id: light.hue_white_lamp_outside_back
+    type: turn_off
+  - device_id: 26595601e81f4395a9f8ff759da7e29f
+    domain: light
+    entity_id: light.hue_white_lamp_outside_front
+    type: turn_off
+  - device_id: 378200d368944c1abd869ac4b1b25802
+    domain: light
+    entity_id: light.hue_ambiance_spot_hall
+    type: turn_off

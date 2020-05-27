@@ -1,0 +1,19 @@
+- id: '1590530798003'
+  name: Living Room 80
+  entities:
+    light.hue_ambiance_lamp_living_room_1:
+      brightness: 191
+      color_temp: 366
+      friendly_name: Hue ambiance lamp living room 1
+      max_mireds: 454
+      min_mireds: 153
+      state: 'on'
+      supported_features: 43
+    light.hue_ambiance_lamp_living_room_2:
+      brightness: 195
+      color_temp: 366
+      friendly_name: Hue ambiance lamp living room 2
+      max_mireds: 454
+      min_mireds: 153
+      state: 'on'
+      supported_features: 43
