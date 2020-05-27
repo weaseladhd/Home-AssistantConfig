@@ -1,3 +1,5 @@
+# Sensors
+
   #=== Afvalwijzer
   - platform: afvalwijzer
     provider: afvalstoffendienstkalender
@@ -17,7 +19,6 @@
   - platform: version
     name: Latest Available Version
     beta: false
-    image: raspberrypi3
     source: hassio
 
   #=== File size DB
@@ -25,35 +26,26 @@
     file_paths:
       - /config/home-assistant_v2.db
 
-  - platform: filesize
-    file_paths:
-      - /config/home-assistant.log
-
   #=== Last boot time, Disk, memory & CPU usage
   - platform: systemmonitor
     resources:
       - type: disk_use_percent
         arg: /
-      - type: disk_use
-        arg: /
-      - type: disk_free
-        arg: /
-      - type: memory_use
-      - type: memory_free
       - type: memory_use_percent
       - type: processor_use
       - type: last_boot
       - type: ipv4_address
         arg: enp3s0
+      - type: network_in
+        arg: enp3s0
+      - type: network_out
+        arg: enp3s0
 
-  #=== Date & Time
+  #=== DateTime Sensor
   - platform: time_date
     display_options:
+      - 'date'
       - 'time'
-      - 'date_time'
-
-  #=== Uptime
-  - platform: uptime
 
   #=== DNSIP
   - platform: dnsip
@@ -63,13 +55,10 @@
   - platform: aftership
     api_key: !secret aftership_api_key
 
-  #=== CPU Temperature
-  - platform: command_line
-    name: CPU Temp
-    command: "cat /sys/class/thermal/thermal_zone0/temp"
-    unit_of_measurement: "°C"
-    value_template: '{{ value | multiply(0.001) | round(0) }}'
+  #=== Uptime
+  - platform: uptime
 
+  #=== Hass uptime & Last boot date and time
   - platform: template
     sensors:
 
@@ -112,7 +101,7 @@
 
           {{ as_timestamp(states('sensor.last_boot')) | timestamp_custom('%H:%M on %a') }} {{ date }} {{ as_timestamp(states('sensor.last_boot')) | timestamp_custom('%b %Y') }}
 
-#----- count entities
+  #----- count entities
   - platform: template
     sensors:
 

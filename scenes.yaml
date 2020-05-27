@@ -2,7 +2,7 @@
   name: Living Room 80
   entities:
     light.hue_ambiance_lamp_living_room_1:
-      brightness: 191
+      brightness: 195
       color_temp: 366
       friendly_name: Hue ambiance lamp living room 1
       max_mireds: 454
@@ -17,3 +17,16 @@
       min_mireds: 153
       state: 'on'
       supported_features: 43
+- id: '1590604856514'
+  name: Upstairs 80
+  entities:
+    light.hue_white_lamp_bedroom:
+      brightness: 155
+      friendly_name: Hue white lamp bedroom
+      state: 'on'
+      supported_features: 41
+    light.hue_white_lamp_studyroom:
+      brightness: 155
+      friendly_name: Hue white lamp studyroom
+      state: 'on'
+      supported_features: 41
