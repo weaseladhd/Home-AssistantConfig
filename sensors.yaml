@@ -20,6 +20,15 @@
     image: raspberrypi3
     source: hassio
 
+  #=== File size DB
+  - platform: filesize
+    file_paths:
+      - /config/home-assistant_v2.db
+
+  - platform: filesize
+    file_paths:
+      - /config/home-assistant.log
+
   #=== Last boot time, Disk, memory & CPU usage
   - platform: systemmonitor
     resources:
@@ -42,7 +51,7 @@
     display_options:
       - 'time'
       - 'date_time'
-      
+
   #=== Uptime
   - platform: uptime
 
@@ -50,7 +59,7 @@
   - platform: dnsip
     name: External IP
 
-  #aftership
+  #=== Aftership
   - platform: aftership
     api_key: !secret aftership_api_key
 
