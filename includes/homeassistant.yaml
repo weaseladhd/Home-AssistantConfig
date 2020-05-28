@@ -22,7 +22,7 @@ customize:
     icon: mdi:ceiling-light
   light.outside:
     icon: mdi:outdoor-lamp
-  light:upstairs:
+  light.upstairs:
     icon: mdi:stairs
-  light:downtairs:
+  light.downstairs:
     icon: mdi:home

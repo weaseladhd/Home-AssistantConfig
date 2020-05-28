@@ -1,51 +1,52 @@
-  - platform: group
-    name: Downstairs
-    entities:
-      - light.living_room_1
-      - light.living_room_2
-      - light.hue_runner_middle_room_1
-      - light.hue_runner_middle_room_2
-      - light.hue_ambiance_spot_1
-      - light.hue_ambiance_spot_2
-      - light.hue_ambiance_spot_3
-      - light.hue_ambiance_spot_4
-      - light.hue_ambiance_spot_5
-      - light.hue_ambiance_spot_6
-      - light.hue_ambiance_spot_7
-      - light.hue_ambiance_spot_8
-      - light.hue_filament_bulb_1
-  - platform: group
-    name: Living Room
-    entities:
-      - light.living_room_1
-      - light.living_room_2
-  - platform: group
-    name: Middle Room
-    entities:
-      - light.hue_runner_middle_room_1
-      - light.hue_runner_middle_room_2
-  - platform: group
-    name: Kitchen
-    entities:
-      - light.hue_ambiance_spot_1
-      - light.hue_ambiance_spot_2
-      - light.hue_ambiance_spot_3
-      - light.hue_ambiance_spot_4
-      - light.hue_ambiance_spot_5
-      - light.hue_ambiance_spot_6
-      - light.hue_ambiance_spot_7
-      - light.hue_ambiance_spot_8
-  - platform: group
-    name: Dining Room
-    entities:
-      - light.hue_filament_bulb_1
-  - platform: group
-    name: Upstairs
-    entities:
-      - light.hue_white_lamp_studyroom
-      - light.hue_white_lamp_bedroom
-  - platform: group
-    name: Outside
-    entities:
-      - light.hue_white_lamp_outside_back
-      - light.hue_white_lamp_outside_front
+#lights
+- platform: group
+  name: Downstairs
+  entities:
+    - light.living_room_1
+    - light.living_room_2
+    - light.hue_runner_middle_room_1
+    - light.hue_runner_middle_room_2
+    - light.hue_ambiance_spot_1
+    - light.hue_ambiance_spot_2
+    - light.hue_ambiance_spot_3
+    - light.hue_ambiance_spot_4
+    - light.hue_ambiance_spot_5
+    - light.hue_ambiance_spot_6
+    - light.hue_ambiance_spot_7
+    - light.hue_ambiance_spot_8
+    - light.hue_filament_bulb_1
+- platform: group
+  name: Living Room
+  entities:
+    - light.living_room_1
+    - light.living_room_2
+- platform: group
+  name: Middle Room
+  entities:
+    - light.hue_runner_middle_room_1
+    - light.hue_runner_middle_room_2
+- platform: group
+  name: Kitchen
+  entities:
+    - light.hue_ambiance_spot_1
+    - light.hue_ambiance_spot_2
+    - light.hue_ambiance_spot_3
+    - light.hue_ambiance_spot_4
+    - light.hue_ambiance_spot_5
+    - light.hue_ambiance_spot_6
+    - light.hue_ambiance_spot_7
+    - light.hue_ambiance_spot_8
+- platform: group
+  name: Dining Room
+  entities:
+    - light.hue_filament_bulb_1
+- platform: group
+  name: Upstairs
+  entities:
+    - light.hue_white_lamp_studyroom
+    - light.hue_white_lamp_bedroom
+- platform: group
+  name: Outside
+  entities:
+    - light.hue_white_lamp_outside_back
+    - light.hue_white_lamp_outside_front
