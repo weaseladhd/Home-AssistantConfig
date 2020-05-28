@@ -26,3 +26,7 @@ customize:
     icon: mdi:stairs
   light.downstairs:
     icon: mdi:home
+  sensor.trash_first_next_item:
+    name: Trash
+  sensor.trash_first_next_date:
+    name: Date
