@@ -1,0 +1,6 @@
+# Notify
+- platform: group
+  name: all_iphones
+  services:
+    - service: mobile_app_iphone_wesley
+    - service: mobile_app_iphone

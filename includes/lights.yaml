@@ -1,8 +1,8 @@
   - platform: group
-    name: Lights Downstairs
+    name: Downstairs
     entities:
-      - light.hue_ambiance_lamp_living_room_1
-      - light.hue_ambiance_lamp_living_room_2
+      - light.living_room_1
+      - light.living_room_2
       - light.hue_runner_middle_room_1
       - light.hue_runner_middle_room_2
       - light.hue_ambiance_spot_1
@@ -15,17 +15,17 @@
       - light.hue_ambiance_spot_8
       - light.hue_filament_bulb_1
   - platform: group
-    name: Lights Living Room
+    name: Living Room
     entities:
-      - light.hue_ambiance_lamp_living_room_1
-      - light.hue_ambiance_lamp_living_room_2
+      - light.living_room_1
+      - light.living_room_2
   - platform: group
-    name: Lights Middle Room
+    name: Middle Room
     entities:
       - light.hue_runner_middle_room_1
       - light.hue_runner_middle_room_2
   - platform: group
-    name: Lights Kitchen
+    name: Kitchen
     entities:
       - light.hue_ambiance_spot_1
       - light.hue_ambiance_spot_2
@@ -36,7 +36,7 @@
       - light.hue_ambiance_spot_7
       - light.hue_ambiance_spot_8
   - platform: group
-    name: Lights Dining Room
+    name: Dining Room
     entities:
       - light.hue_filament_bulb_1
   - platform: group

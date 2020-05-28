@@ -1,0 +1,8 @@
+# Proximity
+home:
+  ignored_zones:
+    - work
+  devices:
+    - device_tracker.iphone_wesley
+    - device_tracker.iphone
+  tolerance: 50

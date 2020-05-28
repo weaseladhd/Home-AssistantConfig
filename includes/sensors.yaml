@@ -1,32 +1,32 @@
 # Sensors
 
-  #=== Afvalwijzer
+  # Afvalwijzer
   - platform: afvalwijzer
     provider: afvalstoffendienstkalender
     zipcode: !secret house_zipcode
     housenumber: !secret house_number
     count_today: true
 
-  #=== Nest
+  # Nest
   - platform: badnest
 
-  #=== Installed hass.io version
+  # Installed hass.io version
   - platform: version
     name: Installed Version
     source: local
 
-  #=== Latest available version
+  # Latest available version
   - platform: version
     name: Latest Available Version
     beta: false
     source: hassio
 
-  #=== File size DB
+  # File size DB
   - platform: filesize
     file_paths:
       - /config/home-assistant_v2.db
 
-  #=== Last boot time, Disk, memory & CPU usage
+  # Last boot time, Disk, memory & CPU usage
   - platform: systemmonitor
     resources:
       - type: disk_use_percent
@@ -41,28 +41,28 @@
       - type: network_out
         arg: enp3s0
 
-  #=== DateTime Sensor
+  # DateTime Sensor
   - platform: time_date
     display_options:
       - 'date'
       - 'time'
 
-  #=== DNSIP
+  # DNSIP
   - platform: dnsip
     name: External IP
 
-  #=== Aftership
+  # Aftership
   - platform: aftership
     api_key: !secret aftership_api_key
 
-  #=== Uptime
+  # Uptime
   - platform: uptime
 
-  #=== Hass uptime & Last boot date and time
+  # Hass uptime & Last boot date and time
   - platform: template
     sensors:
 
-      #=== Home Assistant uptime
+      # Home Assistant uptime
       ha_uptime:
         friendly_name: HA Uptime
         value_template: >
@@ -83,7 +83,7 @@
             {{ [ phrase(weeks, 'week'), phrase(days, 'day'), phrase(hours, 'hr'), phrase(minutes, 'min') ] | select('!=','') | list | join(', ') }}
           {% endif %}
 
-      #=== Last boot date and time
+      # Last boot date and time
       last_boot_date_time:
         friendly_name: Last Boot
         value_template: >

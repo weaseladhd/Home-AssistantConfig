@@ -1,3 +1,28 @@
 # Home Assistant
-  whitelist_external_dirs:
-    - '/config/'
+name: Home
+latitude: !secret latitude_home
+longitude: !secret longitude_home
+elevation: 0
+unit_system: metric
+time_zone: Europe/Amsterdam
+external_url: "https://lbl16.duckdns.org"
+internal_url: "http://192.168.1.191:8123"
+whitelist_external_dirs:
+  - /config/
+customize:
+  switch.vacuum_mode:
+    friendly_name: Vacuum
+  light.living_room:
+    icon: mdi:sofa
+  light.kitchen:
+    icon: mdi:stove
+  light.middle_room:
+    icon: mdi:track-light
+  light.dining_room:
+    icon: mdi:ceiling-light
+  light.outside:
+    icon: mdi:outdoor-lamp
+  light:upstairs:
+    icon: mdi:stairs
+  light:downtairs:
+    icon: mdi:home
