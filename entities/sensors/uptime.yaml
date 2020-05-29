@@ -1,4 +1,4 @@
 # Uptime
 platform: uptime
-name: HA Uptime
-unit_of_measurement: minutes
+name: HA uptime
+unit_of_measurement: hours

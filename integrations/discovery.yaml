@@ -1,6 +1,2 @@
 # Discovery
 discovery:
-  ignore:
-  enable:
-    - homekit
-    - sabnzbd

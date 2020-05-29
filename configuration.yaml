@@ -10,13 +10,9 @@ homeassistant:
   time_zone: Europe/Amsterdam
   external_url: !secret ext_url
   internal_url: !secret int_url
-  whitelist_external_dirs:
-  - ../config/
 
   # Load packages
   packages: !include_dir_named integrations
-
-
 
 # default_config:
 default_config:
