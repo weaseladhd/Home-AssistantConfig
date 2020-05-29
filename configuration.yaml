@@ -1,44 +1,28 @@
 # Core Configuration
-homeassistant: !include includes/homeassistant.yaml
+homeassistant: 
+
+  # Core config
+  name: Home
+  latitude: !secret latitude_home
+  longitude: !secret longitude_home
+  elevation: 0
+  unit_system: metric
+  time_zone: Europe/Amsterdam
+  external_url: !secret ext_url
+  internal_url: !secret int_url
+  whitelist_external_dirs:
+  - ../config/
+
+  # Load packages
+  packages: !include_dir_named integrations
+
+
+
+# default_config:
 default_config:
-frontend:
-  themes: !include_dir_merge_named themes
-
-# Text to speech
-tts:
-  - platform: google_translate
-
-# Logging and history
-recorder: !include includes/recorder.yaml
 
 # Managed via UI
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
-
-# Include
-zone: !include includes/zones.yaml
-group: !include includes/groups.yaml
-light: !include includes/lights.yaml
-sensor: !include includes/sensors.yaml
-unifiprotect: !include includes/unifiprotect.yaml
-camera: !include includes/cameras.yaml
-binary_sensor: !include includes/binary_sensors.yaml
-badnest: !include includes/badnest.yaml
-climate: !include includes/climate.yaml
-spotify: !include includes/spotify.yaml
-weather: !include includes/weather.yaml
-notify: !include includes/notify.yaml
-proximity: !include includes/proximity.yaml
-webostv: !include includes/webostv.yaml
-speedtestdotnet: !include includes/speedtestdotnet.yaml
-vacuum: !include includes/vacuum.yaml
-discovery: !include includes/discovery.yaml
-sabnzbd: !include includes/sabnzbd.yaml
-
-#to configure
-#wake_on_lan: !include includes/wake_on_lan.yaml
-#homekit: !include includes/homekit.yaml
-#mqtt: !include includes/mqtt.yaml
-#utility_meter: !include includes/utility_meter.yaml
 
