@@ -1,0 +1,5 @@
+# Latest available version
+platform: version
+name: Latest Available Version
+beta: false
+source: hassio

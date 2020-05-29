@@ -9,7 +9,10 @@
 
 # Whitelist Folders
 !themes
-!includes
+!integrations
+!entities/
+!entities/*
+!customizations
 
 # Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
 secrets.yaml

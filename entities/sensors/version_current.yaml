@@ -1,0 +1,4 @@
+# Installed hass.io version
+platform: version
+name: Installed Version
+source: local

@@ -1,0 +1,6 @@
+platform: circadian_lighting
+lights_brightness:
+  - light.hue_white_lamp_studyroom
+  - light.hue_white_lamp_bedroom
+  - light.hue_white_lamp_outside_back
+  - light.hue_white_lamp_outside_front

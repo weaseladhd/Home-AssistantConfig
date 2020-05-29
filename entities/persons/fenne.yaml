@@ -1,0 +1,6 @@
+---
+name: Fenne
+id: Fenne
+user_id: !secret user_id_fenne
+device_trackers:
+  - device_tracker.iphone

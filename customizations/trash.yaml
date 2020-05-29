@@ -1,0 +1,5 @@
+# Customizations Trash
+sensor.trash_first_next_item:
+  friendly_name: Trash
+sensor.trash_first_next_date:
+  friendly_name: Date

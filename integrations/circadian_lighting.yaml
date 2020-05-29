@@ -1,0 +1,4 @@
+# Circadian Lighting
+circadian_lighting:
+  interval: 60
+  transition: 60

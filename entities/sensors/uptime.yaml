@@ -1,0 +1,4 @@
+# Uptime
+platform: uptime
+name: HA Uptime
+unit_of_measurement: minutes

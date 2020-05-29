@@ -1,0 +1,5 @@
+# Dining Room
+platform: group
+name: Dining Room
+entities:
+  - light.hue_filament_bulb_1

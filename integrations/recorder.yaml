@@ -1,0 +1,8 @@
+# Recorder
+recorder:
+  db_url: !secret maria_db_url
+  purge_keep_days: 14
+  exclude:
+    domains:
+      - sun
+      - weather

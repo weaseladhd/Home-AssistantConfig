@@ -1,0 +1,21 @@
+# Hass Last boot date and time
+platform: template
+sensors:
+
+  # Last boot date and time
+  last_boot_date_time:
+    friendly_name: Last Boot
+    value_template: >
+      {% set date = as_timestamp(states('sensor.last_boot')) | timestamp_custom('%d') %}
+      {% set date = '{:01}'.format(date | int) %}
+      {% if date in ('1', '21', '31') %}
+        {% set date = date ~ 'st' %}
+      {% elif date in ('2', '22') %}
+        {% set date = date ~ 'nd' %}
+      {% elif date in ('3', '23') %}
+        {% set date = date ~ 'rd' %}
+      {% else %}
+        {% set date = date ~ 'th' %}
+      {% endif %}
+
+      {{ as_timestamp(states('sensor.last_boot')) | timestamp_custom('%H:%M on %a') }} {{ date }} {{ as_timestamp(states('sensor.last_boot')) | timestamp_custom('%b %Y') }}

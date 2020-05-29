@@ -1,0 +1,6 @@
+# Work
+name: Work
+latitude: !secret latitude_work
+longitude: !secret longitude_work
+radius: 300
+icon: mdi:office-building
