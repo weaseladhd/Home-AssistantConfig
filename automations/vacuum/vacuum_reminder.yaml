@@ -1,0 +1,13 @@
+description: Vacuum reminder notification
+alias: vacuum_reminder_notification
+trigger:
+  platform: time
+  at: "22:00"
+condition:
+  condition: state
+  entity_id: binary_sensor.vacuum_day_tomorrow
+  state: "on"
+action:
+  service: notify.wesley_telegram
+  data:
+    message: "Robot vacuum will clean this night, make sure to close the doors and leave nothing on the floor!"

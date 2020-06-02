@@ -40,10 +40,10 @@ sensors:
       {% set tv_on = is_state("media_player.living_room_tv", "on") %}
       {{ light_on or tv_on }}
 
-  vacuum_day:
-    friendly_name: Vacuum day today
+  vacuum_day_tomorrow:
+    friendly_name: Vacuum day tomorrow
     value_template: >
-      {{ as_timestamp(now()) | timestamp_custom("%a") in ("Tue", "Sat") }}
+      {{ as_timestamp(now()) | timestamp_custom("%a") in ("Mon", "Fri") }}
     entity_id: sensor.date
 
   no_one_home:

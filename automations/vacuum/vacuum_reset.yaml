@@ -1,0 +1,10 @@
+description: Vacuum reset cleaned today
+alias: vacuum_reset_cleaned_today
+initial_state: "on"
+trigger:
+  platform: time
+  at: "00:00:00"
+action:
+  service: input_boolean.turn_off
+  entity_id: input_boolean.vacuum_cleaned_today
+

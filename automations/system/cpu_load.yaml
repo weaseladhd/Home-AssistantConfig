@@ -1,0 +1,14 @@
+---
+description: Send notification on high CPU usage
+alias: high_cpu_usage
+id: 61953d0-50cc-412340b1ff-3f305223ce38344
+trigger:
+  - platform: numeric_state
+    entity_id: sensor.processor_use
+    above: 70
+    for:
+      hours: 2
+action:
+  - service: notify.wesley_telegram
+    data:
+      message: "CPU usage has been above 70% for 2 hours! ⚠️🖥"
