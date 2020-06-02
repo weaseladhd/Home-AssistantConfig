@@ -1,0 +1,5 @@
+# Wesley Iphone
+platform: group
+name: wesley_iphone
+services:
+  - service: mobile_app_wesley_iphone

@@ -18,7 +18,4 @@ homeassistant:
 default_config:
 
 # Managed via UI
-automation: !include automations.yaml
 script: !include scripts.yaml
-scene: !include scenes.yaml
-

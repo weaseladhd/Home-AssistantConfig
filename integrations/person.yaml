@@ -1,2 +1,2 @@
-# Persons
-person: !include_dir_list ../entities/persons
+# Persons (moved to frontend)
+person: ~

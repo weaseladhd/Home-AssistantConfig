@@ -16,3 +16,4 @@
 
 # Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
 secrets.yaml
+google_calendars.yaml

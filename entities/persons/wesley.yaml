@@ -1,6 +1,0 @@
----
-name: Wesley
-id: Wesley
-user_id: !secret user_id_wesley
-device_trackers:
-  - device_tracker.iphone_wesley

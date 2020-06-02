@@ -1,0 +1,4 @@
+# openhardwaremonitor
+platform: openhardwaremonitor
+host: !secret ohm_host
+port: !secret ohm_port

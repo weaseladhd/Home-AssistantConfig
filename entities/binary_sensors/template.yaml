@@ -1,0 +1,53 @@
+platform: template
+sensors:
+
+  motion_detected:
+    friendly_name: Any motion detected
+    value_template: >
+      {{ is_state("binary_sensor.activity_in_living_room", "on") }}
+
+  motion_detected_in_last_hour:
+    friendly_name: Any motion detected in last hour
+    value_template: >
+      {{ is_state("binary_sensor.motion_detected", "on") }}
+    delay_off: "01:00:00"
+
+  someone_in_the_house_in_last_hour:
+    friendly_name: Someone in the house in the last hour
+    value_template: >
+      {{ is_state("binary_sensor.motion_detected_in_last_hour", "on")
+        or is_state("group.persons", "home") }}
+
+  activity_in_living_room:
+    friendly_name: Activity in the living room
+    value_template: >
+      {{ is_state("binary_sensor.living_room_sensor_motion", "on") }}
+    delay_off: "00:02:00"
+
+  any_light_on:
+    friendly_name: Any light is on
+    value_template: >
+      {% set living_room_lights_on = is_state("light.living_room", "on") %}
+      {% set kitchen_lights_on = is_state("light.kitchen", "on") %}
+      {% set middle_room_lights_on = is_state("light.middle_room", "on") %}
+      {% set dining_room_lights_on = is_state("light.dining_room", "on") %}
+      {{ living_room_lights_on or kitchen_lights_on or middle_room_lights_on or dining_room_lights_on }}
+
+  anything_on:
+    friendly_name: Anything is on
+    value_template: >
+      {% set light_on = is_state("binary_sensor.any_light_on", "on") %}
+      {% set tv_on = is_state("media_player.living_room_tv", "on") %}
+      {{ light_on or tv_on }}
+
+  vacuum_day:
+    friendly_name: Vacuum day today
+    value_template: >
+      {{ as_timestamp(now()) | timestamp_custom("%a") in ("Tue", "Sat") }}
+    entity_id: sensor.date
+
+  no_one_home:
+    friendly_name: No one is home
+    value_template: >
+      {{ not is_state("person.wesley", "home")
+          and not is_state("person.fenne", "home") }}
