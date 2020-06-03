@@ -1,0 +1,17 @@
+---
+description: Presence detection no one home
+alias: presence_detection_no_one_home
+initial_state: "on"
+trigger:
+  platform: state
+  entity_id: binary_sensor.motion_detected
+  from: "off"
+  to: "on"
+condition:
+  condition: state
+  entity_id: group.persons
+  state: not_home
+action:
+  service: notify.wesley_telegram
+  data:
+    message: "Intruder alert! There is presence detected while no one is home."

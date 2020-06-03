@@ -23,7 +23,7 @@
     entity_id: light.hue_ambiance_spot_hall
     type: turn_on
   - data:
-      message: Lights are turned on at sunrise!
+      message: Night lights are turned on at sunrise!
     service: notify.wesley_telegram
 - id: '1590530381304'
   alias: outside_hall_lights_off_at_sunrise
@@ -47,5 +47,5 @@
     entity_id: light.hue_ambiance_spot_hall
     type: turn_off
   - data:
-      message: Lights are turned off at sunrise!
+      message: Night lights are turned off at sunrise!
     service: notify.wesley_telegram

@@ -30,3 +30,13 @@
       friendly_name: Hue white lamp studyroom
       state: 'on'
       supported_features: 41
+- id: '1591109684054'
+  name: Goodnight
+  entities:
+    light.downstairs:
+      friendly_name: Downstairs
+      icon: mdi:home
+      max_mireds: 454
+      min_mireds: 153
+      state: 'off'
+      supported_features: 43
