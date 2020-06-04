@@ -1,4 +1,6 @@
+---
 description: Vacuum reminder notification
+id: efbdb04c-a5c6-4d84-9e15-5bf0bb8b8ba6
 alias: vacuum_reminder_notification
 trigger:
   platform: time

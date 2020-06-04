@@ -1,5 +1,6 @@
 ---
 description: Presence detection no one home
+id: fe0ce642-2373-47f5-b7b4-63a9d5c546cb
 alias: presence_detection_no_one_home
 initial_state: "on"
 trigger:

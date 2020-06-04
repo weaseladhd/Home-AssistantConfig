@@ -1,5 +1,6 @@
 ---
 description: Vacation mode auto turn on
+id: a27acee8-69f7-49df-b20b-f70b2632f3e5
 alias: vacation_mode_auto_turn_on
 initial_state: "on"
 trigger:

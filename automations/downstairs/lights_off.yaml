@@ -1,16 +1,13 @@
 ---
-description: Turn lights off in our living room
-alias: living_room_lights_off
-id: d2cad90f-cc2f-43cd-aeea-b2450644e57d
+description: Automatically turn off lights downstairs
+id: 234e3ce7-a618-4ef9-9408-c283c52d7413
+alias: turn_lights_off_downstairs
 trigger:
-  - platform: homeassistant
-    event: start
   - platform: state
-    entity_id:
-      - sun.sun
+    entity_id: sun.sun
 condition:
   - condition: state
-    entity_id: light.living_room
+    entity_id: light.downstairs
     state: 'on'
   - condition: numeric_state
     entity_id: sun.sun
@@ -21,5 +18,5 @@ action:
   - service: light.turn_off
     data:
       entity_id:
-        - light.living_room
+        - light.downstairs
       transition: 5

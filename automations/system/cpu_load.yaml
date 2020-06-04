@@ -1,7 +1,7 @@
 ---
 description: Send notification on high CPU usage
+id: fbe989ae-ccc1-4944-8b08-1e30c2ebdf25
 alias: high_cpu_usage
-id: 61953d0-50cc-412340b1ff-3f305223ce38344
 trigger:
   - platform: numeric_state
     entity_id: sensor.processor_use

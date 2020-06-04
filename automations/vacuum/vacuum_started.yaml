@@ -1,4 +1,6 @@
+---
 description: Vacuum started cleaning
+id: f6a9d34e-f125-4fc9-9533-ea3e1f07dadb
 alias: vacuum_started_cleaning
 trigger:
   platform: state

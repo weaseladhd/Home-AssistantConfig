@@ -1,4 +1,6 @@
+---
 description: Vacuum stopped cleaning
+id: 899fa523-1f0d-4f21-a909-9e9d4da2b397
 alias: vacuum_stopped_cleaning
 trigger:
   platform: state
