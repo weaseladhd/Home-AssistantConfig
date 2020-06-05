@@ -1,21 +1,85 @@
 - id: '1590530798003'
-  name: Living Room 80
+  name: Downstairs off
   entities:
-    light.hue_ambiance_lamp_living_room_1:
-      brightness: 195
-      color_temp: 366
-      friendly_name: Hue ambiance lamp living room 1
+    light.hue_ambiance_spot_1:
+      friendly_name: Hue ambiance spot 1
       max_mireds: 454
       min_mireds: 153
-      state: 'on'
+      state: 'off'
       supported_features: 43
-    light.hue_ambiance_lamp_living_room_2:
-      brightness: 195
-      color_temp: 366
-      friendly_name: Hue ambiance lamp living room 2
+    light.hue_ambiance_spot_2:
+      friendly_name: Hue ambiance spot 2
       max_mireds: 454
       min_mireds: 153
-      state: 'on'
+      state: 'off'
+      supported_features: 43
+    light.hue_ambiance_spot_3:
+      friendly_name: Hue ambiance spot 3
+      max_mireds: 454
+      min_mireds: 153
+      state: 'off'
+      supported_features: 43
+    light.hue_ambiance_spot_4:
+      friendly_name: Hue ambiance spot 4
+      max_mireds: 454
+      min_mireds: 153
+      state: 'off'
+      supported_features: 43
+    light.hue_ambiance_spot_5:
+      friendly_name: Hue ambiance spot 5
+      max_mireds: 454
+      min_mireds: 153
+      state: 'off'
+      supported_features: 43
+    light.hue_ambiance_spot_6:
+      friendly_name: Hue ambiance spot 6
+      max_mireds: 454
+      min_mireds: 153
+      state: 'off'
+      supported_features: 43
+    light.hue_ambiance_spot_7:
+      friendly_name: Hue ambiance spot 7
+      max_mireds: 454
+      min_mireds: 153
+      state: 'off'
+      supported_features: 43
+    light.hue_ambiance_spot_8:
+      friendly_name: Hue ambiance spot 8
+      max_mireds: 454
+      min_mireds: 153
+      state: 'off'
+      supported_features: 43
+    light.hue_filament_bulb_1:
+      friendly_name: Hue filament bulb 1
+      state: 'off'
+      supported_features: 41
+    light.hue_runner_middle_room_1:
+      friendly_name: Hue Runner middle room 1
+      icon: mdi:track-light
+      max_mireds: 454
+      min_mireds: 153
+      state: 'off'
+      supported_features: 43
+    light.hue_runner_middle_room_2:
+      friendly_name: Hue Runner middle room 2
+      icon: mdi:track-light
+      max_mireds: 454
+      min_mireds: 153
+      state: 'off'
+      supported_features: 43
+    light.living_room_1:
+      friendly_name: Living Room 1
+      icon: mdi:floor-lamp
+      max_mireds: 454
+      min_mireds: 153
+      state: 'off'
+      supported_features: 43
+    light.living_room_2:
+      friendly_name: Living Room 2
+      icon: mdi:floor-lamp
+      max_mireds: 454
+      min_mireds: 153
+      state: 'off'
       supported_features: 43
 - id: '1590604856514'
   name: Upstairs 80

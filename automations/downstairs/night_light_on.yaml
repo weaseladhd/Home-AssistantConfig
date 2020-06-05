@@ -4,7 +4,7 @@ id: 5a342968-89f9-4f10-a7ed-ac7d52473123
 alias: turn_night_lights_on_downstairs
 trigger:
   platform: state
-  entity_id: binary_sensor.living_room_sensor_motion
+  entity_id: binary_sensor.activity_in_living_room
   to: 'on'
 condition:
   condition: and
@@ -21,9 +21,8 @@ condition:
 action:
   - service: light.turn_on
     data:
-      entity_id: light.living_room
-      transition: 2
+      entity_id: light.downstairs
       brightness_pct: 10
   - service: notify.wesley_telegram
     data:
-      message: Lights turned on downstairs
+      message: Night lights turned on downstairs

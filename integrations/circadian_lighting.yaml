@@ -1,4 +1,5 @@
 # Circadian Lighting
 circadian_lighting:
+  max_colortemp: 3500
   interval: 60
   transition: 60
