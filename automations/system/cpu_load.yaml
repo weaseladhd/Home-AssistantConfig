@@ -11,4 +11,4 @@ trigger:
 action:
   - service: notify.wesley_telegram
     data:
-      message: "CPU usage has been above 70% for 2 hours! ⚠️🖥"
+      message: "CPU usage has been above 70% for 2 hours"

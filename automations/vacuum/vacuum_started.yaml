@@ -11,9 +11,3 @@ action:
   service: notify.wesley_telegram
   data:
     message: "Robot vacuum started to clean!"
-
-
-
-
-
-

@@ -9,4 +9,3 @@ trigger:
 action:
   service: input_boolean.turn_off
   entity_id: input_boolean.vacuum_cleaned_today
-
