@@ -9,8 +9,8 @@ trigger:
   for:
     minutes: 60
 action:
-  - service: scene.turn_on
-    entity_id: scene.downstairs_off
+  - service: light.turn_off
+    entity_id: light.downstairs
   - service: notify.wesley_telegram
     data:
       message: Lights turned off downstairs

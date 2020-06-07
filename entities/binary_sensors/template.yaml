@@ -5,6 +5,7 @@ sensors:
     friendly_name: Any motion detected
     value_template: >
       {{ is_state("binary_sensor.activity_in_living_room", "on") }}
+      {{ is_state("binary_sensor.activity_in_hallway", "on") }}
 
   motion_detected_in_last_hour:
     friendly_name: Any motion detected in last hour
@@ -20,6 +21,12 @@ sensors:
 
   activity_in_living_room:
     friendly_name: Activity in the living room
+    value_template: >
+      {{ is_state_attr("sensor.aeotec_limited_zwa005_trisensor_burglar", "8") }}
+    delay_off: "00:02:00"
+
+  activity_in_hallway:
+    friendly_name: Activity in the hallway
     value_template: >
       {{ is_state("binary_sensor.living_room_sensor_motion", "on") }}
     delay_off: "00:02:00"
