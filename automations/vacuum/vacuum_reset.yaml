@@ -2,7 +2,6 @@
 description: Vacuum reset cleaned today
 id: 06c6be4a-2265-44a4-8321-448000f177d2
 alias: vacuum_reset_cleaned_today
-initial_state: "on"
 trigger:
   platform: time
   at: "00:00:00"
