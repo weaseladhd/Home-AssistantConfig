@@ -1,5 +1,5 @@
 # Work
-name: Work
+name: Work W
 latitude: !secret latitude_work
 longitude: !secret longitude_work
 radius: 300

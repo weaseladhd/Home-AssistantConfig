@@ -1,0 +1,6 @@
+# Work
+name: Work F Vught
+latitude: !secret latitude_work_fenne_vught
+longitude: !secret longitude_work_fenne_vught
+radius: 300
+icon: mdi:office-building

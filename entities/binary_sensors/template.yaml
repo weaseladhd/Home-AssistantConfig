@@ -4,8 +4,8 @@ sensors:
   motion_detected:
     friendly_name: Any motion detected
     value_template: >
-      {{ is_state("binary_sensor.activity_in_living_room", "on") }}
-      {{ is_state("binary_sensor.activity_in_hallway", "on") }}
+      {{ is_state("binary_sensor.activity_in_living_room", "on")
+        or is_state("binary_sensor.activity_in_hallway", "on") }}
 
   motion_detected_in_last_hour:
     friendly_name: Any motion detected in last hour
@@ -22,13 +22,13 @@ sensors:
   activity_in_living_room:
     friendly_name: Activity in the living room
     value_template: >
-      {{ is_state_attr("sensor.aeotec_limited_zwa005_trisensor_burglar", "8") }}
+      {{ is_state("sensor.aeotec_limited_zwa005_trisensor_burglar", "8") }}
     delay_off: "00:02:00"
 
   activity_in_hallway:
     friendly_name: Activity in the hallway
     value_template: >
-      {{ is_state("binary_sensor.living_room_sensor_motion", "on") }}
+      {{ is_state("binary_sensor.hallway_sensor_motion", "on") }}
     delay_off: "00:02:00"
 
   any_light_on:
@@ -38,7 +38,8 @@ sensors:
       {% set kitchen_lights_on = is_state("light.kitchen", "on") %}
       {% set middle_room_lights_on = is_state("light.middle_room", "on") %}
       {% set dining_room_lights_on = is_state("light.dining_room", "on") %}
-      {{ living_room_lights_on or kitchen_lights_on or middle_room_lights_on or dining_room_lights_on }}
+      {% set hallway_light_on = is_state("light.hue_ambiance_spot_hall", "on") %}
+      {{ living_room_lights_on or kitchen_lights_on or middle_room_lights_on or dining_room_lights_on or hallway_ligh_on }}
 
   anything_on:
     friendly_name: Anything is on
@@ -58,3 +59,9 @@ sensors:
     value_template: >
       {{ not is_state("person.wesley", "home")
           and not is_state("person.fenne", "home") }}
+
+  home_occupied:
+    friendly_name: Home occupied
+    value_template: >
+      {{ is_state("person.wesley", "home")
+          or is_state("person.fenne", "home") }}
