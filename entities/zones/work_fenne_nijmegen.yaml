@@ -1,0 +1,6 @@
+# Work
+name: Work Nijmegen
+latitude: !secret latitude_work_fenne_nijmegen
+longitude: !secret longitude_work_fenne_nijmegen
+radius: 300
+icon: mdi:office-building

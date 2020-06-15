@@ -1,5 +1,5 @@
 # Work
-name: Work F Vught
+name: Work Vught
 latitude: !secret latitude_work_fenne_vught
 longitude: !secret longitude_work_fenne_vught
 radius: 300
