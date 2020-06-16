@@ -1,17 +1,17 @@
 # Iphone Fenne
-iphone_fenne:
-  - sensor.activity_iphone_fenne
-  - sensor.average_active_iphone_fenne
-  - sensor.bssid_iphone_fenne
-  - sensor.battery_level_iphone_fenne
-  - sensor.battery_state_iphone_fenne
-  - sensor.connection_type_iphone_fenne
-  - sensor.distance_iphone_fenne
-  - sensor.floors_ascended_iphone_fenne
-  - sensor.floors_descended_iphone_fenne
-  - sensor.geocoded_location_iphone_fenne
-  - sensor.last_update_trigger_iphone_fenne
-  - sensor.sim_iphone_fenne
-  - sensor.ssid_iphone_fenne
-  - sensor.steps_iphone_fenne
-  - device_tracker.iphone_fenne
+iphone:
+  - sensor.activity_iphone
+  - sensor.average_active_iphone
+  - sensor.bssid_iphone
+  - sensor.battery_level_iphone
+  - sensor.battery_state_iphone
+  - sensor.connection_type_iphone
+  - sensor.distance_iphone
+  - sensor.floors_ascended_iphone
+  - sensor.floors_descended_iphone
+  - sensor.geocoded_location_iphone
+  - sensor.last_update_trigger_iphone
+  - sensor.sim_iphone
+  - sensor.ssid_iphone
+  - sensor.steps_iphone
+  - device_tracker.iphone
