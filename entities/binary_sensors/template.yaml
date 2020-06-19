@@ -54,6 +54,16 @@ sensors:
       {{ as_timestamp(now()) | timestamp_custom("%a") in ("Mon", "Fri") }}
     entity_id: sensor.date
 
+  wesley_home:
+    friendly_name: Wesley is home
+    value_template: >
+      {{ is_state("person.wesley", "home") }}
+
+  fenne_home:
+    friendly_name: Fenne is home
+    value_template: >
+      {{ is_state("person.fenne", "home") }}
+
   no_one_home:
     friendly_name: No one is home
     value_template: >
