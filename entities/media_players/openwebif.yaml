@@ -3,6 +3,5 @@ platform: enigma2
 host: 192.168.20.18
 port: 80
 name: VuDuo2
-source_bouquet: Ziggo
 username: !secret vu_user
 password: !secret vu_pass
