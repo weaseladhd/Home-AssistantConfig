@@ -1,0 +1,19 @@
+# Quarantine Wesley
+platform: template
+sensors:
+
+  hours_outside_per_day_wesley:
+    friendly_name: Hours outside per day Wesley
+    value_template: >
+      {% set d, h, m = state_attr("sensor.quarantine_meter_wesley", "value").split() %}
+      {% set d, h, m = d[:-1] | int, h[:-1] | int, m[:-1] | int %}
+      {% set hours_outside = ((14 - d) * 86400 - h * 3600 - m * 60) / 3600 %}
+      {{ (hours_outside / 14) | round(1) }}
+
+  hours_outside_per_day_fenne:
+    friendly_name: Hours outside per day Fenne
+    value_template: >
+      {% set d, h, m = state_attr("sensor.quarantine_meter_fenne", "value").split() %}
+      {% set d, h, m = d[:-1] | int, h[:-1] | int, m[:-1] | int %}
+      {% set hours_outside = ((14 - d) * 86400 - h * 3600 - m * 60) / 3600 %}
+      {{ (hours_outside / 14) | round(1) }}
