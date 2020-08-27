@@ -14,4 +14,9 @@ lights_ct:
   - light.hue_ambiance_spot_8
   - light.hue_filament_bulb_1
 #  - light.hue_ambiance_spot_hall
+lights_brightness:
+  - light.hue_white_lamp_studyroom
+  - light.hue_white_lamp_bedroom
+  - light.hue_white_lamp_outside_back
+  - light.hue_white_lamp_outside_front
 max_brightness: 75
