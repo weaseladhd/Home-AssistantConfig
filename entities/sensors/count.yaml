@@ -146,7 +146,7 @@ sensors:
   total_timers:
     entity_id: []
     friendly_name: 'Timers'
-    icon_template: mdi:timer
+    icon_template: mdi:timer-outline
     value_template: "{{ states.timer | list | length }}"
 
   #----- Count Zones
