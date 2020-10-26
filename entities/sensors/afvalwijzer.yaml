@@ -1,6 +1,6 @@
 # afvalwijzer
 platform: afvalwijzer
 provider: afvalstoffendienstkalender
-zipcode: !secret house_zipcode
-housenumber: !secret house_number
-count_today: true
+postal_code: !secret postal_code
+street_number: !secret street_number
+include_date_today: true

@@ -47,3 +47,28 @@
       friendly_name: Upstairs
       state: 'off'
       supported_features: 41
+- id: '1603665215431'
+  name: Downstairs 80
+  entities:
+    light.downstairs:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 204
+      color_temp: 430
+      entity_id:
+      - light.living_room_1
+      - light.living_room_2
+      - light.hue_runner_middle_room_1
+      - light.hue_runner_middle_room_2
+      - light.hue_ambiance_spot_1
+      - light.hue_ambiance_spot_2
+      - light.hue_ambiance_spot_3
+      - light.hue_ambiance_spot_4
+      - light.hue_ambiance_spot_5
+      - light.hue_ambiance_spot_6
+      - light.hue_ambiance_spot_7
+      - light.hue_ambiance_spot_8
+      - light.hue_filament_bulb_1
+      friendly_name: Downstairs
+      supported_features: 43
+      state: 'on'
