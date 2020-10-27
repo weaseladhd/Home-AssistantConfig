@@ -1,0 +1,8 @@
+platform: history_stats
+name: Times TV has been on last 7 days
+entity_id: media_player.living_room_tv
+state: "on"
+type: count
+duration:
+  days: 7
+end: "{{ now() }}"

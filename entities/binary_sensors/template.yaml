@@ -66,7 +66,6 @@ sensors:
     friendly_name: Vacuum day tomorrow
     value_template: >
       {{ as_timestamp(now()) | timestamp_custom("%a") in ("Mon", "Fri") }}
-    entity_id: sensor.date
 
   wesley_home:
     friendly_name: Wesley is home
