@@ -1,10 +1,10 @@
 #cloudflare
-cloudflare:
-  email: !secret cf_email
-  api_key: !secret cf_api
-  zone: !secret cf_zone
-  records:
-    - !secret cf_sub1
-    - !secret cf_sub2
-    - !secret cf_sub3
-    - !secret cf_sub4
+#cloudflare:
+#  email: !secret cf_email
+#  api_key: !secret cf_api
+#  zone: !secret cf_zone
+#  records:
+#    - !secret cf_sub1
+#    - !secret cf_sub2
+#    - !secret cf_sub3
+#    - !secret cf_sub4

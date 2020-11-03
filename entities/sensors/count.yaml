@@ -74,7 +74,7 @@ sensors:
 
   #----- Count Input Selects
   total_input_selects:
-    entity_id: sensor.date
+    entity_id: []
     friendly_name: 'Input Selects'
     icon_template: mdi:format-align-justify
     value_template: "{{ states.input_select | list | length }}"
@@ -88,7 +88,7 @@ sensors:
 
   #----- Count Lights
   total_lights:
-    entity_id: sensor.date
+    entity_id: []
     friendly_name: 'Lights'
     icon_template: mdi:lightbulb-on
     value_template: "{{ states.light | list | length }}"
