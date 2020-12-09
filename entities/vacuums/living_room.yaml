@@ -2,3 +2,4 @@
 platform: xiaomi_miio
 host: !secret ip_vacuum
 token: !secret vacuum_token
+name: Xiaomi Vacuum Cleaner
