@@ -1,1 +1,11 @@
-[]
+- id: '1607949947296'
+  alias: Send a camera snapshot when motion is detected
+  description: ''
+  use_blueprint:
+    path: vorion/send-camera-snapshot-notification-on-motion.yaml
+    input:
+      delay: 0
+      motion_sensor: binary_sensor.motion_uvc_g3_pro_front
+      camera: camera.uvc_g3_pro_front
+      notify_device: 62618f2f67784a4585fdff061cfb9905
+      is_ios: true
