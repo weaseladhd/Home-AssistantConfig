@@ -1,4 +1,0 @@
-# Badnest
-#badnest:
-#  issue_token: !secret nest_issue_token
-#  cookie: !secret nest_cookie
