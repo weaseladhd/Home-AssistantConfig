@@ -1,0 +1,9 @@
+# Quarantine Fenne
+platform: history_stats
+name: Quarantine meter Fenne
+entity_id: person.fenne
+state: "home"
+type: ratio
+duration:
+  days: 14
+end: "{{ now() }}"

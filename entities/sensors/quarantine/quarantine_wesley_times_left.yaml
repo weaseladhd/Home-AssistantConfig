@@ -1,0 +1,9 @@
+# Quarantine Wesley times left
+platform: history_stats
+name: Quarantine meter Wesley times left
+entity_id: person.wesley
+state: "home"
+type: count
+duration:
+  days: 14
+end: "{{ now() }}"

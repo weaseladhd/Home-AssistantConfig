@@ -1,0 +1,9 @@
+# Quarantine Wesley
+platform: history_stats
+name: Quarantine meter Wesley
+entity_id: person.wesley
+state: "home"
+type: ratio
+duration:
+  days: 14
+end: "{{ now() }}"
