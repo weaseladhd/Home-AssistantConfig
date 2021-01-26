@@ -3,5 +3,5 @@ dyson:
   password: !secret dyson_password
   language: NL
   devices:
-#    - device_id: DEVICE_ID_1 # e.g., Serial number: XXX-XX-XXXXXXXX
-#      device_ip: DEVICE_IP_1
+    - device_id: !secret dyson_device_1_id
+      device_ip: !secret dyson_device_1_ip
