@@ -17,5 +17,15 @@ homeassistant:
 # default_config:
 default_config:
 
+# browser_mod
+browser_mod:
+  prefix: "browser_"
+  devices:
+    cdd3c879-7969da05:
+      name: wv_desktop_browser
+
+# discovery
+discovery:
+
 # Managed via UI
 script: !include scripts.yaml

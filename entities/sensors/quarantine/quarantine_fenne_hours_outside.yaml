@@ -1,0 +1,13 @@
+platform: template
+sensors:
+
+  hours_outside_per_day_fenne:
+    friendly_name: Hours outside per day Fenne
+    value_template: >
+      {% set value = state_attr("sensor.quarantine_meter_fenne", "value") %}
+      {% if value != None %}
+      {% set d, h, m = value.split() %}
+      {% set d, h, m = d[:-1] | int, h[:-1] | int, m[:-1] | int %}
+      {% set hours_outside = ((14 - d) * 86400 - h * 3600 - m * 60) / 3600 %}
+      {{ (hours_outside / 14) | round(1) }}
+      {% endif %}

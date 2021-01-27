@@ -1,4 +1,3 @@
-# Last boot time, Disk, memory & CPU usage
 platform: systemmonitor
 resources:
   - type: disk_use_percent

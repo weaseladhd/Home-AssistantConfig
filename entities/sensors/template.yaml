@@ -1,28 +1,5 @@
-# Quarantine Wesley
 platform: template
 sensors:
-
-  hours_outside_per_day_wesley:
-    friendly_name: Hours outside per day Wesley
-    value_template: >
-      {% set value = state_attr("sensor.quarantine_meter_wesley", "value") %}
-      {% if value != None %}
-      {% set d, h, m = value.split() %}
-      {% set d, h, m = d[:-1] | int, h[:-1] | int, m[:-1] | int %}
-      {% set hours_outside = ((14 - d) * 86400 - h * 3600 - m * 60) / 3600 %}
-      {{ (hours_outside / 14) | round(1) }}
-      {% endif %}
-
-  hours_outside_per_day_fenne:
-    friendly_name: Hours outside per day Fenne
-    value_template: >
-      {% set value = state_attr("sensor.quarantine_meter_fenne", "value") %}
-      {% if value != None %}
-      {% set d, h, m = value.split() %}
-      {% set d, h, m = d[:-1] | int, h[:-1] | int, m[:-1] | int %}
-      {% set hours_outside = ((14 - d) * 86400 - h * 3600 - m * 60) / 3600 %}
-      {{ (hours_outside / 14) | round(1) }}
-      {% endif %}
 
   power_day_eur:
     friendly_name: Power day euro
@@ -48,22 +25,3 @@ sensors:
     friendly_name: Solaredge Current Power
     value_template: "{{ states('sensor.solaredge_current_power') | float | round(1) }}"
     unit_of_measurement: "W"
-
-  adaptive_lighting_color_temp_mired:
-    unit_of_measurement: "mired"
-    value_template: >
-      {{ state_attr("switch.adaptive_lighting_downstairs", "color_temp_mired") }}
-  adaptive_lighting_color_temp_kelvin:
-    unit_of_measurement: "K"
-    value_template: >
-      {{ state_attr("switch.adaptive_lighting_downstairs", "color_temp_kelvin") }}
-  adaptive_lighting_brightness:
-    unit_of_measurement: "%"
-    value_template: >
-      {{ state_attr("switch.adaptive_lighting_downstairs", "brightness_pct") }}
-  adaptive_lighting_sun_position:
-    unit_of_measurement: "%"
-    value_template: >
-      {{ 100 * state_attr("switch.adaptive_lighting_downstairs", "sun_position") }}
-
-      

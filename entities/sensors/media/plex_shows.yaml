@@ -1,4 +1,3 @@
-# Plex
 platform: plex_recently_added
 name: Recently Added Shows
 token: !secret plex_api
