@@ -1,5 +1,5 @@
 # Light Group Dining Room
 platform: group
-name: Dining Room
+name: Dining Room Lights
 entities:
   - light.hue_filament_bulb_1

@@ -1,6 +1,6 @@
 # Light Group Outside
 platform: group
-name: Outside
+name: Outside Lights
 entities:
   - light.hue_white_lamp_outside_back
   - light.hue_white_lamp_outside_front
