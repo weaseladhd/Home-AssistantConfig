@@ -8,16 +8,3 @@ sensors:
     value_template: >
       {{ 'Latest' if states('sensor.hass_version_installed') == 
       states('sensor.hass_version_latest') else states('sensor.hass_version_latest') }}
-
-  hass_dev_release:
-    icon_template: mdi:dev-to
-    friendly_name: Upcoming release
-    value_template: >
-      {% set dev = ((as_timestamp(state_attr('calendar.home_assistant_devs', 
-      'start_time')) - as_timestamp(now())) / 86400) %}
-      {% if dev < -1 %} Released
-      {% elif dev < 0 %} Today
-      {% elif dev < 1 %} Tomorrow
-      {% elif dev > 35 %} No
-      {% else %} {{ dev | int + 1 }} Days
-      {% endif %}
