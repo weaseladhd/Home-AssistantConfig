@@ -1,6 +1,6 @@
 # Light Group Upstairs
 platform: group
-name: Upstairs Lights
+name: Upstairs
 entities:
   - light.hue_white_lamp_studyroom
   - light.hue_white_lamp_bedroom

@@ -1,6 +1,6 @@
 # Light Group Living Room
 platform: group
-name: Living Room Ligts
+name: Living Room
 entities:
   - light.living_room_1
   - light.living_room_2

@@ -1,6 +1,6 @@
 # Light Group Kitchen
 platform: group
-name: Kitchen Lights
+name: Kitchen
 entities:
   - light.hue_ambiance_spot_1
   - light.hue_ambiance_spot_2

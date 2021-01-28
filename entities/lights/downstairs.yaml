@@ -1,6 +1,6 @@
 # Light Group Downstairs
 platform: group
-name: Downstairs Lights
+name: Downstairs
 entities:
   - light.living_room_1
   - light.living_room_2
