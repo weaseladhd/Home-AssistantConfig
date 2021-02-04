@@ -14,6 +14,9 @@ homeassistant:
   # Load packages
   packages: !include_dir_named integrations
 
+  # Customizations
+  customize: !include customize.yaml
+
 # default_config:
 default_config:
 
