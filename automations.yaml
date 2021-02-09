@@ -9,3 +9,31 @@
       camera: camera.uvc_g3_pro_front
       notify_device: 62618f2f67784a4585fdff061cfb9905
       is_ios: true
+- id: '1612867325017'
+  alias: Home Assistant update notification
+  description: ''
+  use_blueprint:
+    path: Klumper/update_notification.yaml
+    input:
+      notification_message: Home Assistant {{ newest_version }} is available
+      delay: '0'
+      notify_device: 62618f2f67784a4585fdff061cfb9905
+      updater: binary_sensor.updater
+- id: '1612867372715'
+  alias: Zone Notification (FF Work Nijmegen)
+  description: ''
+  use_blueprint:
+    path: homeassistant/notify_leaving_zone.yaml
+    input:
+      person_entity: person.fenne
+      zone_entity: zone.work_nijmegen
+      notify_device: 62618f2f67784a4585fdff061cfb9905
+- id: '1612867409866'
+  alias: Zone Notification (FF Work Vught)
+  description: ''
+  use_blueprint:
+    path: homeassistant/notify_leaving_zone.yaml
+    input:
+      person_entity: person.fenne
+      zone_entity: zone.work_vught
+      notify_device: 62618f2f67784a4585fdff061cfb9905

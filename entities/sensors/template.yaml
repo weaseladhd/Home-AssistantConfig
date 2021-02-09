@@ -50,8 +50,8 @@ sensors:
       {% set lights_on = lights | selectattr('state','eq','on') | list %}
       {% set lights_name = lights | selectattr('state','eq','on') | map(attribute='name') | join(', ') %}
       {% set switches = [states.fan.living_room, states.media_player.living_room_tv, states.media_player.master_bedroom_tv, states.media_player.vuduo2] %}
-      {% set switches_on = switches | selectattr('state','eq','on') | list %} 
-      {% set switches_name = switches | selectattr('state','eq','on') | map(attribute='name') | join(', ') %}
+      {% set switches_on = devices | selectattr('state','eq','on') | list %} 
+      {% set switches_name = devices | selectattr('state','eq','on') | map(attribute='name') | join(', ') %}
       {% if (lights_on | length == 0) and (switches_on | length > 0) %} 
       {{ switches_name | regex_replace(',([^,]*)$',' and\\1') }} are on
       {% elif (lights_on | length == 1) and (switches_on | length == 1) %}
@@ -63,7 +63,7 @@ sensors:
       {% elif (lights_on | length > 1) and (switches_on | length > 1) %}
       {{ lights_on | length }} Lights, {{ switches_name | regex_replace(',([^,]*)$',' and\\1') }} are on
       {% elif (lights_on | length == 1) and (switches_on | length == 0) %}
-      {{ lights_name }} are on
+      {{ lights_name }} is on
       {% elif (lights_on | length > 1) and (switches_on | length == 0) %}
       {{ lights_on | length}} Lights are on
       {% else %} 

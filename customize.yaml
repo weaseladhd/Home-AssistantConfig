@@ -1,2 +1,8 @@
 fan.living_room:
-  friendly_name: Fan living room
+  friendly_name: Living Room Fan
+light.hue_white_lamp_studyroom:
+  friendly_name: Study Room Light
+light.hue_being_ceiling_landing:
+  friendly_name: Landing light
+light.hue_white_lamp_bedroom:
+  friendly_name: Bedroom light
