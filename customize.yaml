@@ -16,3 +16,14 @@ sensor.aq_maliskamp_p2:
   friendly_name: PM2.5 Maliskamp
   unit_of_measurement: µg/m³
   icon: hass:thought-bubble-outline
+sensor.current_uv_index:
+  friendly_name: UV-index OpenUV
+  unit_of_measurement: "UVI"
+  icon: hass:weather-sunny
+sensor.max_uv_index:
+  unit_of_measurement: "UVI"
+  icon: hass:weather-sunny
+sensor.current_ozone_level:
+  friendly_name: Ozon OpenUV
+  unit_of_measurement: "DU"
+  icon: hass:vector-triangle

@@ -1,5 +1,3 @@
----
-# Automations
 - id: '1607949947296'
   alias: Send a camera snapshot when motion is detected
   description: ''
@@ -39,3 +37,45 @@
       person_entity: person.fenne
       zone_entity: zone.work_vught
       notify_device: 62618f2f67784a4585fdff061cfb9905
+- id: '1612980102342'
+  alias: Update OpenUV 5 minutes before sunrise and after sunset
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunrise
+    offset: -00:05:00
+  - platform: sun
+    event: sunset
+    offset: 00:05:00
+  condition: []
+  action:
+  - service: openuv.update_uv_index_data
+    data: {}
+  mode: single
+- id: '1612980243699'
+  alias: Update OpenUV every 30 minutes during daytime
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: '30'
+  condition:
+  - condition: and
+    conditions:
+    - condition: sun
+      before: sunset
+      after: sunrise
+  action:
+  - service: openuv.update_uv_index_data
+    data: {}
+  mode: single
+- id: '1612980343472'
+  alias: Update OpenUV protection window daily
+  description: ''
+  trigger:
+  - platform: time
+    at: 02:12:00
+  condition: []
+  action:
+  - service: openuv.update_protection_data
+    data: {}
+  mode: single
