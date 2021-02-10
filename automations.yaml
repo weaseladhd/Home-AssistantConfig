@@ -1,6 +1,5 @@
 ---
 # Automations
-
 - id: '1607949947296'
   alias: Send a camera snapshot when motion is detected
   description: ''

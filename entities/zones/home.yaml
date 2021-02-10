@@ -1,3 +1,4 @@
+---
 # Home
 name: Home
 latitude: !secret latitude_home

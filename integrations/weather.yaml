@@ -1,4 +1,3 @@
 ---
 # Weather
-
 weather: !include_dir_list ../entities/weather

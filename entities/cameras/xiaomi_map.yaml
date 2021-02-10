@@ -1,3 +1,5 @@
+---
+# Xiaomi Cloud Map
 platform: xiaomi_cloud_map_extractor
 host: !secret ip_vacuum
 token: !secret vacuum_token

@@ -1,4 +1,3 @@
 ---
 # Binary sensors
-
 binary_sensor: !include_dir_list ../entities/binary_sensors

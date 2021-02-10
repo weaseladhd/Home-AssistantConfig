@@ -1,3 +1,5 @@
+---
+# Template binary sensors
 platform: template
 sensors:
 

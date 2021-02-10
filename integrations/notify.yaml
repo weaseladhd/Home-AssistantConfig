@@ -1,4 +1,3 @@
 ---
 # Notify
-
 notify: !include_dir_list ../entities/notifiers

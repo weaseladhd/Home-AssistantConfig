@@ -1,3 +1,4 @@
+---
 # Vacuum Living Room
 platform: xiaomi_miio
 host: !secret ip_vacuum
