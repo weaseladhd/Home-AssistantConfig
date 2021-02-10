@@ -23,18 +23,18 @@
       state: 'on'
     light.downstairs:
       entity_id:
-      - light.living_room_1
-      - light.living_room_2
-      - light.hue_runner_middle_room_1
-      - light.hue_runner_middle_room_2
-      - light.hue_ambiance_spot_1
-      - light.hue_ambiance_spot_2
-      - light.hue_ambiance_spot_3
-      - light.hue_ambiance_spot_4
-      - light.hue_ambiance_spot_5
-      - light.hue_ambiance_spot_6
-      - light.hue_ambiance_spot_7
-      - light.hue_ambiance_spot_8
+        - light.living_room_1
+        - light.living_room_2
+        - light.hue_runner_middle_room_1
+        - light.hue_runner_middle_room_2
+        - light.hue_ambiance_spot_1
+        - light.hue_ambiance_spot_2
+        - light.hue_ambiance_spot_3
+        - light.hue_ambiance_spot_4
+        - light.hue_ambiance_spot_5
+        - light.hue_ambiance_spot_6
+        - light.hue_ambiance_spot_7
+        - light.hue_ambiance_spot_8
       friendly_name: Downstairs
       max_mireds: 454
       min_mireds: 153
@@ -42,8 +42,8 @@
       supported_features: 43
     light.upstairs:
       entity_id:
-      - light.hue_white_lamp_studyroom
-      - light.hue_white_lamp_bedroom
+        - light.hue_white_lamp_studyroom
+        - light.hue_white_lamp_bedroom
       friendly_name: Upstairs
       state: 'off'
       supported_features: 41
@@ -56,19 +56,19 @@
       brightness: 204
       color_temp: 430
       entity_id:
-      - light.living_room_1
-      - light.living_room_2
-      - light.hue_runner_middle_room_1
-      - light.hue_runner_middle_room_2
-      - light.hue_ambiance_spot_1
-      - light.hue_ambiance_spot_2
-      - light.hue_ambiance_spot_3
-      - light.hue_ambiance_spot_4
-      - light.hue_ambiance_spot_5
-      - light.hue_ambiance_spot_6
-      - light.hue_ambiance_spot_7
-      - light.hue_ambiance_spot_8
-      - light.hue_filament_bulb_1
+        - light.living_room_1
+        - light.living_room_2
+        - light.hue_runner_middle_room_1
+        - light.hue_runner_middle_room_2
+        - light.hue_ambiance_spot_1
+        - light.hue_ambiance_spot_2
+        - light.hue_ambiance_spot_3
+        - light.hue_ambiance_spot_4
+        - light.hue_ambiance_spot_5
+        - light.hue_ambiance_spot_6
+        - light.hue_ambiance_spot_7
+        - light.hue_ambiance_spot_8
+        - light.hue_filament_bulb_1
       friendly_name: Downstairs
       supported_features: 43
       state: 'on'
