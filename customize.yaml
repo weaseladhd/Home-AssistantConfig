@@ -8,3 +8,11 @@ light.hue_being_ceiling_landing:
   friendly_name: Landing light
 light.hue_white_lamp_bedroom:
   friendly_name: Bedroom light
+sensor.aq_maliskamp_p1:
+  friendly_name: PM10 Maliskamp
+  unit_of_measurement: µg/m³
+  icon: hass:thought-bubble
+sensor.aq_maliskamp_p2:
+  friendly_name: PM2.5 Maliskamp
+  unit_of_measurement: µg/m³
+  icon: hass:thought-bubble-outline

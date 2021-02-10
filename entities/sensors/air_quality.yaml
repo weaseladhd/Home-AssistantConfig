@@ -1,0 +1,10 @@
+---
+# Air auality Opensensemap
+platform: template
+sensors:
+  aq_maliskamp_p1:
+    value_template: "{{ state_attr('air_quality.maliskamp',
+    'particulate_matter_10') | float | round(2) }}"
+  aq_maliskamp_p2:
+    value_template: "{{ state_attr('air_quality.maliskamp',
+    'particulate_matter_2_5') | float | round(2) }}"
