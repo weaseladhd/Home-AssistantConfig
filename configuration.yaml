@@ -32,3 +32,6 @@ discovery:
 
 # Managed via UI
 script: !include scripts.yaml
+
+# Auto generated Readme
+readme:
