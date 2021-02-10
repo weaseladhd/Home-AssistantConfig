@@ -1,4 +1,5 @@
-# afvalwijzer
+---
+# Afvalwijzer
 platform: afvalwijzer
 provider: afvalstoffendienstkalender
 postal_code: !secret postal_code

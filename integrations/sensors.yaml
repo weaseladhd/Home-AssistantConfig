@@ -1,2 +1,3 @@
+---
 # Sensors
 sensor: !include_dir_list ../entities/sensors

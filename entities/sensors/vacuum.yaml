@@ -1,3 +1,5 @@
+---
+# Vacuum template
 platform: template
 sensors:
 

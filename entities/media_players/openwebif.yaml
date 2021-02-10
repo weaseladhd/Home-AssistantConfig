@@ -1,3 +1,4 @@
+---
 # openwebif
 platform: enigma2
 host: !secret vu_host

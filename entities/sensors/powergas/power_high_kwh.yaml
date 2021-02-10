@@ -1,3 +1,5 @@
+---
+# Power high kWh
 platform: rest
 resource: http://192.168.20.51/api/v1/smartmeter?limit=1&json=object&round=off
 name: Power high kWh

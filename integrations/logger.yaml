@@ -1,3 +1,5 @@
+---
+# Logger
 logger:
   default: info
   logs:

@@ -1,3 +1,5 @@
+---
+# Quarantine Fenne hours outside
 platform: template
 sensors:
 

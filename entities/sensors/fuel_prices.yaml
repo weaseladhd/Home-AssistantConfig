@@ -1,3 +1,5 @@
+---
+# Fuel prices
 platform: brandstofprijzen
 monitored_variables:
   - euro95

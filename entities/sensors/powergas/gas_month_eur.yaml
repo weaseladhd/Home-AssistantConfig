@@ -1,3 +1,5 @@
+---
+# Gas month euro
 platform: rest
 resource: http://192.168.20.51/api/v1/financial/month?limit=1&json=object&round=off
 name: Gas month euro

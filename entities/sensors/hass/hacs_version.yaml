@@ -1,3 +1,5 @@
+---
+# HACS current version
 platform: command_line
 name: hacs_version
 scan_interval: 86400

@@ -1,3 +1,5 @@
+---
+# HASS version
 platform: template
 sensors:
 

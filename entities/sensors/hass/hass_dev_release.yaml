@@ -1,3 +1,5 @@
+---
+# HASS Dev release
 platform: template
 sensors:
 

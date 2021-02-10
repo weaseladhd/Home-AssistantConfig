@@ -1,3 +1,5 @@
+---
+# Plex movies recently added
 platform: plex_recently_added
 name: Recently Added Movies
 token: !secret plex_api

@@ -1,3 +1,4 @@
+---
 # Sabnzbd
 sabnzbd:
   api_key: !secret sab_api

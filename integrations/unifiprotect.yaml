@@ -1,3 +1,4 @@
+---
 # Unifi Protect
 unifiprotect:
   host: !secret unifi_host

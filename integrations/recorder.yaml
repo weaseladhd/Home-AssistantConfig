@@ -1,3 +1,4 @@
+---
 # Recorder
 recorder:
   db_url: !secret maria_db_url

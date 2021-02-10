@@ -1,2 +1,3 @@
+---
 # Lights
 light: !include_dir_list ../entities/lights

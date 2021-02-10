@@ -1,4 +1,5 @@
 ---
+# Shutdown notification
 description: Send notification on Home Assistant stop
 id: 0ef4058f-db93-46b7-b3ea-338ac4e4a560
 alias: system_shutdown_notification

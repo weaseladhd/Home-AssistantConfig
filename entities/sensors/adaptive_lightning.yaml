@@ -1,3 +1,5 @@
+---
+# Adaptive lightning
 platform: template
 sensors:
 

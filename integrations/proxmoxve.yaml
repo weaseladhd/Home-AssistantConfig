@@ -1,3 +1,4 @@
+---
 # Proxmox VE
 proxmoxve:
   - host: !secret pve_host

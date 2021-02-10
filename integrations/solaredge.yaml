@@ -1,3 +1,5 @@
+---
+# Solaredge
 solaredge:
   api_key: !secret solaredge_api
   site_id: !secret solaredge_site_id

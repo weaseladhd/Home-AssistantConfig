@@ -1,3 +1,4 @@
+---
 # count entities
 platform: template
 sensors:

@@ -1,3 +1,5 @@
+---
+# Quarantine Wesley hours outside
 platform: template
 sensors:
 

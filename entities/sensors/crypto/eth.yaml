@@ -1,3 +1,5 @@
+---
+# Crypto ETH Sensor
 platform: cryptoinfo
 cryptocurrency_name: "ethereum"
 currency_name: "eur"

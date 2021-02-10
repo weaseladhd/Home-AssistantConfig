@@ -1,2 +1,3 @@
+---
 # Text to speech
 tts: !include_dir_list ../entities/tts

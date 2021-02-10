@@ -1,3 +1,4 @@
+---
 # Scene
 scene: !include ../scenes.yaml
 scene split: !include_dir_list ../scenes

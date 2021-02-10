@@ -1,2 +1,3 @@
+---
 # Switch
 switch: !include_dir_list ../entities/switches

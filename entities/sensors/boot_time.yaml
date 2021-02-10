@@ -1,8 +1,8 @@
+---
 # Hass Last boot date and time
 platform: template
 sensors:
 
-  # Last boot date and time
   last_boot_date_time:
     friendly_name: Last Boot
     value_template: >

@@ -1,3 +1,5 @@
+---
+# HASS release notes rc
 platform: rest
 name: hass_release_notes_rc
 resource: https://api.github.com/repos/home-assistant/core/releases?per_page=1

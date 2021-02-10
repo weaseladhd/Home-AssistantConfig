@@ -1,3 +1,5 @@
+---
+# Crypto BTC Sensor
 platform: cryptoinfo
 cryptocurrency_name: "bitcoin"
 currency_name: "eur"

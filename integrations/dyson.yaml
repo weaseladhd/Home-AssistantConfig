@@ -1,3 +1,5 @@
+---
+# Dyson
 dyson:
   username: !secret dyson_username
   password: !secret dyson_password
