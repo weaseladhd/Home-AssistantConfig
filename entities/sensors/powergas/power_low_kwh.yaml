@@ -1,4 +1,4 @@
-platform: rest 
+platform: rest
 resource: http://192.168.20.51/api/v1/smartmeter?limit=1&json=object&round=off
 name: Power low kWh
 value_template: '{{ value_json.0.CONSUMPTION_KWH_LOW | round(2) }}'

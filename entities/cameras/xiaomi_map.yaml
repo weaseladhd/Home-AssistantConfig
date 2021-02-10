@@ -25,7 +25,7 @@ colors:
   color_charger: [204, 204, 204]
   color_robo: [255, 255, 255]
   color_unknown: [0, 0, 0]
-  color_scan: [0xDF, 0xDF, 0xDF, 0]#
+  color_scan: [0xDF, 0xDF, 0xDF, 0]
 map_transformation:
   scale: 2
   trim:

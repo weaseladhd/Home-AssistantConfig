@@ -50,7 +50,7 @@ sensors:
     icon_template: mdi:toggle-switch
     value_template: "{{ states.input_boolean | list | length }}"
 
-  #Count Input Datetimes
+  # Count Input Datetimes
   total_input_datetimes:
     friendly_name: 'Input Datetimes'
     icon_template: mdi:calendar-clock

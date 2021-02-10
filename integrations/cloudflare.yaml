@@ -1,5 +1,5 @@
-#cloudflare
-#cloudflare:
+# cloudflare
+# cloudflare:
 #  email: !secret cf_email
 #  api_key: !secret cf_api
 #  zone: !secret cf_zone

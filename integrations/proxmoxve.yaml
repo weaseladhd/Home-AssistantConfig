@@ -1,7 +1,7 @@
 # Proxmox VE
 proxmoxve:
   - host: !secret pve_host
-    username: !secret pve_username 
+    username: !secret pve_username
     password: !secret pve_password
     realm: pve
     verify_ssl: false

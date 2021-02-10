@@ -1,4 +1,4 @@
-platform: rest 
+platform: rest
 resource: http://192.168.20.51/api/v1/financial/month?limit=1&json=object&round=off
 name: Power high month euro
 value_template: '{{ value_json.0.CONSUMPTION_COST_ELECTRICITY_HIGH | round(2) }}'

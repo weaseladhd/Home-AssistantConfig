@@ -102,7 +102,7 @@ sensors:
     value_template: >
       {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sonday'] %}
       {{ days[now().weekday()] }}
-      
+
   sidebar_date:
     icon_template: mdi:calendar
     value_template: >

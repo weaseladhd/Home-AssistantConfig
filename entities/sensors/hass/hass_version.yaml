@@ -6,5 +6,5 @@ sensors:
     friendly_name_template: >
       Installed {{ states('sensor.hass_version_installed') }}
     value_template: >
-      {{ 'Latest' if states('sensor.hass_version_installed') == 
+      {{ 'Latest' if states('sensor.hass_version_installed') ==
       states('sensor.hass_version_latest') else states('sensor.hass_version_latest') }}
