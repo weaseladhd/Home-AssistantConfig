@@ -17,6 +17,7 @@ homeassistant:
 
   # Customizations
   customize: !include customize.yaml
+  customize_glob: !include customize_glob.yaml
 
 # default_config:
 default_config:
