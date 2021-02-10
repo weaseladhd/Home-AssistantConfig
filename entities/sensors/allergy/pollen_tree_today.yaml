@@ -1,0 +1,7 @@
+---
+# Pollen tree today
+platform: scrape
+resource: !secret weather_com_allergy_forecast
+select: ".PollenBreakdown--body--2i7U7 > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > ul:nth-of-type(1) > li:nth-of-type(1) > strong:nth-of-type(1)"
+name: Pollen Tree Today
+scan_interval: 28800
