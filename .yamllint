@@ -4,6 +4,7 @@ ignore: |
   themes/
   .github/
   blueprints/
+  automations.yaml
 rules:
   braces:
     level: error
