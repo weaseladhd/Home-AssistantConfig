@@ -16,7 +16,7 @@ jobs:
       - name: Getting your configuration from GitHub
         uses: actions/checkout@v1
       - name: Running YAMLlint
-        uses: frenck/action-yamllint@v1
+        uses: ibiqlik/action-yamllint@v3
         with:
           config_file: .github/yamllint-config.yml
 
