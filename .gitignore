@@ -4,10 +4,9 @@
 
 # Whitelist Files
 !*.yaml
+!*.yml
 !.gitignore
 !*.md
-!.travis.yml
-!travis_secrets.yaml
 
 # Whitelist Folders
 !themes
