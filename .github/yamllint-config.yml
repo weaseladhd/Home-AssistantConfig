@@ -1,8 +1,5 @@
 ---
-#####
 # Used to configure yamlling so it skips some checks
-# But also some files too
-#####
 extends: default
 
 rules:
@@ -13,7 +10,6 @@ rules:
   indentation: disable
 
 ignore: |
-  lovelace-ui.yaml
   custom_components/
   .git
   .github/workflows/yaml-lint.yaml

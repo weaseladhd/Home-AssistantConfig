@@ -1,4 +1,4 @@
-platform: rest 
+platform: rest
 resource: http://192.168.20.51/api/v1/powergas/day?limit=1&json=object&round=off
 name: Power delta day kWh
 value_template: '{{ value_json.0.CONSUMPTION_DELTA_KWH | round(4) }}'

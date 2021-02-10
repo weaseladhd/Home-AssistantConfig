@@ -1,5 +1,5 @@
 # Core Configuration
-homeassistant: 
+homeassistant:
 
   # Core config
   name: Home
@@ -26,9 +26,6 @@ browser_mod:
   devices:
     cdd3c879-7969da05:
       name: wv_desktop_browser
-
-# discovery
-discovery:
 
 # Managed via UI
 script: !include scripts.yaml

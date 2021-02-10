@@ -27,4 +27,4 @@ monitored_conditions:
   - precipitation_forecast_total
   - rainlast24hour
   - rainlasthour
-  - rainchance_1d 
+  - rainchance_1d

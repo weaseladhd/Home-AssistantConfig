@@ -4,4 +4,3 @@ resource: https://api.github.com/repos/home-assistant/core/releases/latest
 value_template: '{{ value_json.name }}'
 json_attributes: [body]
 scan_interval: 21600
-
