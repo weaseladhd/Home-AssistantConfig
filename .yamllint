@@ -3,6 +3,7 @@ ignore: |
   custom_components/
   themes/
   .github/
+  automations/
 rules:
   braces:
     level: error
