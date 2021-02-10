@@ -7,7 +7,7 @@
 !*.yml
 !.gitignore
 !*.md
-!0d25726f0c18_sample.json
+!ci_google_service_account.json
 
 # Whitelist Folders
 !themes
