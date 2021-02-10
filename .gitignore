@@ -21,7 +21,31 @@
 !.github
 !.github/*
 !.stubs
+!blueprints
+!blueprints/*
+!blueprints/automation/*
 
 # Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
 secrets.yaml
 google_calendars.yaml
+home-assistant_v2.db
+home-assistant.log
+ip_bans.yaml
+known_devices.yaml
+
+# sane defaults
+*.pid
+*.xml
+*.conf
+*.csr
+*.crt
+*.key
+*.log
+
+# database files
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+*.sqlite
+*.sqlite-journal
