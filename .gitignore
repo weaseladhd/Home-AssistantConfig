@@ -18,6 +18,8 @@
 !automations/
 !automations/*
 !entities/sensors/*
+!.github/*
+!.github/workflow/*
 
 # Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
 secrets.yaml
