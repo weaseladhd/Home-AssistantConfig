@@ -7,19 +7,19 @@
 !*.yml
 !.gitignore
 !*.md
-!ci_google_service_account.json
 
 # Whitelist Folders
 !themes
 !integrations
 !entities
 !entities/*
-!customizations
-!automations/
-!automations/*
 !entities/sensors/*
+!customizations
+!automations
+!automations/*
+!.github
 !.github/*
-!.github/workflow/*
+!.stubs
 
 # Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
 secrets.yaml
