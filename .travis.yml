@@ -12,12 +12,10 @@ language: python
 python:
   - "3.7"
 
-# Enable Travis caching of Python Packages (per branch)
-cache: pip
-
 # Prepare the CI environment to support Home Assistant
 before_install:
 - mv travis_secrets.yaml secrets.yaml
+- mv 0d25726f0c18_sample.json 0d25726f0c18.json
 
 # Fix for missing homeassistant-ptozw 0.1.4 and pydispatcher 2.0.5
 # @link https://community.home-assistant.io/t/travis-ci-build-issues/119482
@@ -26,8 +24,9 @@ before_install:
 # Install Home Assistant
 install:
 - pip3 install homeassistant
-- pip3 install six==1.13.0
 
 # Test configuration files
 script:
-  - hass --script check_config --config . --files
+  - hass --version
+  - "hass -c . --script check_config --info all | tee check.output"
+  - '! less check.output | grep -q "Failed config"'
