@@ -6,6 +6,7 @@ before_install:
 - sudo apt-get install -y libudev-dev
 install:
 - pip3 install homeassistant
-- pip install -U six
+- pip install six
+- pip install pyparsing
 script:
 - hass -c . --script check_config
