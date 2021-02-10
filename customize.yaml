@@ -1,3 +1,6 @@
+---
+# Customizations
+
 fan.living_room:
   friendly_name: Living Room Fan
 light.hue_white_lamp_studyroom:
