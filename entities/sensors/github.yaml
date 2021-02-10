@@ -1,0 +1,5 @@
+platform: github
+access_token: !secret github_token
+repositories:
+  - path: 'WeaselADHD/Home-AssistantConfig'
+    name: WeaselADHD's Home Assistant Config
