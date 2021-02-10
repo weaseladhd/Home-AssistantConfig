@@ -18,7 +18,7 @@ jobs:
       - name: 🚀 Run yamllint
         uses: frenck/action-yamllint@v1.0.1
         with:
-          config: /config/.github/.yamllint
+          config: ./.github/.yamllint
 
   remarklint:
     runs-on: ubuntu-18.04
