@@ -7,6 +7,7 @@
 !*.yml
 !.gitignore
 !*.md
+!.yamllint
 
 # Whitelist Folders
 !themes
