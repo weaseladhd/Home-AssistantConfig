@@ -7,3 +7,5 @@ recorder:
     domains:
       - sun
       - weather
+    event_types:
+      - platform_discovered
