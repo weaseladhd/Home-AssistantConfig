@@ -16,6 +16,7 @@
 !entities/*
 !entities/sensors/*
 !customizations
+!customizations/*
 !automations
 !automations/*
 !.github

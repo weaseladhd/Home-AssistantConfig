@@ -1,0 +1,4 @@
+---
+# Script
+scene: !include ../scripts.yaml
+scene split: !include_dir_list ../scripts

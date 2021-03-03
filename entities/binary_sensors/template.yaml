@@ -55,7 +55,7 @@ sensors:
       {% set middle_room_lights_on = is_state("light.middle_room", "on") %}
       {% set dining_room_lights_on = is_state("light.dining_room", "on") %}
       {% set hallway_light_on = is_state("light.hue_ambiance_spot_hall", "on") %}
-      {{ living_room_lights_on or kitchen_lights_on or middle_room_lights_on or dining_room_lights_on or hallway_ligh_on }}
+      {{ living_room_lights_on or kitchen_lights_on or middle_room_lights_on or dining_room_lights_on or hallway_lights_on }}
 
   anything_on:
     friendly_name: Anything is on
