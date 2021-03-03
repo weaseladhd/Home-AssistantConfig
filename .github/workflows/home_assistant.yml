@@ -14,15 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: ⤵️ Check out configuration from GitHub
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: 🚀 Run yamllint
-        uses: frenck/action-yamllint@v1.1.0
+        uses: frenck/action-yamllint@v1.1
 
   remarklint:
     runs-on: ubuntu-18.04
     steps:
       - name: ⤵️ Check out configuration from GitHub
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Running Remark lint
         uses: "docker://pipelinecomponents/remark-lint:latest"
         continue-on-error: true
@@ -87,7 +87,7 @@ jobs:
           git clone https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
           mv -v Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor/custom_components/* ./custom_components
       - name: Check configuration
-        uses: frenck/action-home-assistant@v1.0.0
+        uses: frenck/action-home-assistant@v1.0
         with:
           secrets: ./.stubs/ci_secrets.yaml
           version: "${{ matrix.version }}"
