@@ -28,24 +28,6 @@ sensors:
     value_template: "{{ states('sensor.solaredge_current_power') | float | round(1) }}"
     unit_of_measurement: "W"
 
-  sidebar_greeting:
-    value_template: >
-      {% set time = now().hour %}
-      {% if time <= 1 %} Good night {{'\U0001F611'}}
-      {% elif time <= 3 %} Good night {{'\U0001F62A'}}
-      {% elif time <= 5 %} Good night {{'\U0001F634'}}
-      {% elif time <= 7 %} Good morning {{'\U0001F4A9'}}
-      {% elif time <= 9 %} Good morning {{'\u2615\uFE0F'}}
-      {% elif time <= 10 %} Good morning {{'\U0001F642'}}
-      {% elif time <= 13 %} Good day {{'\U0001F60A'}}
-      {% elif time <= 15 %} Good day {{'\U0001F60E'}}
-      {% elif time <= 17 %} Good day {{'\U0001F44B\U0001F3FB'}}
-      {% elif time <= 19 %} Good evening {{'\U0001F44B\U0001F3FB'}}
-      {% elif time <= 22 %} Good evening {{'\U0001F60C'}}
-      {% elif time <= 23 %} Good evening {{'\U0001F974'}}
-      {% else %} Good evening {{'\U0001F974'}}
-      {% endif %}
-
   sidebar_active:
     value_template: >
       {% set lights = [states.light.kitchen, states.light.living_room, states.light.middle_room, states.light.dining_room, states.light.hue_white_lamp_studyroom, states.light.hue_white_lamp_bedroom, states.light.hue_being_ceiling_landing] %}
