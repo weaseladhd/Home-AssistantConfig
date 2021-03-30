@@ -1,9 +1,0 @@
----
-# Speedtest
-speedtestdotnet:
-  scan_interval:
-    minutes: 120
-  monitored_conditions:
-    - ping
-    - download
-    - upload

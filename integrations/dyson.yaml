@@ -1,9 +1,0 @@
----
-# Dyson
-dyson:
-  username: !secret dyson_username
-  password: !secret dyson_password
-  language: NL
-  devices:
-    - device_id: !secret dyson_device_1_id
-      device_ip: !secret dyson_device_1_ip
