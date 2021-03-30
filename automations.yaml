@@ -26,8 +26,8 @@
     path: homeassistant/notify_leaving_zone.yaml
     input:
       person_entity: person.fenne
-      zone_entity: zone.work_nijmegen
       notify_device: 62618f2f67784a4585fdff061cfb9905
+      zone_entity: zone.work_fenne_nijmegen
 - id: '1612867409866'
   alias: Zone Notification (FF Work Vught)
   description: ''
@@ -35,8 +35,8 @@
     path: homeassistant/notify_leaving_zone.yaml
     input:
       person_entity: person.fenne
-      zone_entity: zone.work_vught
       notify_device: 62618f2f67784a4585fdff061cfb9905
+      zone_entity: zone.work_fenne_vught
 - id: '1612980102342'
   alias: Update OpenUV 5 minutes before sunrise and after sunset
   description: ''
