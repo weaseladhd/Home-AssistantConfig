@@ -58,10 +58,6 @@ jobs:
         run: |
           git clone https://github.com/thomasloven/hass-browser_mod
           mv -v hass-browser_mod/custom_components/* ./custom_components
-      - name: Clone custom component Spotcast
-        run: |
-          git clone https://github.com/fondberg/spotcast
-          mv -v spotcast/custom_components/* ./custom_components
       - name: Clone custom component Afvalwijzer
         run: |
           git clone https://github.com/xirixiz/homeassistant-afvalwijzer
