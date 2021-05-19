@@ -1,5 +1,5 @@
 ---
-# Air auality Opensensemap
+# Air quality Opensensemap
 platform: template
 sensors:
   aq_maliskamp_p1:

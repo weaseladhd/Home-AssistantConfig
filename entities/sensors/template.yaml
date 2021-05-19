@@ -3,31 +3,6 @@
 platform: template
 sensors:
 
-  power_day_eur:
-    friendly_name: Power day euro
-    value_template: "{{ states('sensor.power_high_day_euro') | float + states('sensor.power_low_day_euro') | float | round(1) }}"
-    unit_of_measurement: "€"
-
-  power_month_eur:
-    friendly_name: Power month euro
-    value_template: "{{ states('sensor.power_high_month_euro') | float + states('sensor.power_low_month_euro') | float | round(1) }}"
-    unit_of_measurement: "€"
-
-  utility_day_eur:
-    friendly_name: Utility day euro
-    value_template: "{{ states('sensor.gas_day_euro') | float + states('sensor.power_day_eur') | float | round(1) }}"
-    unit_of_measurement: "€"
-
-  utility_month_eur:
-    friendly_name: Utility month euro
-    value_template: "{{ states('sensor.gas_month_euro') | float + states('sensor.power_month_eur') | float | round(1) }}"
-    unit_of_measurement: "€"
-
-  power_current_se:
-    friendly_name: Solaredge Current Power
-    value_template: "{{ states('sensor.solaredge_current_power') | float | round(1) }}"
-    unit_of_measurement: "W"
-
   sidebar_active:
     value_template: >
       {% set lights = [states.light.kitchen, states.light.living_room, states.light.middle_room, states.light.dining_room, states.light.hue_white_lamp_studyroom, states.light.hue_white_lamp_bedroom, states.light.hue_being_ceiling_landing] %}
@@ -116,12 +91,3 @@ sensors:
         {% endif %}
       {% endif %}
 
-  garbage_disposal:
-    friendly_name: Garbage disposal
-    icon_template: mdi:trash-can-outline
-    value_template: >
-      {% if is_state('sensor.afvalwijzer_next_in_days', '0') %} <ha-icon icon="mdi:trash-can-outline"></ha-icon> {{states("sensor.afvalwijzer_next_item") }} will be picked up today
-      {% elif is_state('sensor.afvalwijzer_next_in_days', '1') %} <ha-icon icon="mdi:trash-can-outline"></ha-icon> {{states("sensor.afvalwijzer_next_item") }} will be picked up tomorrow
-      {% elif not is_state('sensor.afvalwijzer_next_in_days', '1') and not is_state('sensor.afvalwijzer_next_in_days', '0') %} <ha-icon icon="mdi:trash-can-outline"></ha-icon> {{states("sensor.afvalwijzer_next_item") }} will be picked up in {{states("sensor.afvalwijzer_next_in_days") }} days at {{states("sensor.afvalwijzer_next_date") }}
-      {% else %} No garbage disposal data known...
-      {% endif %}

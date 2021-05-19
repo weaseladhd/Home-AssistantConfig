@@ -1,0 +1,9 @@
+---
+# Template
+platform: template
+sensors:
+
+  utility_day_eur:
+    friendly_name: Utility day euro
+    value_template: "{{ states('sensor.gas_day_euro') | float + states('sensor.power_day_eur') | float | round(1) }}"
+    unit_of_measurement: "€"
