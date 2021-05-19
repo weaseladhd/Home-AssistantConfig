@@ -2,7 +2,6 @@
 # Template
 platform: template
 sensors:
-
   utility_month_eur:
     friendly_name: Utility month euro
     value_template: "{{ states('sensor.gas_month_euro') | float + states('sensor.power_month_eur') | float | round(1) }}"

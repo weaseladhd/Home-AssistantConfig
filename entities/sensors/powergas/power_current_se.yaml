@@ -2,7 +2,6 @@
 # Template
 platform: template
 sensors:
-
   power_current_se:
     friendly_name: Solaredge Current Power
     value_template: "{{ states('sensor.solaredge_current_power') | float | round(1) }}"
