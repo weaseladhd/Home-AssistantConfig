@@ -79,3 +79,65 @@
   - service: openuv.update_protection_data
     data: {}
   mode: single
+- id: '1623004018165'
+  alias: Hue Dimmer Switch Study Room
+  description: ''
+  use_blueprint:
+    path: vanstinator/zha-philips-hue-dimmer-switch-rwl020-rwl021.yaml
+    input:
+      remote: f2f515c72a43a7cbf44b1af01098ed6c
+      brightness: 80
+      light:
+        area_id: 4e588329bb6b4725a635aca3260970e0
+      force_brightness: false
+- id: '1623004111448'
+  alias: Hue Dimmer Switch Bedroom
+  description: ''
+  use_blueprint:
+    path: vanstinator/zha-philips-hue-dimmer-switch-rwl020-rwl021.yaml
+    input:
+      remote: 7a95380da4b6b277a58d8d50e6563947
+      light:
+        area_id:
+        - 236628dd9b2341f09ce0edc0f3861977
+        - 4e588329bb6b4725a635aca3260970e0
+        - 13328c04b1b440789f6944bd19a3def1
+        - 6ed33154b4d444b0b37b012a1f13d6ed
+        - b1352033ec3147e1911c9d5e60a1361c
+        - 8f22318d846d409398d85596cfd5bf8c
+        - c875e4db9fb44651bc804138fdbe430b
+      brightness: 50
+- id: '1623005346863'
+  alias: Hue Dimmer Switch Downstairs
+  description: ''
+  use_blueprint:
+    path: vanstinator/zha-philips-hue-dimmer-switch-rwl020-rwl021.yaml
+    input:
+      remote: be13f5952c5470501943d9363012da8d
+      light:
+        area_id:
+        - c875e4db9fb44651bc804138fdbe430b
+        - 6ed33154b4d444b0b37b012a1f13d6ed
+        - b1352033ec3147e1911c9d5e60a1361c
+      brightness: 50
+- id: '1623006218863'
+  alias: Low battery level detection & notification for all battery sensors
+  description: ''
+  use_blueprint:
+    path: sbyx/low-battery-level-detection-notification-for-all-battery-sensors.yaml
+    input:
+      actions:
+      - device_id: 62618f2f67784a4585fdff061cfb9905
+        domain: mobile_app
+        type: notify
+        title: '{{sensors}} batter is low. Please change the battery!'
+        message: Battery
+- id: '1623006343409'
+  alias: Zone Entering Notification
+  description: ''
+  use_blueprint:
+    path: Sjorsa/notify-entering-zone.yaml
+    input:
+      person_entity: person.fenne
+      zone_entity: zone.home
+      notify_device: 62618f2f67784a4585fdff061cfb9905
