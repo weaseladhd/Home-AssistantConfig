@@ -3,4 +3,4 @@
 platform: group
 name: Dining Room
 entities:
-  - light.hue_filament_bulb_1
+  - light.hue_filament_dining_room
