@@ -1,8 +1,0 @@
----
-# openwebif
-platform: enigma2
-host: !secret vu_host
-port: !secret vu_port
-name: VuDuo2
-username: !secret vu_user
-password: !secret vu_pass
