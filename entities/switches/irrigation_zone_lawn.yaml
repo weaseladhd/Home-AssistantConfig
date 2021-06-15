@@ -1,0 +1,13 @@
+---
+#switch
+platform: template
+switches:
+  irrigation_zone_lawn:
+    value_template: '{{ states("input_boolean.irrigation_lawn") }}'
+    friendly_name: 'Irrigation zone lawn'
+    turn_on:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.irrigation_lawn
+    turn_off:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.irrigation_lawn
