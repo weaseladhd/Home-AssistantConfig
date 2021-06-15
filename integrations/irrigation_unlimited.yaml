@@ -1,5 +1,5 @@
 ---
-#irrigation unlimited
+# irrigation unlimited
 irrigation_unlimited:
   controllers:
     zones:

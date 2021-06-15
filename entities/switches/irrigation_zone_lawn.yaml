@@ -1,5 +1,5 @@
 ---
-#switch
+# Switch Irrigation Zone
 platform: template
 switches:
   irrigation_zone_lawn:
