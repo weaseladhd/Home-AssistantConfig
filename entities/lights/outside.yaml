@@ -3,5 +3,5 @@
 platform: group
 name: Outside
 entities:
-  - light.hue_white_lamp_outside_back
-  - light.hue_white_lamp_outside_front
+  - light.hue_white_outside_back
+  - light.hue_white_outside_front
