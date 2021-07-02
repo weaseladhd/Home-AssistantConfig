@@ -86,6 +86,10 @@ jobs:
         run: |
           git clone https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
           mv -v Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor/custom_components/* ./custom_components
+      - name: Clone custom component Irrigation Unlimited
+        run: |
+          git clone https://github.com/rgc99/irrigation_unlimited
+          mv -v irrigation_unlimited/custom_components/* ./custom_components
       - name: Check configuration
         uses: frenck/action-home-assistant@v1.0
         with:
