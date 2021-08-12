@@ -1,0 +1,5 @@
+---
+#Daily energy production off peak
+daily_energy_production_off_peak:
+  source: sensor.power_production_low_kwh
+  cycle: daily
