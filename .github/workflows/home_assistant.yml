@@ -91,7 +91,7 @@ jobs:
           git clone https://github.com/rgc99/irrigation_unlimited
           mv -v irrigation_unlimited/custom_components/* ./custom_components
       - name: Check configuration
-        uses: frenck/action-home-assistant@v1.0
+        uses: frenck/action-home-assistant@v1.1.1
         with:
           secrets: ./.stubs/ci_secrets.yaml
           version: "${{ matrix.version }}"
