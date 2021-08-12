@@ -11,3 +11,4 @@ irrigation_unlimited:
             sun: 'sunrise'
             before: '00:10'
           duration: '00:15'
+          weekday: [sun, wed, fri]
