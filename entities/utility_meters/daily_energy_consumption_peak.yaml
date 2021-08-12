@@ -1,5 +1,5 @@
 ---
-#Daily energy consumption peak
+# Daily energy consumption peak
 daily_energy_consumption_peak:
   source: sensor.power_consumption_high_kwh
   cycle: daily

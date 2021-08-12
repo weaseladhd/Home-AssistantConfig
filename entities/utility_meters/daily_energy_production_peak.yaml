@@ -1,5 +1,5 @@
 ---
-#Daily energy production peak
+# Daily energy production peak
 daily_energy_production_peak:
   source: sensor.power_production_high_kwh
   cycle: daily
