@@ -1,7 +1,0 @@
----
-# Power current W
-platform: rest
-resource: http://192.168.20.51/api/v1/smartmeter?limit=1&json=object&round=on
-name: Power current production W
-value_template: '{{ value_json.0.PRODUCTION_W }}'
-unit_of_measurement: "W"

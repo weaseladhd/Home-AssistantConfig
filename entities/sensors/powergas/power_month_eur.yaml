@@ -1,8 +1,0 @@
----
-# Template
-platform: template
-sensors:
-  power_month_eur:
-    friendly_name: Power month euro
-    value_template: "{{ states('sensor.power_high_month_euro') | float + states('sensor.power_low_month_euro') | float | round(1) }}"
-    unit_of_measurement: "€"

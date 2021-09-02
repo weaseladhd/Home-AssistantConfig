@@ -22,3 +22,12 @@ sensor.current_ozone_level:
   friendly_name: Ozon OpenUV
   unit_of_measurement: "DU"
   icon: hass:vector-triangle
+sensor.energy_consumed_tariff_1:
+  state_class: total_increasing
+sensor.energy_consumed_tariff_2:
+  state_class: total_increasing
+sensor.energy_produced_tariff_1:
+  state_class: total_increasing
+sensor.energy_produced_tariff_2:
+  state_class: total_increasing
+

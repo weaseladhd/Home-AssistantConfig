@@ -1,7 +1,0 @@
----
-# Gas delta month M3
-platform: rest
-resource: http://192.168.20.51/api/v1/powergas/month?limit=1&json=object&round=off
-name: Gas delta month m3
-value_template: '{{ value_json.0.CONSUMPTION_GAS_DELTA_M3 | round(4) }}'
-unit_of_measurement: "M3"

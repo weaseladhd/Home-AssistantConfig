@@ -1,7 +1,0 @@
----
-# Power delta month kWh
-platform: rest
-resource: http://192.168.20.51/api/v1/powergas/month?limit=1&json=object&round=off
-name: Power delta month kWh
-value_template: '{{ value_json.0.CONSUMPTION_DELTA_KWH | round(4) }}'
-unit_of_measurement: "kWh"
