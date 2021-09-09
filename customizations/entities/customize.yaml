@@ -30,4 +30,5 @@ sensor.energy_produced_tariff_1:
   state_class: total_increasing
 sensor.energy_produced_tariff_2:
   state_class: total_increasing
-
+sensor.gas_consumed:
+  state_class: total_increasing
