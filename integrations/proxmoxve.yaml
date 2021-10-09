@@ -10,7 +10,4 @@ proxmoxve:
       - node: pve
         vms:
           - 100
-          - 200
-          - 201
           - 300
-          - 400

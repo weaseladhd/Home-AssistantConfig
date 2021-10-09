@@ -1,5 +1,5 @@
 ---
-# Radarr upcoming media
+# Radarr
 platform: radarr
 api_key: !secret radarr_api
 host: !secret radarr_host
