@@ -6,7 +6,7 @@ sensors:
   car_days:
     unique_id: car_days
     friendly_name: Car possession in days
-    value_template: '{{ (as_timestamp(now()) - as_timestamp("2020-11-04 10:00:00") ) | timestamp_custom("%j")| int }}'
+    value_template: '{{ ((now().timestamp() - as_timestamp("2020-11-04")) /86400) | int }}'
     unit_of_measurement: 'Days'
 
   car_km_allowed:
