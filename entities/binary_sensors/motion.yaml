@@ -32,7 +32,7 @@ sensors:
   activity_in_hallway:
     friendly_name: Activity in the hallway
     value_template: >
-      {{ is_state("binary_sensor.hue_motion_sensor_hallway_occupancy", "on")
+      {{ is_state("binary_sensor.hue_motion_sensor_hallway_motion", "on")
       or is_state("binary_sensor.sensor_motion_hallway_ias_zone", "on") }}
     delay_off: "00:02:00"
 

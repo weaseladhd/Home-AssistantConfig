@@ -1,10 +1,10 @@
 ---
 # Enigma2 Openwebif
-platform: enigma2
-host: !secret vu_host
-port: !secret vu_port
-source_bouquet: Ziggo
-username: !secret vu_user
-password: !secret vu_pass
-name: vuduo2
-use_channel_icon: true
+# platform: enigma2
+# host: !secret vu_host
+# port: !secret vu_port
+# source_bouquet: Ziggo
+# username: !secret vu_user
+# password: !secret vu_pass
+# name: vuduo2
+# use_channel_icon: true
