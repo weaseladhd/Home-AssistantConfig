@@ -32,34 +32,34 @@ sensors:
     icon_template: custom:roborock-filter
     unit_of_measurement: '%'
     value_template: >
-      {{ (state_attr('vacuum.xiaomi_vacuum_cleaner', 'filter_left') / 1.5) | round | default(0) }}
+      {{ (states('sensor.xiaomi_vacuum_cleaner_filter_left')|float / 1.5) | round | default(0) }}
 
   roborock_mainbrush:
     friendly_name: Main Brush
     icon_template: custom:roborock-mainbrush
     unit_of_measurement: '%'
     value_template: >
-      {{ (state_attr('vacuum.xiaomi_vacuum_cleaner', 'main_brush_left') / 3) | round | default(0) }}
+      {{ (states('sensor.xiaomi_vacuum_cleaner_main_brush_left')|float / 3) | round | default(0) }}
 
   roborock_sensors:
     friendly_name: Sensor
     icon_template: custom:roborock-sensor
     unit_of_measurement: '%'
     value_template: >
-      {{ (state_attr('vacuum.xiaomi_vacuum_cleaner', 'sensor_dirty_left') / 0.3) | round | default(0) }}
+      {{ (states('sensor.xiaomi_vacuum_cleaner_sensor_dirty_left')|float / 0.3) | round | default(0) }}
 
   roborock_sidebrush:
     friendly_name: Side Brush
     icon_template: custom:roborock-sidebrush
     unit_of_measurement: '%'
     value_template: >
-      {{ (state_attr('vacuum.xiaomi_vacuum_cleaner', 'side_brush_left') / 2) | round | default(0) }}
+      {{ (states('sensor.xiaomi_vacuum_cleaner_side_brush_left')|float / 2) | round | default(0) }}
 
   roborock_last_clean:
     friendly_name: Last Cleaned
     icon_template: mdi:calendar-clock
     value_template: >
-      {% set last_cleaned = (as_timestamp(now()) - as_timestamp(state_attr('vacuum.xiaomi_vacuum_cleaner', 'clean_stop'))) | default(0) %}
+      {% set last_cleaned = (as_timestamp(now(),0) - as_timestamp(states('sensor.xiaomi_vacuum_cleaner_last_clean_end'),0)) | default(0) %}
       {% if last_cleaned | timestamp_custom('%d') | int -1 == 1 %} {{ last_cleaned | timestamp_custom('%d') | int -1 }} day ago
       {% elif last_cleaned | timestamp_custom('%d') | int -1 >= 2 %} {{ last_cleaned | timestamp_custom('%d') | int -1 }} days ago
       {% elif last_cleaned | timestamp_custom('%H') | int -1 == 1 %} {{ last_cleaned | timestamp_custom('%H') | int -1 }} hour ago
