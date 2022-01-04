@@ -1,18 +1,18 @@
 ---
 # Iphone Wesley
-iphone_wesley:
-  - sensor.activity_iphone_wesley
-  - sensor.average_active_pace_iphone_wesley
-  - sensor.bssid_iphone_wesley
-  - sensor.battery_level_iphone_wesley
-  - sensor.battery_state_iphone_wesley
-  - sensor.connection_type_iphone_wesley
-  - sensor.distance_iphone_wesley
-  - sensor.floors_ascended_iphone_wesley
-  - sensor.floors_descended_iphone_wesley
-  - sensor.geocoded_location_iphone_wesley
-  - sensor.last_update_trigger_iphone_wesley
-  - sensor.sim_iphone_wesley
-  - sensor.ssid_iphone_wesley
-  - sensor.steps_iphone_wesley
-  - device_tracker.iphone_wesley
+iphone_wv:
+  - sensor.activity_iphone_wv
+  - sensor.average_active_pace_iphone_wv
+  - sensor.bssid_iphone_wv
+  - sensor.battery_level_iphone_wv
+  - sensor.battery_state_iphone_wv
+  - sensor.connection_type_iphone_wv
+  - sensor.distance_iphone_wv
+  - sensor.floors_ascended_iphone_wv
+  - sensor.floors_descended_iphone_wv
+  - sensor.geocoded_location_iphone_wv
+  - sensor.last_update_trigger_iphone_wv
+  - sensor.sim_iphone_wv
+  - sensor.ssid_iphone_wv
+  - sensor.steps_iphone_wv
+  - device_tracker.iphone_wv
