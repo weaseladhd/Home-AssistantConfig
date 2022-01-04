@@ -7,8 +7,9 @@
       delay: 0
       motion_sensor: binary_sensor.motion_uvc_g3_pro_front
       camera: camera.uvc_g3_pro_front
-      notify_device: 62618f2f67784a4585fdff061cfb9905
+      notify_device: 6d34f062b6c1898ca60db74f88c562e6
       is_ios: true
+      notification_message: '{{ motion_sensor_name }} detected movement!'
 - id: '1612867325017'
   alias: Home Assistant update notification
   description: ''
@@ -26,7 +27,7 @@
     path: homeassistant/notify_leaving_zone.yaml
     input:
       person_entity: person.fenne
-      notify_device: 62618f2f67784a4585fdff061cfb9905
+      notify_device: 6d34f062b6c1898ca60db74f88c562e6
       zone_entity: zone.work_fenne_nijmegen
 - id: '1612867409866'
   alias: Zone Notification (FF Work Vught)
@@ -35,7 +36,7 @@
     path: homeassistant/notify_leaving_zone.yaml
     input:
       person_entity: person.fenne
-      notify_device: 62618f2f67784a4585fdff061cfb9905
+      notify_device: 6d34f062b6c1898ca60db74f88c562e6
       zone_entity: zone.work_fenne_vught
 - id: '1612980102342'
   alias: Update OpenUV 5 minutes before sunrise and after sunset
@@ -127,11 +128,11 @@
     path: sbyx/low-battery-level-detection-notification-for-all-battery-sensors.yaml
     input:
       actions:
-      - device_id: 62618f2f67784a4585fdff061cfb9905
+      - device_id: 6d34f062b6c1898ca60db74f88c562e6
         domain: mobile_app
         type: notify
-        title: '{{sensors}} batter is low. Please change the battery!'
-        message: Battery
+        title: '{{sensors}} battery is low. Please change the battery!'
+        message: Battery is low
 - id: '1623006343409'
   alias: Zone Entering Notification
   description: ''
@@ -140,4 +141,4 @@
     input:
       person_entity: person.fenne
       zone_entity: zone.home
-      notify_device: 62618f2f67784a4585fdff061cfb9905
+      notify_device: 6d34f062b6c1898ca60db74f88c562e6
