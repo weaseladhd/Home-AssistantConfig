@@ -16,6 +16,6 @@ history:
       - sensor.last_boot_date_time
       - sensor.internet_time
       - sensor.iphone_sim_1
-      - sensor.iphone_wesley_sim_1
-      - sensor.iphone_wesley_sim_2
+      - sensor.iphone_wv_sim_1
+      - sensor.iphone_wv_sim_2
       - sensor.local_ip
