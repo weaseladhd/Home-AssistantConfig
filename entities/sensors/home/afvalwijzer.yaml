@@ -4,4 +4,5 @@ platform: afvalwijzer
 provider: afvalstoffendienstkalender
 postal_code: !secret postal_code
 street_number: !secret street_number
-include_date_today: true
+exclude_pickup_today: false
+default_label: None
