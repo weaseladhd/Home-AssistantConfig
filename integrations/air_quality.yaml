@@ -1,7 +1,7 @@
 ---
 # Air quality
-# https://opensensemap.org/explore/5f78a62fe6255b001b59bae3
+# https://opensensemap.org/explore/5ebfe9b7e0b0b3001b3b7d9b
 air_quality:
   - platform: opensensemap
-    station_id: 5f78a62fe6255b001b59bae3
+    station_id: 5ebfe9b7e0b0b3001b3b7d9b
     name: Maliskamp
