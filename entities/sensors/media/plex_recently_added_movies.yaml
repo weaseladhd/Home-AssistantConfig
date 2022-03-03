@@ -1,9 +1,0 @@
----
-# Plex movies recently added
-platform: plex_recently_added
-name: Recently Added Movies
-token: !secret plex_token
-host: !secret plex_host
-port: !secret plex_port
-section_types:
-  - movie
