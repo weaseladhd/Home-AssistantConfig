@@ -1,6 +1,0 @@
----
-# HASS version latest beta
-platform: version
-name: hass_version_latest_beta
-beta: true
-source: docker

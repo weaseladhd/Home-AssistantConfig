@@ -1,4 +1,0 @@
----
-# HASS version installed
-platform: version
-name: hass_version_installed

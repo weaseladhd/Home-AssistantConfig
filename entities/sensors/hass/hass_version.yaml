@@ -6,7 +6,7 @@ sensors:
   hass_version:
     icon_template: mdi:home-assistant
     friendly_name_template: >
-      Installed {{ states('sensor.hass_version_installed') }}
+      Installed {{ states('sensor.current_version') }}
     value_template: >
-      {{ 'Latest' if states('sensor.hass_version_installed') ==
-      states('sensor.hass_version_latest') else states('sensor.hass_version_latest') }}
+      {{ 'Latest' if states('sensor.current_version') ==
+      states('sensor.home_assistant_versions') else states('sensor.home_assistant_versions') }}
