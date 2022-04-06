@@ -1,7 +1,0 @@
----
-# Light Group Hallway
-platform: group
-name: Hallway
-entities:
-  - light.hue_being_ceiling_hallway
-  - light.hue_ambiance_spot_hall

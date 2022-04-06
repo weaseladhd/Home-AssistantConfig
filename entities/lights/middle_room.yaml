@@ -1,7 +1,0 @@
----
-# Light Group Middle Room
-platform: group
-name: Middle Room
-entities:
-  - light.hue_runner_middle_room_1
-  - light.hue_runner_middle_room_2

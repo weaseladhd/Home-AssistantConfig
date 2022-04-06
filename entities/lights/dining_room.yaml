@@ -1,6 +1,0 @@
----
-# Light Group Dining Room
-platform: group
-name: Dining Room
-entities:
-  - light.hue_filament_dining_room

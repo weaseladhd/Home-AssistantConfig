@@ -1,7 +1,0 @@
----
-# Light Group Outside
-platform: group
-name: Outside
-entities:
-  - light.hue_white_outside_back
-  - light.hue_white_outside_front

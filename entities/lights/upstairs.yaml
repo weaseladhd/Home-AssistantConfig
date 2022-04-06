@@ -1,8 +1,0 @@
----
-# Light Group Upstairs
-platform: group
-name: Upstairs
-entities:
-  - light.hue_white_lamp_studyroom
-  - light.hue_white_lamp_bedroom
-  - light.hue_being_ceiling_landing
