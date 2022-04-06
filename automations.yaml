@@ -142,3 +142,61 @@
       person_entity: person.fenne
       zone_entity: zone.home
       notify_device: 6d34f062b6c1898ca60db74f88c562e6
+- id: '1649249933414'
+  alias: Notify lowest gas price
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.gas_station_euro95_lowest_price_1
+  condition: []
+  action:
+  - service: notify.mobile_app_iphone_wv
+    data:
+      title: Goedkoopste benzine stations
+      message: 'Euro 95 price is € {{ states.sensor.gas_station_euro95_lowest_price_1.state
+        }} at {{ state_attr("sensor.gas_station_euro95_lowest_price_1","friendly_name")
+        }}. '
+      data:
+        url: https://www.google.com/maps/search/?api=1&query={{ state_attr("sensor.gas_station_euro95_lowest_price_1","latitude")
+          }},{{ state_attr("sensor.gas_station_euro95_lowest_price_1", "longitude")
+          }}
+  mode: single
+- id: '1649250131376'
+  alias: System shutdown notification
+  description: ''
+  trigger:
+  - platform: homeassistant
+    event: shutdown
+  condition: []
+  action:
+  - service: notify.wesley_telegram
+    data:
+      message: Home Assistant is shutting down... Bye!
+  mode: single
+- id: '1649250204764'
+  alias: System start notification
+  description: ''
+  trigger:
+  - platform: homeassistant
+    event: start
+  condition: []
+  action:
+  - service: notify.wesley_telegram
+    data:
+      message: Home Assistant is starting up again 🎉
+  mode: single
+- id: '1649250405677'
+  alias: Update Gas Stations
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: '30'
+  condition: []
+  action:
+  - service: mqtt.publish
+    data:
+      topic: dgp/gas_stations
+      payload_template: '{"fuel_type":"euro95","radius":5,"latitude":{{ state_attr("person.wesley",
+        "latitude") }},"longitude":{{ state_attr("person.wesley", "longitude") }},
+        "to_publish":5}'
+  mode: single
