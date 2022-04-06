@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: ⤵️ Check out configuration from GitHub
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: 🚀 Run yamllint
         uses: frenck/action-yamllint@v1.1
 
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: ⤵️ Check out configuration from GitHub
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Running Remark lint
         uses: "docker://pipelinecomponents/remark-lint:latest"
         continue-on-error: true
@@ -38,7 +38,7 @@ jobs:
         version: ["stable", "beta", "dev"]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Create fake empty files
         run: |
           touch ./home-assistant_v2.db
@@ -91,7 +91,7 @@ jobs:
           git clone https://github.com/rgc99/irrigation_unlimited
           mv -v irrigation_unlimited/custom_components/* ./custom_components
       - name: Check configuration
-        uses: frenck/action-home-assistant@v1.1.1
+        uses: frenck/action-home-assistant@v1.3
         with:
           secrets: ./.stubs/ci_secrets.yaml
           version: "${{ matrix.version }}"
