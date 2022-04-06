@@ -26,3 +26,9 @@ sensors:
     friendly_name: Car KM percentage
     value_template: '{{ ((states("sensor.audi_a3_limousine_wv_mileage")|float)|round(0) / (states("sensor.car_km_allowed")|float)|round(0) *100)|round(1) }}'
     unit_of_measurement: '%'
+
+  car_additional_cost:
+    unique_id: car_additional_cost
+    friendly_name: Car additional cost
+    value_template: '{{ ((states("sensor.car_km_excess")|float) | round(0) * (states("input_number.car_additional_km_price")|float) | round(0)) /100|round(2)|float | abs }}'
+    unit_of_measurement: '€'
