@@ -1,5 +1,0 @@
----
-# Daily energy consumption off peak
-daily_energy_consumption_off_peak:
-  source: sensor.power_consumption_low_kwh
-  cycle: daily

@@ -2,4 +2,3 @@
 # Customizations global
 "sensor.*_uv_index":
   unit_of_measurement: "UVI"
-  icon: hass:weather-sunny

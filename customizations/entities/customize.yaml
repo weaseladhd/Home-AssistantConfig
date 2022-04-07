@@ -1,13 +1,5 @@
 ---
 # Customizations
-fan.living_room:
-  friendly_name: Living Room Fan
-light.hue_white_lamp_studyroom:
-  friendly_name: Study Room Light
-light.hue_being_ceiling_landing:
-  friendly_name: Landing light
-light.hue_white_lamp_bedroom:
-  friendly_name: Bedroom light
 sensor.aq_maliskamp_p1:
   friendly_name: PM10 Maliskamp
   unit_of_measurement: µg/m³
@@ -16,12 +8,8 @@ sensor.aq_maliskamp_p2:
   friendly_name: PM2.5 Maliskamp
   unit_of_measurement: µg/m³
   icon: hass:thought-bubble-outline
-sensor.current_uv_index:
-  friendly_name: UV-index OpenUV
 sensor.current_ozone_level:
-  friendly_name: Ozon OpenUV
   unit_of_measurement: "DU"
-  icon: hass:vector-triangle
 sensor.energy_consumed_tariff_1:
   state_class: total_increasing
 sensor.energy_consumed_tariff_2:
