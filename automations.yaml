@@ -10,16 +10,6 @@
       notify_device: 6d34f062b6c1898ca60db74f88c562e6
       is_ios: true
       notification_message: '{{ motion_sensor_name }} detected movement!'
-- id: '1612867325017'
-  alias: Home Assistant update notification
-  description: ''
-  use_blueprint:
-    path: Klumper/update_notification.yaml
-    input:
-      notification_message: Home Assistant {{ newest_version }} is available
-      delay: '0'
-      notify_device: 62618f2f67784a4585fdff061cfb9905
-      updater: binary_sensor.updater
 - id: '1612867372715'
   alias: Zone Notification (FF Work Nijmegen)
   description: ''
@@ -128,13 +118,11 @@
     path: sbyx/low-battery-level-detection-notification-for-all-battery-sensors.yaml
     input:
       actions:
-      - device_id: 6d34f062b6c1898ca60db74f88c562e6
-        domain: mobile_app
-        type: notify
-        title: '{{sensors}} battery is low. Please change the battery!'
-        message: Battery is low
+      - service: notify.wesley_telegram
+        data:
+          message: '{{sensors}} battery is low. Please change the battery!'
 - id: '1623006343409'
-  alias: Zone Entering Notification
+  alias: Zone Notification (FF Home)
   description: ''
   use_blueprint:
     path: Sjorsa/notify-entering-zone.yaml
@@ -150,9 +138,8 @@
     entity_id: sensor.gas_station_euro95_lowest_price_1
   condition: []
   action:
-  - service: notify.mobile_app_iphone_wv
+  - service: notify.wesley_telegram
     data:
-      title: Goedkoopste benzine stations
       message: 'Euro 95 price is € {{ states.sensor.gas_station_euro95_lowest_price_1.state
         }} at {{ state_attr("sensor.gas_station_euro95_lowest_price_1","friendly_name")
         }}. '
@@ -199,4 +186,17 @@
       payload_template: '{"fuel_type":"euro95","radius":5,"latitude":{{ state_attr("person.wesley",
         "latitude") }},"longitude":{{ state_attr("person.wesley", "longitude") }},
         "to_publish":5}'
+  mode: single
+- id: '1649255352767'
+  alias: Home Assistant update notification
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.home_assistant_versions_update_available
+    to: Update Available
+  condition: []
+  action:
+  - service: notify.wesley_telegram
+    data:
+      message: Home Assistant update is available
   mode: single
