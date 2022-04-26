@@ -170,7 +170,7 @@
   action:
   - service: notify.wesley_telegram
     data:
-      message: Home Assistant is starting up again 🎉
+      message: Home Assistant has started up again 🎉
   mode: single
 - id: '1649250405677'
   alias: Update Gas Stations
