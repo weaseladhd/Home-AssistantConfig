@@ -1,6 +1,7 @@
 ---
 # Home Assistant core configuration!
 homeassistant:
+  external_url: "https://weaselweb.nl"
 
   # Load packages
   packages: !include_dir_named integrations
