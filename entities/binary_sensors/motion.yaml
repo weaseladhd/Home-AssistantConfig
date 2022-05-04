@@ -26,26 +26,25 @@ sensors:
   activity_in_living_room:
     friendly_name: Activity in the living room
     value_template: >
-      {{ is_state("binary_sensor.hue_motion_sensor_living_room_motion", "on") }}
+      {{ is_state("binary_sensor.living_room_motion_sensor_occupancy", "on") }}
     delay_off: "00:02:00"
 
   activity_in_hallway:
     friendly_name: Activity in the hallway
     value_template: >
-      {{ is_state("binary_sensor.hue_motion_sensor_hallway_motion", "on")
-      or is_state("binary_sensor.sensor_motion_hallway_ias_zone", "on") }}
+      {{ is_state("binary_sensor.hallway_motion_sensor_occupancy", "on") }}
     delay_off: "00:02:00"
 
   activity_in_study_room:
     friendly_name: Activity in the study room
     value_template: >
-      {{ is_state("binary_sensor.sensor_motion_study_ias_zone", "on") }}
+      {{ is_state("binary_sensor.study_motion_sensor_occupancy", "on") }}
     delay_off: "00:02:00"
 
   activity_in_landing:
     friendly_name: Activity in the landing
     value_template: >
-      {{ is_state("binary_sensor.sensor_motion_landing_ias_zone", "on") }}
+      {{ is_state("binary_sensor.landing_motion_sensor_occupancy", "on") }}
     delay_off: "00:02:00"
 
   any_light_on:
