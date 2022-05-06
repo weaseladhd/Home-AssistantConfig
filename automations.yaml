@@ -168,23 +168,19 @@
       dimmer_action: sensor.bedroom_dimmer_switch_action
       action_on_press:
       - service: light.turn_on
-        data:
-          transition: 2
+        data: {}
         target:
-          area_id: upstairs
+          device_id: 17249d23849dd37faf257b3fe1d78ca2
       action_off_press:
       - service: light.turn_off
-        data:
-          transition: 2
+        data: {}
         target:
-          area_id: upstairs
+          device_id: 17249d23849dd37faf257b3fe1d78ca2
       action_off_hold:
       - service: light.turn_off
-        data:
-          transition: 2
+        data: {}
         target:
           area_id:
-          - downstairs
           - upstairs
       action_on_hold:
       - service: light.turn_on
@@ -192,7 +188,6 @@
         target:
           area_id:
           - upstairs
-          - downstairs
       action_up_hold:
       - service: light.turn_on
         data:
@@ -203,15 +198,17 @@
       - service: light.turn_on
         data:
           brightness_step_pct: -10
+        target:
+          area_id: upstairs
       action_up_press:
       - service: light.turn_on
         data:
-          brightness_step_pct: 5
+          brightness_step_pct: 10
         target:
-          area_id: upstairs
+          device_id: 17249d23849dd37faf257b3fe1d78ca2
       action_down_press:
       - service: light.turn_on
         data:
-          brightness_step_pct: -5
+          brightness_step_pct: -10
         target:
-          area_id: upstairs
+          device_id: 17249d23849dd37faf257b3fe1d78ca2
