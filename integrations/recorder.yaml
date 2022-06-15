@@ -3,9 +3,37 @@
 recorder:
   db_url: !secret maria_db_url
   purge_keep_days: 14
+  include:
+    domains:
+      - sensor
+      - binary_sensor
+      - switch
+      - light
+      - device_tracker
+      - vacuum
+      - group
+      - input_boolean
+      - cover
+      - person
+      - counter
+      - timer
+      - climate
   exclude:
     domains:
       - sun
       - weather
     event_types:
+      - service_removed
+      - service_executed
       - platform_discovered
+      - homeassistant_start
+      - homeassistant_stop
+      - feedreader
+      - service_registered
+      - call_service
+      - component_loaded
+      - logbook_entry
+      - system_log_event
+      - automation_triggered
+      - script_started
+      - timer_out_of_sync
