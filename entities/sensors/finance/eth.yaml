@@ -1,7 +1,0 @@
----
-# Crypto ETH Sensor
-platform: cryptoinfo
-cryptocurrency_name: "ethereum"
-currency_name: "eur"
-multiplier: 1
-update_frequency: 15

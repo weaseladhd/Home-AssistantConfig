@@ -1,7 +1,0 @@
----
-# Crypto BTC Sensor
-platform: cryptoinfo
-cryptocurrency_name: "bitcoin"
-currency_name: "eur"
-multiplier: 1
-update_frequency: 15
