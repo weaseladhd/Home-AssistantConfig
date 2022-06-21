@@ -66,22 +66,6 @@ jobs:
         run: |
           git clone https://github.com/xirixiz/homeassistant-afvalwijzer
           mv -v homeassistant-afvalwijzer/custom_components/* ./custom_components
-      - name: Clone custom component Cryptoinfo
-        run: |
-          git clone https://github.com/heyajohnny/cryptoinfo
-          mv -v cryptoinfo/custom_components/* ./custom_components
-      - name: Clone custom component Plex recently added
-        run: |
-          git clone https://github.com/custom-components/sensor.plex_recently_added
-          mv -v sensor.plex_recently_added/custom_components/* ./custom_components
-      - name: Clone custom component Radarr upcoming media
-        run: |
-          git clone https://github.com/custom-components/sensor.sonarr_upcoming_media
-          mv -v sensor.sonarr_upcoming_media/custom_components/* ./custom_components
-      - name: Clone custom component Sonarr upcoming media
-        run: |
-          git clone https://github.com/custom-components/sensor.radarr_upcoming_media
-          mv -v sensor.radarr_upcoming_media/custom_components/* ./custom_components
       - name: Clone custom component Xiaomi map cloud extractor
         run: |
           git clone https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
@@ -90,6 +74,10 @@ jobs:
         run: |
           git clone https://github.com/rgc99/irrigation_unlimited
           mv -v irrigation_unlimited/custom_components/* ./custom_components
+      - name: Clone custom component Powercalc
+        run: |
+          git clone https://github.com/bramstroker/homeassistant-powercalc
+          mv -v powercalc/custom_components/* ./custom_components
       - name: Check configuration
         uses: frenck/action-home-assistant@v1.3
         with:
