@@ -1,0 +1,14 @@
+---
+# unifigateway
+platform: unifigateway
+host: !secret unifi_host
+username: !secret unifi_username
+password: !secret unifi_password
+port: !secret unifi_port
+monitored_conditions:
+  - www
+  - lan
+  - wan
+  - wlan
+  - alerts
+  - firmware
