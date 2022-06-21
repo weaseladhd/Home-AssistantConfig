@@ -77,7 +77,7 @@ jobs:
       - name: Clone custom component Powercalc
         run: |
           git clone https://github.com/bramstroker/homeassistant-powercalc
-          mv -v powercalc/custom_components/* ./custom_components
+          mv -v homeassistant-powercalc/custom_components/* ./custom_components
       - name: Check configuration
         uses: frenck/action-home-assistant@v1.3
         with:
