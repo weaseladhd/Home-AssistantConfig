@@ -78,6 +78,10 @@ jobs:
         run: |
           git clone https://github.com/bramstroker/homeassistant-powercalc
           mv -v homeassistant-powercalc/custom_components/* ./custom_components
+      - name: Clone custom component unifigateway
+        run: |
+          git clone https://github.com/custom-components/sensor.unifigateway
+          mv -v sensor.unifigateway/custom_components/* ./custom_components
       - name: Check configuration
         uses: frenck/action-home-assistant@v1.3
         with:
