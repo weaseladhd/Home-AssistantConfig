@@ -212,3 +212,23 @@
           brightness_step_pct: -10
         target:
           device_id: 17249d23849dd37faf257b3fe1d78ca2
+- id: '1656945637447'
+  alias: Home Assistant starts ➔ Update Group - Chores
+  trigger:
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: call_service
+    event_data:
+      domain: group
+      service: reload
+  condition: []
+  action:
+  - service: group.set
+    data_template:
+      name: All Chores
+      object_id: chores
+      entities: "{% set ns = namespace(entities=[]) %}\n{% for s in states.input_button\
+        \ if s.object_id.startswith('chore_') %}\n  {% set ns.entities = ns.entities\
+        \ + [ s.entity_id ] %}\n{% endfor %}\n{{ ns.entities }}\n"
+  mode: single
