@@ -1,0 +1,4 @@
+---
+# Chores
+input_button: !include ../entities/chores/chores.yaml
+input_text: !include ../entities/chores/chores.yaml

@@ -1,0 +1,35 @@
+---
+# Chores
+chore_kitchen_clean_sink:
+  name: Clean Kitchen Sink
+  icon: mdi:faucet-variant
+chore_kitchen_clean_counter:
+  name: Clean Kitchen Counter
+  icon: mdi:countertop
+chore_kitchen_clean_stove:
+  name: Clean Kitchen Stove
+  icon: mdi:stove
+chore_kitchen_clean_fridge:
+  name: Clean Kitchen Fridge
+  icon: mdi:fridge
+chore_badroom_clean_shower:
+  name: Clean Shower
+  icon: mdi:shower-head
+chore_badroom_clean_sink:
+  name: Clean Badroom Sink
+  icon: mdi:countertop
+chore_upstairs_vacuum:
+  name: Vacuum Upstairs
+  icon: mdi:vacuum
+chore_downstairs_vacuum:
+  name: Vacuum Downstairs
+  icon: mdi:vacuum
+chore_attic_vacuum:
+  name: Vacuum Attic
+  icon: mdi:vacuum
+chore_downstairs_mop:
+  name: Mop Downstairs
+  icon: mdi:bucket-outline
+chore_clean_stairs:
+  name: Clean Stairs
+  icon: mdi:stairs
