@@ -1,0 +1,12 @@
+---
+# Binary sensors
+lovelace:
+  mode: storage
+  # Add yaml dashboards
+  dashboards:
+    lovelace-yaml:
+      mode: yaml
+      title: Yaml Dashboard
+      icon: mdi:view-dashboard-variant
+      show_in_sidebar: true
+      filename: ui-lovelace.yaml

@@ -1,0 +1,10 @@
+# Yaml Dashboard for Home Assistant
+# Made by WeaselADHD 2022
+# https://weaselweb.nl/
+
+button_card_templates: !include_dir_merge_named templates/button-card/
+
+title: Dashboard
+views:
+  - !include views/summary.yaml
+  - !include views/lights.yaml
