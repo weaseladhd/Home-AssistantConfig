@@ -1,10 +1,12 @@
 ---
 # unifigateway
 platform: unifigateway
+verify_ssl: false
 host: !secret unifi_host
 username: !secret unifi_username
 password: !secret unifi_password
 port: !secret unifi_port
+version: UDMP-unifiOS
 monitored_conditions:
   - www
   - lan
