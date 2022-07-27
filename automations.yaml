@@ -129,7 +129,7 @@
   action:
   - service: notify.wesley_telegram
     data:
-      message: Home Assistant has started up again 🎉
+      message: "Home Assistant has started up again \U0001F389"
   mode: single
 - id: '1649250405677'
   alias: Update Gas Stations
@@ -228,7 +228,182 @@
     data_template:
       name: All Chores
       object_id: chores
-      entities: "{% set ns = namespace(entities=[]) %}\n{% for s in states.input_button\
-        \ if s.object_id.startswith('chore_') %}\n  {% set ns.entities = ns.entities\
-        \ + [ s.entity_id ] %}\n{% endfor %}\n{{ ns.entities }}\n"
+      entities: "{% set ns = namespace(entities=[]) %}\n{% for s in states.input_button
+        if s.object_id.startswith('chore_') %}\n  {% set ns.entities = ns.entities
+        + [ s.entity_id ] %}\n{% endfor %}\n{{ ns.entities }}\n"
+  mode: single
+- id: '1657870817731'
+  alias: UniFi Protect Dynamic Doorbell
+  description: ''
+  use_blueprint:
+    path: AngellusMortis/dynamic_doorbell.yaml
+    input:
+      doorbell: select.uvc_g4_doorbell_doorbell_text
+      temp_entity: sensor.br_temperature
+      text_template: Welcome | {ctime} | {temp}
+      time_format: '%H:%M'
+- id: '1657871870764'
+  alias: UniFi Protect Doorbell Notifications
+  description: ''
+  use_blueprint:
+    path: AngellusMortis/push_notification_doorbell_event.yaml
+    input:
+      doorbell: binary_sensor.doorbell_uvc_g4_doorbell
+      notify_target_app: wesley_iphone
+      time_format: '%H:%M'
+      send_mobile: true
+      send_telegram: true
+      notify_telegram: wesley_telegram
+      base_image_url: https://weaselweb.nl
+      lovelace_view: https://weaselweb.nl/lovelace
+- id: '1657872083215'
+  alias: UniFi Protect Motion Notifications
+  description: ''
+  use_blueprint:
+    path: AngellusMortis/push_notification_motion_event.yaml
+    input:
+      motion_entity: binary_sensor.motion_uvc_g3_pro_front
+      send_mobile: true
+      send_telegram: true
+      time_format: '%H:%M'
+      notify_telegram: wesley_telegram
+      base_image_url: https://weaselweb.nl
+      lovelace_view: https://weaselweb.nl/lovelace
+      presence_filter: person.wesley
+- id: '1657874083533'
+  alias: Hue Dimmer switch controller Study
+  description: ''
+  use_blueprint:
+    path: EPMatt/philips_324131092621.yaml
+    input:
+      integration: Zigbee2MQTT
+      helper_last_controller_event: input_text.last_controller_event_hue_dimmer_switch_study
+      controller_entity: sensor.study_dimmer_switch_action
+      action_button_on_short:
+      - type: turn_on
+        device_id: 33fe15ce0a53ea639ef8ca056bd93403
+        entity_id: light.study_light
+        domain: light
+        brightness_pct: 80
+        flash: short
+      action_button_off_short:
+      - type: turn_off
+        device_id: 33fe15ce0a53ea639ef8ca056bd93403
+        entity_id: light.study_light
+        domain: light
+- id: '1657874738642'
+  alias: Hue Dimmer switch controller Bedroom
+  description: ''
+  use_blueprint:
+    path: EPMatt/philips_324131092621.yaml
+    input:
+      integration: Zigbee2MQTT
+      controller_entity: sensor.bedroom_dimmer_switch_action
+      helper_last_controller_event: input_text.last_controller_event_hue_dimmer_switch_bedroom
+      action_button_on_short:
+      - type: turn_on
+        device_id: 17249d23849dd37faf257b3fe1d78ca2
+        entity_id: light.bedroom_light
+        domain: light
+      action_button_off_short:
+      - type: turn_off
+        device_id: 17249d23849dd37faf257b3fe1d78ca2
+        entity_id: light.bedroom_light
+        domain: light
+      action_button_up_short:
+      - device_id: 17249d23849dd37faf257b3fe1d78ca2
+        domain: light
+        entity_id: light.bedroom_light
+        type: brightness_increase
+      action_button_down_short:
+      - device_id: 17249d23849dd37faf257b3fe1d78ca2
+        domain: light
+        entity_id: light.bedroom_light
+        type: brightness_decrease
+      action_button_off_long:
+      - service: light.turn_off
+        data:
+          transition: 1
+        target:
+          area_id: upstairs
+- id: '1657875007373'
+  alias: Hue Dimmer switch controller Downstairs
+  description: ''
+  use_blueprint:
+    path: EPMatt/philips_324131092621.yaml
+    input:
+      integration: Zigbee2MQTT
+      controller_entity: sensor.living_room_dimmer_switch_action
+      helper_last_controller_event: input_text.last_controller_event_hue_dimmer_switch_downstairs
+      action_button_on_short:
+      - service: light.turn_on
+        data:
+          transition: 1
+        target:
+          area_id: downstairs
+      action_button_off_short:
+      - service: light.turn_off
+        data:
+          transition: 1
+        target:
+          area_id: downstairs
+- id: '1658263288463'
+  alias: Windows Open Warning
+  description: Sends notification to open windows. Triggered the first time each day
+    that the outside temperature is more than 0.5 degrees below indoor temperature.
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.temperature_indoor_outdoor_difference
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+    below: '-0.5'
+  condition:
+  - condition: state
+    entity_id: input_boolean.evening_temperature_warning_fired
+    state: 'off'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: sensor.outside_temperature
+      state: unavailable
+  action:
+  - service: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.evening_temperature_warning_fired
+    data: {}
+  - service: notify.wesley_telegram
+    data:
+      message: It is now 0.5 degrees cooler outside than inside. Consider opening
+        the windows.
+      title: Cold outside!
+  - service: notify.wesley_telegram
+    data: {}
+  mode: single
+- id: '1658263443149'
+  alias: Reset Morning Temperature Warning
+  description: ''
+  trigger:
+  - platform: time
+    at: 00:00:00
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.morning_temperature_warning_fired
+  mode: single
+- id: '1658263470685'
+  alias: Reset Evening Temperature Warning
+  description: ''
+  trigger:
+  - platform: time
+    at: 00:00:00
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.evening_temperature_warning_fired
   mode: single
