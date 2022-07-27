@@ -1,0 +1,6 @@
+---
+# Ping Cloudflare
+platform: ping
+host: 1.1.1.1
+name: Ping Cloudflare
+count: 2

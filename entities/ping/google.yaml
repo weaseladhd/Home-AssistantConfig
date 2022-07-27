@@ -1,0 +1,6 @@
+---
+# Ping Cloudflare
+platform: ping
+host: https://google.nl
+name: Ping Google
+count: 2

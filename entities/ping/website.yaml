@@ -1,0 +1,6 @@
+---
+# Ping Cloudflare
+platform: ping
+host: https://weaselweb.nl
+name: Ping Weaselweb
+count: 2
