@@ -1,0 +1,7 @@
+---
+# Sun elevation
+platform: template
+sensors:
+  sun_elevation:
+    value_template: "{{ state_attr('sun.sun',
+    'elevation') | float | round(2) }}"

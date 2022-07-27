@@ -1,0 +1,9 @@
+---
+# Humidity Indoor Outdoor Difference
+platform: template
+sensors:
+  humidity_indoor_outdoor_difference:
+    friendly_name: Humidity Indoor Outdoor Difference
+    unit_of_measurement: "%"
+    value_template: >
+      {% set indoor = states.sensor.indoor_avg_humidity.state|float %}{% set outdoor = states.sensor.br_humidity.state|float %}{{ (outdoor - indoor)|round(1) }}
