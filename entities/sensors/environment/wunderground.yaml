@@ -1,0 +1,49 @@
+---
+# Weather Underground:
+platform: wundergroundpws
+api_key: !secret WU_key
+pws_id: !secret WU_id
+numeric_precision: none
+monitored_conditions:
+  - temp
+#  - dewpt
+#  - stationID
+#  - solarRadiation
+#  - obsTimeLocal
+#  - uv
+#  - winddir
+#  - humidity
+#  - heatIndex
+#  - windChill
+#  - precipTotal
+#  - precipRate
+#  - precip_1d
+#  - precip_2d
+#  - precip_3d
+#  - precip_4d
+#  - precip_5d
+#  - precip_chance_1d
+#  - precip_chance_2d
+#  - precip_chance_3d
+#  - precip_chance_4d
+#  - precip_chance_5d
+#  - temp_high_1d
+#  - temp_high_2d
+#  - temp_high_3d
+#  - temp_high_4d
+#  - temp_high_5d
+#  - temp_low_1d
+#  - temp_low_2d
+#  - temp_low_3d
+#  - temp_low_4d
+#  - temp_low_5d
+#  - windGust
+#  - windSpeed
+#  - weather_1d
+#  - weather_1n
+#  - weather_2d
+#  - weather_2n
+#  - weather_3d
+#  - weather_3n
+#  - weather_4d
+#  - weather_4n
