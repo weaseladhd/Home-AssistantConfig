@@ -12,6 +12,6 @@ irrigation_unlimited:
           time:
             sun: 'sunrise'
             before: '00:10'
-          duration: '00:15'
+          duration: '00:25'
           weekday: [sun, wed, fri]
           anchor: finish
