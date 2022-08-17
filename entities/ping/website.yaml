@@ -1,6 +1,6 @@
 ---
 # Ping Cloudflare
 platform: ping
-host: https://weaselweb.nl
+host: !secret ext_url
 name: Ping Weaselweb
 count: 2
