@@ -1,4 +1,3 @@
----
 # Ping Cloudflare
 platform: ping
 host: https://google.nl

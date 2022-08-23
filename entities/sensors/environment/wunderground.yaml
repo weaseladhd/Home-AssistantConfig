@@ -1,9 +1,8 @@
----
 # Weather Underground:
 platform: wundergroundpws
 api_key: !secret WU_key
 pws_id: !secret WU_id
-numeric_precision: none
+numeric_precision: decunak
 monitored_conditions:
   - temp
 #  - dewpt

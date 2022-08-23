@@ -1,4 +1,3 @@
----
 # Ping Cloudflare
 platform: ping
 host: !secret ext_url

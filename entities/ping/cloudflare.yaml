@@ -1,4 +1,3 @@
----
 # Ping Cloudflare
 platform: ping
 host: 1.1.1.1

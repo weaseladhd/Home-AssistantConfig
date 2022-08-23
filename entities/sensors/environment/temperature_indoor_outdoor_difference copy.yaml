@@ -1,4 +1,3 @@
----
 # Temperature Indoor Outdoor Difference
 platform: template
 sensors:
