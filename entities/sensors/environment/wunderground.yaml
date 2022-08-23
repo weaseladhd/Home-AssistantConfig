@@ -1,3 +1,4 @@
+---
 # Weather Underground:
 platform: wundergroundpws
 api_key: !secret WU_key
