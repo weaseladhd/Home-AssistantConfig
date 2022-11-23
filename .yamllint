@@ -67,7 +67,7 @@ rules:
   new-line-at-end-of-file:
     level: error
   new-lines:
-    level: disable
+    level: warning
     type: unix
   trailing-spaces:
     level: error
