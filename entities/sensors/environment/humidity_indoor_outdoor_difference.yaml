@@ -2,6 +2,7 @@
 # Humidity Indoor Outdoor Difference
 platform: template
 sensors:
+
   humidity_indoor_outdoor_difference:
     friendly_name: Humidity Indoor Outdoor Difference
     unit_of_measurement: "%"
