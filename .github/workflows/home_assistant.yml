@@ -87,7 +87,7 @@ jobs:
           git clone https://github.com/cytech/Home-Assistant-wundergroundpws
           mv -v Home-Assistant-wundergroundpws/custom_components/* ./custom_components
       - name: Check configuration
-        uses: frenck/action-home-assistant@v1.3
+        uses: frenck/action-home-assistant@v1.4
         with:
           secrets: ./.stubs/ci_secrets.yaml
           version: "${{ matrix.version }}"
