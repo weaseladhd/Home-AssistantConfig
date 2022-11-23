@@ -82,6 +82,10 @@ jobs:
         run: |
           git clone https://github.com/custom-components/sensor.unifigateway
           mv -v sensor.unifigateway/custom_components/* ./custom_components
+      - name: Clone custom component wundergroundpws
+        run: |
+          git clone https://github.com/cytech/Home-Assistant-wundergroundpws
+          mv -v Home-Assistant-wundergroundpws/custom_components/* ./custom_components
       - name: Check configuration
         uses: frenck/action-home-assistant@v1.3
         with:
