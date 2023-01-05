@@ -1,0 +1,24 @@
+name: Ikea Open/Close Remote E1766
+service: Zigbee2MQTT
+event_type: mqtt
+mqtt_topic_format: zigbee2mqtt/+/action
+buttons:
+  ## Those buttons only accept single tap actions
+  - x: 182
+    y: 90
+    width: 65
+    shape: circle
+    actions:
+      - title: press
+        conditions:
+          - key: payload
+            value: open
+  - x: 182
+    y: 280
+    width: 65
+    shape: circle
+    actions:
+      - title: press
+        conditions:
+          - key: payload
+            value: close

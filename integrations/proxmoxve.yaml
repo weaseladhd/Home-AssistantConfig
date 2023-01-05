@@ -10,7 +10,7 @@ proxmoxve:
       - node: pve
         vms:
           - 100
-          - 300
+          - 301
         containers:
           - 500
           - 501
