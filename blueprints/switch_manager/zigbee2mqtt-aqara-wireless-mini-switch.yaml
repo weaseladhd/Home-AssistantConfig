@@ -1,4 +1,4 @@
-name: TuYa 1 Gang Remote
+name: Aqara Wireless Mini Switch
 service: Zigbee2MQTT
 event_type: mqtt
 mqtt_topic_format: zigbee2mqtt/+/action
@@ -16,3 +16,7 @@ buttons:
         conditions:
           - key: payload
             value: hold
+      - title: hold (released)
+        conditions:
+          - key: payload
+            value: release

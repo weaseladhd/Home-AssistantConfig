@@ -1,7 +1,7 @@
 ---
 # Home Assistant core configuration!
 homeassistant:
-#  external_url: !secret ext_url
+  #external_url: !secret ext_url
 
   # Load packages
   packages: !include_dir_named integrations

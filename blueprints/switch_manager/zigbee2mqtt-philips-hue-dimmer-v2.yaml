@@ -8,9 +8,12 @@ buttons:
     width: 189
     height: 159
     actions:
+      - title: init
+        conditions:
+          - key: payload
+            value: on_press
       - title: press
         conditions:
-          # Need to reference press release as on_press is fired even when being held
           - key: payload
             value: on_press_release
       - title: hold
@@ -26,6 +29,10 @@ buttons:
     width: 189
     height: 90
     actions:
+      - title: init
+        conditions:
+          - key: payload
+            value: up_press
       - title: press
         conditions:
           - key: payload
@@ -43,6 +50,10 @@ buttons:
     width: 189
     height: 90
     actions:
+      - title: init
+        conditions:
+          - key: payload
+            value: down_press
       - title: press
         conditions:
           - key: payload
@@ -60,6 +71,10 @@ buttons:
     width: 189
     height: 159
     actions:
+      - title: init
+        conditions:
+          - key: payload
+            value: off_press
       - title: press
         conditions:
           - key: payload
