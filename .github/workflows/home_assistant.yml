@@ -86,6 +86,10 @@ jobs:
         run: |
           git clone https://github.com/cytech/Home-Assistant-wundergroundpws
           mv -v Home-Assistant-wundergroundpws/custom_components/* ./custom_components
+      - name: Clone custom component formulaone_api
+        run: |
+          git clone https://github.com/delzear/hass-formulaoneapi
+          mv -v hass-formulaoneapi/custom_components/* ./custom_components
       - name: Check configuration
         uses: frenck/action-home-assistant@v1.4
         with:
