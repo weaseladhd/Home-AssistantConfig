@@ -1,0 +1,6 @@
+---
+# weather underground
+wundergroundpws:
+  api_key: !secret WU_api
+  pws_id: !secret WU_id
+  numeric_precision: none
