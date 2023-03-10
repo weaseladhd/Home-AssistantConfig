@@ -11,7 +11,9 @@ proxmoxve:
         vms:
           - 100
           - 301
+          - 401
         containers:
+          - 402
           - 500
           - 501
           - 502
