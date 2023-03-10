@@ -8,8 +8,8 @@ proxmoxve:
     verify_ssl: false
     nodes:
     - node:
-        -pve-01
-        -pve-02
+        - pve-01
+        - pve-02
       vms:
         - 100
         - 301
