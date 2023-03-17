@@ -1,5 +1,5 @@
 blueprint:
-  name: UniFi Protect Dynamic Doorbell (old)
+  name: Dynamic Doorbell (WV)
   domain: automation
   source_url: https://raw.githubusercontent.com/AngellusMortis/unifiprotect_blueprints/main/blueprints/automation/unifiprotect/dynamic_doorbell.yaml
   description: "## UniFi Protect Dynamic Doorbell\n\nThis blueprint will dynamically
@@ -25,16 +25,25 @@ blueprint:
     Entity\" option\n\n[1]: https://www.home-assistant.io/integrations/unifiprotect/\n[2]:
     https://www.home-assistant.io/docs/configuration/templating/\n"
   input:
-    doorbell:
-      name: Doorbell Entity
-      description: 'The doorbell sensor you want to trigger notifications for.
+    doorbell_text:
+      name: Doorbell Text Entity
+      description: 'The doorbell text entity.
 
         '
       selector:
         entity:
           integration: unifiprotect
-          domain: select
-          device_class: unifiprotect_lcd_message
+          domain: sensor
+          multiple: false
+    doorbell_set_text:
+      name: Doorbell Set Text Entity
+      description: 'The doorbell set text entity.
+
+        '
+      selector:
+        entity:
+          integration: unifiprotect
+          domain: text
           multiple: false
     temp_entity:
       name: (Optional) Temperature Sensor Entity
@@ -51,7 +60,7 @@ blueprint:
         string. Final generated string must be 30 characters or less.
 
         '
-      default: Welcome | {ctime}
+      default: Welcome | {ctime} | {temp}
       selector:
         text: {}
     always_run:
@@ -77,7 +86,8 @@ blueprint:
 mode: single
 max_exceeded: silent
 variables:
-  input_doorbell: !input doorbell
+  input_doorbell_text: !input doorbell_text
+  input_doorbell_set_text: !input doorbell_set_text
   input_time_format: !input time_format
   input_text_template: !input text_template
   input_temp_entity: !input temp_entity
@@ -86,15 +96,16 @@ trigger:
 - platform: time_pattern
   minutes: '*'
 condition:
-- '{{ input_always_run or is_state(input_doorbell, ''unknown'') or states[input_doorbell].state.startswith(''Default
+- '{{ input_always_run or is_state(input_doorbell_text, ''unknown'') or states[input_doorbell_text].state.startswith(''Default
   Message'') }}'
 action:
-- service: text.uvc_g4_doorbell_doorbell
+- service: text.set_value
   data:
-    entity_id: !input doorbell
-    message: "{%- set ctime=as_local(now()).strftime(input_time_format) -%}\n{%- if
+    value: "{%- set ctime=as_local(now()).strftime(input_time_format) -%}\n{%- if
       input_temp_entity != \"\" -%}\n  {%- if is_state(input_temp_entity, 'unavailable')
       -%}\n    {%- set temp=\"\" %}\n  {%- else -%}\n    {%- set temp=\"{}{}\".format(int(states[input_temp_entity].state),
       state_attr(input_temp_entity, \"unit_of_measurement\")) -%}\n  {%- endif -%}\n{%-
       endif -%}\n{{ input_text_template.replace(\"{ctime}\", ctime).replace(\"{temp}\",
       temp) }}\n"
+  target:
+    entity_id: !input doorbell_set_text

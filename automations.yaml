@@ -167,18 +167,6 @@
       temp_entity: sensor.wupws_temp
       text_template: Welcome | {ctime} | {temp}
       time_format: '%H:%M'
-- id: '1657871870764'
-  alias: UniFi protect doorbell notification
-  description: ''
-  use_blueprint:
-    path: WeaselADHD/push_notification_doorbell_event.yaml
-    input:
-      doorbell: binary_sensor.doorbell_uvc_g4_doorbell
-      send_telegram: true
-      notify_telegram: wesley_telegram
-      time_format: '%H:%M'
-      base_image_url: https://weaselweb.nl
-      lovelace_view: https://weaselweb.nl/lovelace
 - id: '1658263288463'
   alias: Windows open warning
   description: Sends notification to open windows. Triggered the first time each day
@@ -369,3 +357,12 @@
       cooldown: 60
       lovelace_view: https://weaselweb.nl/lovelace
       notify_target_app: notify.wesley_telegram
+- id: '1679057691753'
+  alias: UniFi Protect Dynamic Doorbell (old)
+  description: ''
+  use_blueprint:
+    path: WeaselADHD/dynamic_doorbell.yaml
+    input:
+      doorbell: sensor.uvc_g4_doorbell_doorbell_text
+      temp_entity: sensor.wupws_temp
+      text_template: Welcome | {ctime} | {temp}

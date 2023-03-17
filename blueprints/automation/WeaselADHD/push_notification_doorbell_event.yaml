@@ -1,5 +1,5 @@
 blueprint:
-  name: UniFi Protect Doorbell Notifications (old)
+  name: UniFi Protect Doorbell Notifications (WV)
   domain: automation
   source_url: https://raw.githubusercontent.com/AngellusMortis/unifiprotect_blueprints/main/blueprints/automation/unifiprotect/push_notification_doorbell_event.yaml
   description: "## UniFi Protect Doorbell Notifications\n\nThis blueprint will send
