@@ -7,12 +7,12 @@ proxmoxve:
     realm: pve
     verify_ssl: false
     nodes:
-    - node:
-        - pve-01
-        - pve-02
+    - node: pve-01
+      vms:
+        - 301
+    - node: pve-02
       vms:
         - 100
-        - 301
         - 401
       containers:
         - 402
