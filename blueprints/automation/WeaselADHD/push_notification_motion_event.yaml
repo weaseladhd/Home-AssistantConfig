@@ -1,57 +1,46 @@
 blueprint:
-  name: UniFi Protect Smart Detection Notifications
+  name: UniFi Protect Motion Notifications (old)
   domain: automation
-  source_url: https://github.com/AngellusMortis/unifiprotect_blueprints/blob/main/blueprints/automation/unifiprotect/push_notification_smart_event.yaml
-  description: "## UniFi Protect Smart Detection Notifications\n\nThis blueprint will
-    send push notifications to desktop browser / mobile Home Assistant / Telegram
-    apps when a smart detection event is fired.\n\nThis blueprint is _only_ for **smart
-    detection**, not motion.\n\n### Required Settings\n\n  - UniFi Protect Smart Detection
-    Sensor\n  - What Smart Detection(s) you want to trigger on\n\n### Optional Settings\n\n
-    \ - Precense filter for only sending notifications for when you are not home\n
-    \ - Notification targets and toggles for following notifications types:\n    -
-    [HTML5 Push Notification][1]\n    - [Mobile App Notification][2]\n    - [Telegram
-    Notification][9]\n  - Time formatting strings. Timestamp is injected into the
-    notification in case the notification is delay.\n  - Notification Channel / Tag
-    (docs: [HTML5 Tag][3], [Android Channels][4], [Mobile Tag][5])\n  - Cooldown before
-    sending another notification\n  - Silence timer for muting notifications via Actionable
-    Notification (docs: [HTML5][6], [Mobile][7])\n  - Configurable HA Internal / External
-    Base URLs\n  - Configurable Lovelace view from notification\n\n### Requirements\n\nTo
-    take full effect of this automation blueprint, your Home Assistant instance needs
-    some setup beforehand.\n\n- A UniFi Protect NVR running on a UDM Pro, UNVR or
-    other Protect Console\n- Home Assistant 2022.2.0 or newer with the HA core version
-    of the [UniFi Protect integration][8]\n- A UniFi camera pair with your NVR that
-    has Smart Detections. This is any G4 series camera _except_ the EA G4 Instant.\n-
-    A valid HTTPS certificate and public facing Home Assistant instance\n  - If you
-    do not have these, the actionable notifications and images will not appear in
-    the notifications.\n  - You do not need your _whole_ Home Assistant to be publicly
-    accessible. Only the paths `/api/camera_proxy/*` and `/api/webhook/*` need to
-    be accessible outside of your network.\n\n[1]: https://www.home-assistant.io/integrations/html5\n[2]:
+  source_url: https://raw.githubusercontent.com/AngellusMortis/unifiprotect_blueprints/main/blueprints/automation/unifiprotect/push_notification_motion_event.yaml
+  description: "## UniFi Protect Motion Notifications\n\nThis blueprint will send
+    push notifications to desktop browser / mobile Home Assistant / Telegram apps
+    when a motion event is fired.\n\nThis blueprint is _only_ for **motion** events,
+    not smart detections.\n\n### Required Settings\n\n  - UniFi Protect Motion Sensor\n\n###
+    Optional Settings\n\n  - Precense filter for only sending notifications for when
+    you are not home\n  - Notification targets and toggles for following notifications
+    types:\n    - [HTML5 Push Notification][1]\n    - [Mobile App Notification][2]\n
+    \   - [Telegram Notification][9]\n  - Time formatting strings. Timestamp is injected
+    into the notification in case the notification is delay.\n  - Notification Channel
+    / Tag (docs: [HTML5 Tag][3], [Android Channels][4], [Mobile Tag][5])\n  - Cooldown
+    before sending another notification\n  - Silence timer for muting notifications
+    via Actionable Notification (docs: [HTML5][6], [Mobile][7])\n  - Configurable
+    HA Internal / External Base URLs\n  - Configurable Lovelace view from notification\n\n###
+    Requirements\n\nTo take full effect of this automation blueprint, your Home Assistant
+    instance needs some setup beforehand.\n\n- A UniFi Protect NVR running on a UDM
+    Pro, UNVR or other Protect Console\n- Home Assistant 2022.2.0 or newer with the
+    HA core version of the [UniFi Protect integration][8]\n- A UniFi camera pair with
+    your NVR\n- A valid HTTPS certificate and public facing Home Assistant instance\n
+    \ - If you do not have these, the actionable notifications and images will not
+    appear in the notifications.\n  - You do not need your _whole_ Home Assistant
+    to be publicly accessible. Only the paths `/api/camera_proxy/*` and `/api/webhook/*`
+    need to be accessible outside of your network.\n\n[1]: https://www.home-assistant.io/integrations/html5\n[2]:
     https://companion.home-assistant.io/docs/notifications/notifications-basic#sending-notifications-to-multiple-devices\n[3]:
     https://www.home-assistant.io/integrations/html5#tag\n[4]: https://companion.home-assistant.io/docs/notifications/notifications-basic/#notification-channels\n[5]:
     https://companion.home-assistant.io/docs/notifications/notifications-basic/#replacing\n[6]:
     https://www.home-assistant.io/integrations/html5#actions\n[7]: https://companion.home-assistant.io/docs/notifications/actionable-notifications/\n[8]:
     https://www.home-assistant.io/integrations/unifiprotect/\n[9]: https://www.home-assistant.io/integrations/telegram/\n"
   input:
-    smart_entity:
-      name: Smart Dection Entity
-      description: 'The smart detection sensor for you want to fire events for.
+    motion_entity:
+      name: Motion Entity
+      description: 'The camera motion sensor for you want to fire events for.
 
         '
       selector:
         entity:
           integration: unifiprotect
-          domain: sensor
-          device_class: unifiprotect__detection
+          domain: binary_sensor
+          device_class: motion
           multiple: false
-    objects:
-      name: (Optional) Smart Detections
-      description: 'Smart Detections to filter on. List should be comma separated.
-        Possible objects: person, vehicle
-
-        '
-      default: person,vehicle
-      selector:
-        text: {}
     presence_filter:
       name: (Optional) Presence Filter
       description: Only notify if selected presence entity is not "home".
@@ -97,7 +86,7 @@ blueprint:
         with "Manual " if action is triggered manually. https://companion.home-assistant.io/docs/notifications/notifications-basic#notification-channels
 
         '
-      default: Smart Detection
+      default: Motion
       selector:
         text: {}
     send_telegram:
@@ -198,8 +187,7 @@ blueprint:
 mode: single
 max_exceeded: silent
 variables:
-  input_smart_entity: !input smart_entity
-  input_objects: !input objects
+  input_motion_entity: !input motion_entity
   input_channel: !input channel
   input_base_image_url: !input base_image_url
   input_base_ha_url: !input base_ha_url
@@ -214,28 +202,22 @@ variables:
   input_send_telegram: !input send_telegram
   input_time_format: !input time_format
   input_presence_filter: !input presence_filter
-  camera_entities: '[{% for eid in device_entities(device_id(input_smart_entity))
+  camera_entities: '[{% for eid in device_entities(device_id(input_motion_entity))
     %}{%if eid.startswith(''camera'') and not ''package'' in eid and not is_state(eid,
     ''unavailable'') %}"{{ eid }}",{% endif %}{% endfor %}]'
-  smart_entities: '[{% for eid in device_entities(device_id(input_smart_entity)) %}{%if
-    eid.startswith(''sensor'') and is_state_attr(eid, "device_class", "occupancy")
-    %}"{{ eid }}",{% endif %}{% endfor %}]'
-  smart_detect_objs: '{{ (input_objects | lower).split('','') | map(''trim'') | list
-    | select(''in'', [''person'', ''vehicle'']) | list }}'
   lovelace_view: '{{ input_lovelace_view | trim }}'
   camera_entity_id: '{{ camera_entities | default([None]) | first }}'
-  trigger_object: '{{ states[input_smart_entity].state }}'
-  trigger_time: "{% if states[input_smart_entity] == None %}\n  None\n{% else %}\n
-    \ {{ as_local(states[input_smart_entity].last_changed).strftime(input_time_format)
+  trigger_time: "{% if states[input_motion_entity] == None %}\n  None\n{% else %}\n
+    \ {{ as_local(states[input_motion_entity].last_changed).strftime(input_time_format)
     }}\n{% endif %}\n"
   notification_channel: "{% if \"from_state\" in trigger %}\n  {{ input_channel }}\n{%
     else %}\n  Manual {{ input_channel }}\n{% endif %}\n"
   notification_tag: '{{ notification_channel.lower().replace('' '', ''-'') }}'
-  notification_title: '{{ device_attr(input_smart_entity, ''name'') }}'
+  notification_title: '{{ device_attr(input_motion_entity, ''name'') }}'
   notification_url: "{% if lovelace_view == \"\" %}\n  None\n{% else %}\n  {{ input_base_ha_url
     | trim }}{{ lovelace_view }}\n{% endif %}\n"
-  notification_message: '{{ trigger_object.title() }} detected by {{ notification_title
-    }}{% if trigger_time != None %} at {{ trigger_time }}{% endif %}.'
+  notification_message: Motion detected by {{ notification_title }}{% if trigger_time
+    != None %} at {{ trigger_time }}{% endif %}.
   notification_message_html5: '{{ notification_message }}{% if notification_url !=
     None %}
 
@@ -248,14 +230,14 @@ variables:
   notification_image: "{% if camera_entity_id == None or input_base_image_url == \"\"
     %}\n  None\n{% else %}\n  {{ input_base_image_url | trim }}{{ state_attr(camera_entity_id,
     'entity_picture') }}\n{% endif %}\n"
-  silence_action: silence-{{ input_smart_entity }}
+  silence_action: silence-{{ input_motion_entity }}
 trigger:
 - platform: state
-  entity_id: !input smart_entity
-  from: none
+  entity_id: !input motion_entity
+  from: 'off'
+  to: 'on'
 condition:
 - '{{ not input_presence_filter or not is_state(input_presence_filter, ''home'') }}'
-- '{{ trigger_object in smart_detect_objs }}'
 action:
 - choose:
   - conditions: '{{ input_debug_enabled }}'
@@ -263,11 +245,9 @@ action:
     - service: notify.persistent_notification
       data:
         title: 'Debug: {{ notification_title }}'
-        message: 'Entity ID: `{{ input_smart_entity }}`
+        message: 'Entity ID: `{{ input_motion_entity }}`
 
           Camera: `{{ camera_entity_id }}`
-
-          Object: `{{ trigger_object }}`
 
           Notification Service (Mobile): `notify.{{ input_notify_target_app }}`
 
@@ -357,8 +337,7 @@ action:
     sequence:
     - service: telegram_bot.answer_callback_query
       data:
-        message: Smart Detections notifications silenced for {{ input_silence_timer
-          }} minutes
+        message: Motion notifications silenced for {{ input_silence_timer }} minutes
         callback_query_id: '{{ wait.trigger.event.data.id }}'
 - choose:
   - conditions: '{{ input_debug_enabled }}'

@@ -1,15 +1,3 @@
-- id: '1607949947296'
-  alias: Send a camera snapshot when motion is detected
-  description: ''
-  use_blueprint:
-    path: vorion/send-camera-snapshot-notification-on-motion.yaml
-    input:
-      delay: 0
-      motion_sensor: binary_sensor.motion_uvc_g3_pro_front
-      camera: camera.uvc_g3_pro_front
-      notify_device: 6d34f062b6c1898ca60db74f88c562e6
-      is_ios: true
-      notification_message: '{{ motion_sensor_name }} detected movement!'
 - id: '1612867372715'
   alias: Zone Notification (FF Work Nijmegen)
   description: ''
@@ -90,29 +78,11 @@
   alias: Zone Notification (FF Home)
   description: ''
   use_blueprint:
-    path: Sjorsa/notify-entering-zone.yaml
+    path: homeassistant/notify_entering_zone.yaml
     input:
       person_entity: person.fenne
       zone_entity: zone.home
       notify_device: 6d34f062b6c1898ca60db74f88c562e6
-- id: '1649249933414'
-  alias: Notify lowest gas price
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: sensor.gas_station_euro95_lowest_price_1
-  condition: []
-  action:
-  - service: notify.wesley_telegram
-    data:
-      message: 'Euro 95 price is € {{ states.sensor.gas_station_euro95_lowest_price_1.state
-        }} at {{ state_attr("sensor.gas_station_euro95_lowest_price_1","friendly_name")
-        }}. '
-      data:
-        url: https://www.google.com/maps/search/?api=1&query={{ state_attr("sensor.gas_station_euro95_lowest_price_1","latitude")
-          }},{{ state_attr("sensor.gas_station_euro95_lowest_price_1", "longitude")
-          }}
-  mode: single
 - id: '1649250131376'
   alias: System shutdown notification
   description: ''
@@ -157,67 +127,16 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: binary_sensor.home_assistant_versions_update_available
-    to: Update Available
+    entity_id:
+    - binary_sensor.home_assistant_versions_update_available
+    to: 'on'
   condition: []
   action:
   - service: notify.wesley_telegram
     data:
-      message: Home Assistant update is available
+      message: Home Assistant update is available!
+      title: HA update available
   mode: single
-- id: '1651682926928'
-  alias: Bedroom Dimmer Switch
-  description: ''
-  use_blueprint:
-    path: hugalafutro/Z2M_Hue_Dimmer_Switch.yaml
-    input:
-      dimmer_action: sensor.bedroom_dimmer_switch_action
-      action_on_press:
-      - service: light.turn_on
-        data: {}
-        target:
-          device_id: 17249d23849dd37faf257b3fe1d78ca2
-      action_off_press:
-      - service: light.turn_off
-        data: {}
-        target:
-          device_id: 17249d23849dd37faf257b3fe1d78ca2
-      action_off_hold:
-      - service: light.turn_off
-        data: {}
-        target:
-          area_id:
-          - upstairs
-      action_on_hold:
-      - service: light.turn_on
-        data: {}
-        target:
-          area_id:
-          - upstairs
-      action_up_hold:
-      - service: light.turn_on
-        data:
-          brightness_step_pct: 10
-        target:
-          area_id: upstairs
-      action_down_hold:
-      - service: light.turn_on
-        data:
-          brightness_step_pct: -10
-        target:
-          area_id: upstairs
-      action_up_press:
-      - service: light.turn_on
-        data:
-          brightness_step_pct: 10
-        target:
-          device_id: 17249d23849dd37faf257b3fe1d78ca2
-      action_down_press:
-      - service: light.turn_on
-        data:
-          brightness_step_pct: -10
-        target:
-          device_id: 17249d23849dd37faf257b3fe1d78ca2
 - id: '1656945637447'
   alias: Home Assistant starts ➔ Update Group - Chores
   trigger:
@@ -249,112 +168,19 @@
       text_template: Welcome | {ctime} | {temp}
       time_format: '%H:%M'
 - id: '1657871870764'
-  alias: UniFi Protect Doorbell Notifications
+  alias: UniFi protect doorbell notification
   description: ''
   use_blueprint:
-    path: AngellusMortis/push_notification_doorbell_event.yaml
+    path: WeaselADHD/push_notification_doorbell_event.yaml
     input:
       doorbell: binary_sensor.doorbell_uvc_g4_doorbell
-      notify_target_app: wesley_iphone
-      time_format: '%H:%M'
-      send_mobile: true
       send_telegram: true
       notify_telegram: wesley_telegram
-      base_image_url: https://weaselweb.nl
-      lovelace_view: https://weaselweb.nl/lovelace
-- id: '1657872083215'
-  alias: UniFi Protect Motion Notifications
-  description: ''
-  use_blueprint:
-    path: AngellusMortis/push_notification_motion_event.yaml
-    input:
-      motion_entity: binary_sensor.motion_uvc_g3_pro_front
-      send_mobile: true
-      send_telegram: true
       time_format: '%H:%M'
-      notify_telegram: wesley_telegram
       base_image_url: https://weaselweb.nl
       lovelace_view: https://weaselweb.nl/lovelace
-      presence_filter: person.wesley
-- id: '1657874083533'
-  alias: Hue Dimmer switch controller Study
-  description: ''
-  use_blueprint:
-    path: EPMatt/philips_324131092621.yaml
-    input:
-      integration: Zigbee2MQTT
-      helper_last_controller_event: input_text.last_controller_event_hue_dimmer_switch_study
-      controller_entity: sensor.study_dimmer_switch_action
-      action_button_on_short:
-      - type: turn_on
-        device_id: 33fe15ce0a53ea639ef8ca056bd93403
-        entity_id: light.study_light
-        domain: light
-        brightness_pct: 80
-        flash: short
-      action_button_off_short:
-      - type: turn_off
-        device_id: 33fe15ce0a53ea639ef8ca056bd93403
-        entity_id: light.study_light
-        domain: light
-- id: '1657874738642'
-  alias: Hue Dimmer switch controller Bedroom
-  description: ''
-  use_blueprint:
-    path: EPMatt/philips_324131092621.yaml
-    input:
-      integration: Zigbee2MQTT
-      controller_entity: sensor.bedroom_dimmer_switch_action
-      helper_last_controller_event: input_text.last_controller_event_hue_dimmer_switch_bedroom
-      action_button_on_short:
-      - type: turn_on
-        device_id: 17249d23849dd37faf257b3fe1d78ca2
-        entity_id: light.bedroom_light
-        domain: light
-      action_button_off_short:
-      - type: turn_off
-        device_id: 17249d23849dd37faf257b3fe1d78ca2
-        entity_id: light.bedroom_light
-        domain: light
-      action_button_up_short:
-      - device_id: 17249d23849dd37faf257b3fe1d78ca2
-        domain: light
-        entity_id: light.bedroom_light
-        type: brightness_increase
-      action_button_down_short:
-      - device_id: 17249d23849dd37faf257b3fe1d78ca2
-        domain: light
-        entity_id: light.bedroom_light
-        type: brightness_decrease
-      action_button_off_long:
-      - service: light.turn_off
-        data:
-          transition: 1
-        target:
-          area_id: upstairs
-- id: '1657875007373'
-  alias: Hue Dimmer switch controller Downstairs
-  description: ''
-  use_blueprint:
-    path: EPMatt/philips_324131092621.yaml
-    input:
-      integration: Zigbee2MQTT
-      controller_entity: sensor.living_room_dimmer_switch_action
-      helper_last_controller_event: input_text.last_controller_event_hue_dimmer_switch_downstairs
-      action_button_on_short:
-      - service: light.turn_on
-        data:
-          transition: 1
-        target:
-          area_id: downstairs
-      action_button_off_short:
-      - service: light.turn_off
-        data:
-          transition: 1
-        target:
-          area_id: downstairs
 - id: '1658263288463'
-  alias: Windows Open Warning
+  alias: Windows open warning
   description: Sends notification to open windows. Triggered the first time each day
     that the outside temperature is more than 0.5 degrees below indoor temperature.
   trigger:
@@ -364,16 +190,21 @@
       hours: 0
       minutes: 10
       seconds: 0
-    below: '-0.5'
+    below: -0.5
   condition:
-  - condition: state
-    entity_id: input_boolean.evening_temperature_warning_fired
-    state: 'off'
-  - condition: not
+  - condition: and
     conditions:
     - condition: state
-      entity_id: sensor.outside_temperature
-      state: unavailable
+      entity_id: input_boolean.evening_temperature_warning_fired
+      state: 'off'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: sensor.wupws_temp
+        state: unavailable
+    - condition: numeric_state
+      entity_id: sensor.indoor_avg_temperature
+      above: 20
   action:
   - service: input_boolean.turn_on
     target:
@@ -384,8 +215,6 @@
       message: It is now 0.5 degrees cooler outside than inside. Consider opening
         the windows.
       title: Cold outside!
-  - service: notify.wesley_telegram
-    data: {}
   mode: single
 - id: '1658263443149'
   alias: Reset Morning Temperature Warning
@@ -490,3 +319,53 @@
           brightness_pct: 20
         target:
           device_id: 090693b1f4c84bb93c78e4fd9f12bd1f
+- id: '1679055487698'
+  alias: Windows close warning
+  description: Sends notification to open windows. Triggered the first time each day
+    that the outside temperature is more than 0.5 degrees below indoor temperature.
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.temperature_indoor_outdoor_difference
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+    above: 0.5
+  condition:
+  - condition: and
+    conditions:
+    - condition: state
+      entity_id: input_boolean.morning_temperature_warning_fired
+      state: 'off'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: sensor.wupws_temp
+        state: unavailable
+    - condition: numeric_state
+      entity_id: sensor.indoor_avg_temperature
+      above: 20
+  action:
+  - service: input_boolean.turn_on
+    target:
+      entity_id:
+      - input_boolean.morning_temperature_warning_fired
+    data: {}
+  - service: notify.wesley_telegram
+    data:
+      message: It is now 0.5 degrees warmer outside than inside. Consider closing
+        the windows!
+      title: Hot outside!
+  mode: single
+- id: '1679056053273'
+  alias: Unifi doorbell notification
+  description: ''
+  use_blueprint:
+    path: AngellusMortis/notification_ring_event.yaml
+    input:
+      doorbell_sensor:
+      - binary_sensor.doorbell_uvc_g4_doorbell
+      time_format: '%H:%M'
+      cooldown: 60
+      lovelace_view: https://weaselweb.nl/lovelace
+      notify_target_app: notify.wesley_telegram

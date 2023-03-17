@@ -1,5 +1,5 @@
 blueprint:
-  name: UniFi Protect Dynamic Doorbell
+  name: UniFi Protect Dynamic Doorbell (old)
   domain: automation
   source_url: https://raw.githubusercontent.com/AngellusMortis/unifiprotect_blueprints/main/blueprints/automation/unifiprotect/dynamic_doorbell.yaml
   description: "## UniFi Protect Dynamic Doorbell\n\nThis blueprint will dynamically
@@ -34,7 +34,7 @@ blueprint:
         entity:
           integration: unifiprotect
           domain: select
-          device_class: unifiprotect__lcd_message
+          device_class: unifiprotect_lcd_message
           multiple: false
     temp_entity:
       name: (Optional) Temperature Sensor Entity
@@ -71,7 +71,7 @@ blueprint:
         https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
 
         '
-      default: '%I:%M %p'
+      default: '%H:%M'
       selector:
         text: {}
 mode: single
@@ -89,7 +89,7 @@ condition:
 - '{{ input_always_run or is_state(input_doorbell, ''unknown'') or states[input_doorbell].state.startswith(''Default
   Message'') }}'
 action:
-- service: unifiprotect.set_doorbell_message
+- service: text.uvc_g4_doorbell_doorbell
   data:
     entity_id: !input doorbell
     message: "{%- set ctime=as_local(now()).strftime(input_time_format) -%}\n{%- if

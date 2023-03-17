@@ -1,54 +1,103 @@
----
-# Scenes
 - id: '1590604856514'
   name: Upstairs 60
   entities:
-    light.hue_white_lamp_bedroom:
-      brightness: 155
-      friendly_name: Bedroom
-      icon: mdi:bed-king
+    light.upstairs:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+      - blink
+      - breathe
+      - candle
+      - channel_change
+      - finish_effect
+      - okay
+      - stop_effect
+      - stop_hue_effect
+      supported_color_modes:
+      - brightness
+      - color_temp
+      entity_id:
+      - light.study_light
+      - light.bedroom_light
+      - light.landing_light
+      icon: mdi:lightbulb-group
+      friendly_name: Upstairs
+      supported_features: 44
+      color_mode: brightness
+      brightness: 152
       state: 'on'
-      supported_features: 41
-    light.hue_white_lamp_studyroom:
-      brightness: 155
-      friendly_name: Study
-      icon: mdi:desk-lamp
-      state: 'on'
-      supported_features: 41
+  metadata:
+    light.upstairs:
+      entity_only: true
 - id: '1591109684054'
   name: Goodnight
   entities:
     input_boolean.sleep_mode:
       editable: true
-      friendly_name: Sleep mode
       icon: mdi:bed-king
+      friendly_name: Sleep mode
       state: 'on'
     light.downstairs:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6666
+      min_mireds: 150
+      max_mireds: 500
+      effect_list:
+      - blink
+      - breathe
+      - candle
+      - channel_change
+      - finish_effect
+      - okay
+      - stop_effect
+      - stop_hue_effect
+      supported_color_modes:
+      - color_temp
       entity_id:
-        - light.living_room_1
-        - light.living_room_2
-        - light.hue_runner_middle_room_1
-        - light.hue_runner_middle_room_2
-        - light.hue_ambiance_spot_1
-        - light.hue_ambiance_spot_2
-        - light.hue_ambiance_spot_3
-        - light.hue_ambiance_spot_4
-        - light.hue_ambiance_spot_5
-        - light.hue_ambiance_spot_6
-        - light.hue_ambiance_spot_7
-        - light.hue_ambiance_spot_8
+      - light.living_room_light_1
+      - light.living_room_light_2
+      - light.middle_room_spot_1
+      - light.middle_room_spot_2
+      - light.kitchen_spot_1
+      - light.kitchen_spot_2
+      - light.kitchen_spot_3
+      - light.kitchen_spot_4
+      - light.kitchen_spot_5
+      - light.kitchen_spot_6
+      - light.kitchen_spot_7
+      - light.kitchen_spot_8
+      icon: mdi:lightbulb-group
       friendly_name: Downstairs
-      max_mireds: 454
-      min_mireds: 153
+      supported_features: 44
       state: 'off'
-      supported_features: 43
     light.upstairs:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+      - blink
+      - breathe
+      - candle
+      - channel_change
+      - finish_effect
+      - okay
+      - stop_effect
+      - stop_hue_effect
+      supported_color_modes:
+      - brightness
+      - color_temp
       entity_id:
-        - light.hue_white_lamp_studyroom
-        - light.hue_white_lamp_bedroom
+      - light.study_light
+      - light.bedroom_light
+      - light.landing_light
+      icon: mdi:lightbulb-group
       friendly_name: Upstairs
+      supported_features: 44
       state: 'off'
-      supported_features: 41
+  metadata: {}
 - id: '1603665215431'
   name: Downstairs 80
   entities:
@@ -58,19 +107,73 @@
       brightness: 204
       color_temp: 430
       entity_id:
-        - light.living_room_1
-        - light.living_room_2
-        - light.hue_runner_middle_room_1
-        - light.hue_runner_middle_room_2
-        - light.hue_ambiance_spot_1
-        - light.hue_ambiance_spot_2
-        - light.hue_ambiance_spot_3
-        - light.hue_ambiance_spot_4
-        - light.hue_ambiance_spot_5
-        - light.hue_ambiance_spot_6
-        - light.hue_ambiance_spot_7
-        - light.hue_ambiance_spot_8
-        - light.hue_filament_dining_room
+      - light.living_room_1
+      - light.living_room_2
+      - light.hue_runner_middle_room_1
+      - light.hue_runner_middle_room_2
+      - light.hue_ambiance_spot_1
+      - light.hue_ambiance_spot_2
+      - light.hue_ambiance_spot_3
+      - light.hue_ambiance_spot_4
+      - light.hue_ambiance_spot_5
+      - light.hue_ambiance_spot_6
+      - light.hue_ambiance_spot_7
+      - light.hue_ambiance_spot_8
+      - light.hue_filament_dining_room
       friendly_name: Downstairs
       supported_features: 43
       state: 'on'
+- id: '1679053157243'
+  name: 'Movie '
+  entities:
+    light.downstairs:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6666
+      min_mireds: 150
+      max_mireds: 500
+      effect_list:
+      - blink
+      - breathe
+      - candle
+      - channel_change
+      - finish_effect
+      - okay
+      - stop_effect
+      - stop_hue_effect
+      supported_color_modes:
+      - color_temp
+      color_mode: color_temp
+      brightness: 26
+      color_temp_kelvin: 2202
+      color_temp: 454
+      hs_color:
+      - 29.79
+      - 84.553
+      rgb_color:
+      - 255
+      - 146
+      - 39
+      xy_color:
+      - 0.579
+      - 0.388
+      entity_id:
+      - light.living_room_light_1
+      - light.living_room_light_2
+      - light.middle_room_spot_1
+      - light.middle_room_spot_2
+      - light.kitchen_spot_1
+      - light.kitchen_spot_2
+      - light.kitchen_spot_3
+      - light.kitchen_spot_4
+      - light.kitchen_spot_5
+      - light.kitchen_spot_6
+      - light.kitchen_spot_7
+      - light.kitchen_spot_8
+      icon: mdi:lightbulb-group
+      friendly_name: Downstairs
+      supported_features: 44
+      state: 'on'
+  icon: mdi:movie-open-play
+  metadata:
+    light.downstairs:
+      entity_only: true
