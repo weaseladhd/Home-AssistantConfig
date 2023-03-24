@@ -187,8 +187,8 @@
       color_temp_kelvin: 2202
       color_temp: 454
       hs_color:
-      - 29.79
-      - 84.553
+        - 29.79
+        - 84.553
       rgb_color:
         - 255
         - 146
