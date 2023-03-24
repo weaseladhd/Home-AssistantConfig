@@ -8,21 +8,21 @@
       min_mireds: 153
       max_mireds: 454
       effect_list:
-      - blink
-      - breathe
-      - candle
-      - channel_change
-      - finish_effect
-      - okay
-      - stop_effect
-      - stop_hue_effect
+        - blink
+        - breathe
+        - candle
+        - channel_change
+        - finish_effect
+        - okay
+        - stop_effect
+        - stop_hue_effect
       supported_color_modes:
-      - brightness
-      - color_temp
+        - brightness
+        - color_temp
       entity_id:
-      - light.study_light
-      - light.bedroom_light
-      - light.landing_light
+        - light.study_light
+        - light.bedroom_light
+        - light.landing_light
       icon: mdi:lightbulb-group
       friendly_name: Upstairs
       supported_features: 44
@@ -46,29 +46,29 @@
       min_mireds: 150
       max_mireds: 500
       effect_list:
-      - blink
-      - breathe
-      - candle
-      - channel_change
-      - finish_effect
-      - okay
-      - stop_effect
-      - stop_hue_effect
+        - blink
+        - breathe
+        - candle
+        - channel_change
+        - finish_effect
+        - okay
+        - stop_effect
+        - stop_hue_effect
       supported_color_modes:
-      - color_temp
+        - color_temp
       entity_id:
-      - light.living_room_light_1
-      - light.living_room_light_2
-      - light.middle_room_spot_1
-      - light.middle_room_spot_2
-      - light.kitchen_spot_1
-      - light.kitchen_spot_2
-      - light.kitchen_spot_3
-      - light.kitchen_spot_4
-      - light.kitchen_spot_5
-      - light.kitchen_spot_6
-      - light.kitchen_spot_7
-      - light.kitchen_spot_8
+        - light.living_room_light_1
+        - light.living_room_light_2
+        - light.middle_room_spot_1
+        - light.middle_room_spot_2
+        - light.kitchen_spot_1
+        - light.kitchen_spot_2
+        - light.kitchen_spot_3
+        - light.kitchen_spot_4
+        - light.kitchen_spot_5
+        - light.kitchen_spot_6
+        - light.kitchen_spot_7
+        - light.kitchen_spot_8
       icon: mdi:lightbulb-group
       friendly_name: Downstairs
       supported_features: 44
@@ -79,21 +79,21 @@
       min_mireds: 153
       max_mireds: 454
       effect_list:
-      - blink
-      - breathe
-      - candle
-      - channel_change
-      - finish_effect
-      - okay
-      - stop_effect
-      - stop_hue_effect
+        - blink
+        - breathe
+        - candle
+        - channel_change
+        - finish_effect
+        - okay
+        - stop_effect
+        - stop_hue_effect
       supported_color_modes:
-      - brightness
-      - color_temp
+        - brightness
+        - color_temp
       entity_id:
-      - light.study_light
-      - light.bedroom_light
-      - light.landing_light
+        - light.study_light
+        - light.bedroom_light
+        - light.landing_light
       icon: mdi:lightbulb-group
       friendly_name: Upstairs
       supported_features: 44
@@ -108,41 +108,80 @@
       brightness: 204
       color_temp: 430
       entity_id:
-      - light.living_room_1
-      - light.living_room_2
-      - light.hue_runner_middle_room_1
-      - light.hue_runner_middle_room_2
-      - light.hue_ambiance_spot_1
-      - light.hue_ambiance_spot_2
-      - light.hue_ambiance_spot_3
-      - light.hue_ambiance_spot_4
-      - light.hue_ambiance_spot_5
-      - light.hue_ambiance_spot_6
-      - light.hue_ambiance_spot_7
-      - light.hue_ambiance_spot_8
-      - light.hue_filament_dining_room
+        - light.living_room_1
+        - light.living_room_2
+        - light.hue_runner_middle_room_1
+        - light.hue_runner_middle_room_2
+        - light.hue_ambiance_spot_1
+        - light.hue_ambiance_spot_2
+        - light.hue_ambiance_spot_3
+        - light.hue_ambiance_spot_4
+        - light.hue_ambiance_spot_5
+        - light.hue_ambiance_spot_6
+        - light.hue_ambiance_spot_7
+        - light.hue_ambiance_spot_8
+        - light.hue_filament_dining_room
       friendly_name: Downstairs
       supported_features: 43
       state: 'on'
 - id: '1679053157243'
   name: 'Movie '
   entities:
-    light.downstairs:
+    light.kitchen:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+        - blink
+        - breathe
+        - candle
+        - channel_change
+        - finish_effect
+        - okay
+        - stop_effect
+        - stop_hue_effect
+      supported_color_modes:
+        - color_temp
+      entity_id:
+        - light.kitchen_spot_1
+        - light.kitchen_spot_2
+        - light.kitchen_spot_3
+        - light.kitchen_spot_4
+        - light.kitchen_spot_5
+        - light.kitchen_spot_6
+        - light.kitchen_spot_7
+        - light.kitchen_spot_8
+      icon: hue:bulb-group-spot
+      friendly_name: Kitchen
+      supported_features: 44
+      state: 'off'
+    light.living_room_light_1:
       min_color_temp_kelvin: 2000
       max_color_temp_kelvin: 6666
       min_mireds: 150
       max_mireds: 500
       effect_list:
-      - blink
-      - breathe
-      - candle
-      - channel_change
-      - finish_effect
-      - okay
-      - stop_effect
-      - stop_hue_effect
+        - blink
+        - breathe
+        - okay
+        - channel_change
+        - candle
+        - finish_effect
+        - stop_effect
+        - stop_hue_effect
       supported_color_modes:
       - color_temp
+      linkquality: 132
+      power_on_behavior:
+      update:
+        installed_version: 1124099330
+        latest_version: 1124099330
+        state: idle
+      update_available: false
+      icon: mdi:floor-lamp
+      friendly_name: Living room light 1
+      supported_features: 44
       color_mode: color_temp
       brightness: 26
       color_temp_kelvin: 2202
@@ -157,24 +196,121 @@
       xy_color:
       - 0.579
       - 0.388
-      entity_id:
-      - light.living_room_light_1
-      - light.living_room_light_2
-      - light.middle_room_spot_1
-      - light.middle_room_spot_2
-      - light.kitchen_spot_1
-      - light.kitchen_spot_2
-      - light.kitchen_spot_3
-      - light.kitchen_spot_4
-      - light.kitchen_spot_5
-      - light.kitchen_spot_6
-      - light.kitchen_spot_7
-      - light.kitchen_spot_8
-      icon: mdi:lightbulb-group
-      friendly_name: Downstairs
-      supported_features: 44
       state: 'on'
+    light.living_room_light_2:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6666
+      min_mireds: 150
+      max_mireds: 500
+      effect_list:
+        - blink
+        - breathe
+        - okay
+        - channel_change
+        - candle
+        - finish_effect
+        - stop_effect
+        - stop_hue_effect
+      supported_color_modes:
+        - color_temp
+      linkquality: 72
+      power_on_behavior:
+      update:
+        installed_version: 1124099330
+        latest_version: 1124099330
+        state: idle
+      update_available: false
+      icon: mdi:floor-lamp
+      friendly_name: Living room light 2
+      supported_features: 44
+      state: 'off'
+    light.dining_light:
+      effect_list:
+        - blink
+        - breathe
+        - okay
+        - channel_change
+        - candle
+        - finish_effect
+        - stop_effect
+        - stop_hue_effect
+      supported_color_modes:
+        - brightness
+      linkquality: 39
+      power_on_behavior:
+      update:
+        installed_version: 16786432
+        latest_version: 16786432
+        state: idle
+      update_available: false
+      friendly_name: Dining light
+      supported_features: 44
+      state: 'off'
+    light.middle_room_spot_1:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+        - blink
+        - breathe
+        - okay
+        - channel_change
+        - candle
+        - finish_effect
+        - stop_effect
+        - stop_hue_effect
+      supported_color_modes:
+        - color_temp
+      linkquality: 30
+      power_on_behavior:
+      update:
+        installed_version: 16786688
+        latest_version: 16786688
+        state: idle
+      update_available: false
+      icon: hue:wall-runner
+      friendly_name: Middle room spot 1
+      supported_features: 44
+      state: 'off'
+    light.middle_room_spot_2:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 454
+      effect_list:
+        - blink
+        - breathe
+        - okay
+        - channel_change
+        - candle
+        - finish_effect
+        - stop_effect
+        - stop_hue_effect
+      supported_color_modes:
+        - color_temp
+      linkquality: 63
+      power_on_behavior:
+      update:
+        installed_version: 16786688
+        latest_version: 16786688
+        state: idle
+      update_available: false
+      icon: hue:wall-runner
+      friendly_name: Middle room spot 2
+      supported_features: 44
+      state: 'off'
   icon: mdi:movie-open-play
   metadata:
-    light.downstairs:
+    light.kitchen:
+      entity_only: true
+    light.living_room_light_1:
+      entity_only: true
+    light.living_room_light_2:
+      entity_only: true
+    light.dining_light:
+      entity_only: true
+    light.middle_room_spot_1:
+      entity_only: true
+    light.middle_room_spot_2:
       entity_only: true
