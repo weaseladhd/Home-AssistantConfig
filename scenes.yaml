@@ -171,7 +171,7 @@
         - stop_effect
         - stop_hue_effect
       supported_color_modes:
-      - color_temp
+        - color_temp
       linkquality: 132
       power_on_behavior:
       update:
@@ -190,12 +190,12 @@
       - 29.79
       - 84.553
       rgb_color:
-      - 255
-      - 146
-      - 39
+        - 255
+        - 146
+        - 39
       xy_color:
-      - 0.579
-      - 0.388
+        - 0.579
+        - 0.388
       state: 'on'
     light.living_room_light_2:
       min_color_temp_kelvin: 2000
