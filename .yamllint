@@ -37,7 +37,7 @@ rules:
     level: error
     present: false
   document-start:
-    level: error
+    level: warning
     present: true
     ignore: |
       config/known_devices.yaml

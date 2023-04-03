@@ -1,6 +1,6 @@
-#- type: markdown
-#  content: >
-#    {{ states.light|selectattr('state','equalto','on')|list|length }} lights are on.
+# - type: markdown
+#   content: >
+#     {{ states.light|selectattr('state','equalto','on')|list|length }} lights are on.
 
 - type: entities
   entities:

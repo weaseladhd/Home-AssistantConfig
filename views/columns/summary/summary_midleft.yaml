@@ -23,7 +23,6 @@
       head: light.upstairs
       type: custom:fold-entity-row
 
-
 - type: horizontal-stack
   cards:
     - hours_to_show: 24
@@ -44,7 +43,6 @@
       name: Server room
       type: sensor
       detail: 1
-
 
 - type: custom:simple-thermostat
   entity: climate.living_room

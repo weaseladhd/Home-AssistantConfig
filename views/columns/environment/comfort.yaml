@@ -26,7 +26,6 @@
               ha-card {background: none;}
         - type: custom:gap-card
 
-
     - type: entity
       entity: sensor.thermal_comfort_outside_absolutehumidity
       name: Absolute Humidity
