@@ -1,3 +1,4 @@
+---
 # WeaselWeb HA
 # Summary View
 # Made by WeaselADHD 2022
@@ -42,8 +43,8 @@ cards:
             width: 220
           cards:
 
-          - type: horizontal-stack
-            cards:
+            - type: horizontal-stack
+              cards:
 
             - type: 'custom:mushroom-person-card'
               entity: person.wesley
@@ -103,4 +104,3 @@ cards:
 
               - type: vertical-stack
                 cards: !include columns/summary/summary_right.yaml
-

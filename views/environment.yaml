@@ -71,8 +71,8 @@ cards:
               width: 330
             cards:
 
-            - type: horizontal-stack
-              cards:
+              - type: horizontal-stack
+                cards:
 
               - type: 'custom:mushroom-fan-card'
                 entity: fan.living_room_fan
@@ -141,20 +141,20 @@ cards:
           - type: 'vertical-stack'
             cards: !include columns/environment/humidity.yaml
 
-      # [Column] Air Quality
-
-      #- type: 'custom:layout-card'
-      #  layout_type: 'custom:grid-layout'
-      #  layout:
-      #    margin: -1
-      #  cards:
-
-      #    - type: 'custom:button-card'
-      #      template: header_card_no_link
-      #      variables:
-      #        name: Air Quality
-      #      view_layout:
-      #        grid-column: 1/-1
-
-      #    - type: 'vertical-stack'
-      #     cards: !include columns/environment/air_quality.yaml
+#      # [Column] Air Quality
+#
+#      - type: 'custom:layout-card'
+#        layout_type: 'custom:grid-layout'
+#        layout:
+#          margin: -1
+#        cards:
+#
+#          - type: 'custom:button-card'
+#            template: header_card_no_link
+#            variables:
+#              name: Air Quality
+#            view_layout:
+#              grid-column: 1/-1
+#
+#          - type: 'vertical-stack'
+#           cards: !include columns/environment/air_quality.yaml

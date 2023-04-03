@@ -42,8 +42,8 @@ cards:
               width: 220
             cards:
 
-            - type: horizontal-stack
-              cards:
+              - type: horizontal-stack
+                cards:
 
               - type: 'custom:mushroom-entity-card'
                 entity: group.all_on_off
