@@ -129,6 +129,9 @@
   - platform: state
     entity_id:
     - binary_sensor.home_assistant_versions_update_available
+    - update.home_assistant_core_update
+    - update.home_assistant_supervisor_update
+    - update.home_assistant_operating_system_update
     to: 'on'
   condition: []
   action:

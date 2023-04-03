@@ -25,6 +25,10 @@
 !blueprints
 !blueprints/*
 !blueprints/automation/*
+!views
+!views/*
+!views/columns/*
+!views/snippets/*
 
 # Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
 secrets.yaml

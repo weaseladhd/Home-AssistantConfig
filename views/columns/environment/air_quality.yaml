@@ -1,0 +1,135 @@
+- type: vertical-stack
+  in_card: true
+  cards:
+    - type: horizontal-stack
+      cards:
+        - type: entity
+          entity: sensor.aq_maliskamp_p1
+          icon: none
+          name: PM10
+          card_mod:
+            style: |
+              ha-card {background: none;}
+        - type: entity
+          entity: sensor.aq_maliskamp_p2
+          name: PM2.5
+          card_mod:
+            style: |
+              ha-card {background: none;}
+
+    - type: custom:apexcharts-card
+      config_templates: environment_chart
+      series:
+        - entity: air_quality.maliskamp
+          name: AQI
+          yaxis_id: second
+          show:
+            datalabels: true
+        - entity: sensor.current_ozone_level
+          name: Ozone (O₃)
+          yaxis_id: main
+          show:
+            datalabels: true
+        - entity: sensor.living_room_fan_nitrogen_dioxide
+          name: Nitrogen Dioxide (NO₂)
+          yaxis_id: main
+          show:
+            datalabels: true
+        - entity: sensor.living_room_fan_pm_2_5
+          name: Particulate Matter (PM25)
+          yaxis_id: main
+          show:
+            datalabels: true
+      yaxis:
+        - id: main
+        - id: second
+      apex_config:
+        chart:
+          height: 240px
+
+- type: vertical-stack
+  in_card: true
+  cards:
+
+    - type: sensor
+      name: Wind Speed
+      entity: sensor.br_wind_speed
+
+    - type: custom:apexcharts-card
+      config_templates: environment_chart
+      series:
+        - entity: sensor.br_wind_speed
+          name: km/h
+          yaxis_id: main
+          color: 'var(--primary-color)'
+          show:
+            datalabels: true
+          group_by:
+            func: avg
+            duration: 30min
+        - entity: sensor.br_wind_speed
+          name: Meteo
+          attribute: wind_speed
+          yaxis_id: main
+          curve: straight
+          color: 'var(--primary-color)'
+          opacity: .5
+          data_generator: |
+            const now = new Date();
+            const data = [[now.getTime(), entity.attributes.wind_speed]];
+            for(let i = 0; i <= 12; i++) {
+              data.push([new Date(entity.attributes.forecast[i].datetime).getTime() + i * 1000 * 60 * 60, parseFloat(entity.attributes.forecast[i].wind_speed)] );
+            }
+            return data.reverse();
+      yaxis:
+        - id: main
+          min: 0
+          max: ~5
+      apex_config:
+        chart:
+          height: 160px
+
+- type: vertical-stack
+  in_card: true
+  cards:
+
+    - type: horizontal-stack
+      cards:
+        - type: sensor
+          entity: sensor.co2_intensity
+          name: CO₂
+        - type: sensor
+          entity: sensor.study_fan_particulates
+          name: Particulates
+        - type: sensor
+          entity: sensor.living_room_fan_volatile_organic_compounds
+          name: VOCs
+
+    - type: custom:apexcharts-card
+      config_templates: environment_chart
+      series:
+        - entity: sensor.study_fan_particulates
+          name: Particulates
+          yaxis_id: second
+          show:
+            datalabels: true
+        - entity: sensor.living_room_fan_volatile_organic_compounds
+          name: VOCs
+          yaxis_id: second
+          show:
+            datalabels: true
+        - entity: sensor.co2_intensity
+          name: CO₂
+          yaxis_id: main
+          show:
+            datalabels: true
+      yaxis:
+        - id: main
+        - id: second
+          min: 0
+          max: ~5
+          opposite: true
+          show: false
+      apex_config:
+        chart:
+          height: 240px
