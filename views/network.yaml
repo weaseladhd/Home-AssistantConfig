@@ -1,7 +1,7 @@
 ---
-# Lights View
+# Network View
 
-title: Lights
+title: Network
 icon: mdi:check-network
 path: network
 
@@ -45,8 +45,8 @@ cards:
               width: 350
             cards:
 
-            - type: horizontal-stack
-              cards:
+              - type: horizontal-stack
+                cards:
 
               - type: 'custom:mushroom-entity-card'
                 entity: binary_sensor.cloudflare
@@ -269,7 +269,6 @@ cards:
                   terminate_at: bottom terminal
                 label: '[[[ entity.last_changed ]]]'
                 state_display: '[[[ return entity.attributes.round_trip_time_avg ? (Math.round(entity.attributes.round_trip_time_avg)) + "ms" : "Off" ]]]'
-
 
       # [Column] Download
 

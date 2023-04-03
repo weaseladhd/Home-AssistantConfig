@@ -27,34 +27,34 @@ cards:
           grid-column: 1/-1
         cards:
 
-        - type: markdown
-          style: !include snippets/style-markdown-page-title.yaml
-          content: >
-            # {% if now() > today_at('18:00') %}Good evening{% elif
-            now() > today_at('12:00') %}Good afternoon{% elif now() >
-            today_at('5:00') %}Good morning{% else %}Good night{%
-            endif %}, {{ user }}.
+          - type: markdown
+            style: !include snippets/style-markdown-page-title.yaml
+            content: >
+              # {% if now() > today_at('18:00') %}Good evening{% elif
+              now() > today_at('12:00') %}Good afternoon{% elif now() >
+              today_at('5:00') %}Good morning{% else %}Good night{%
+              endif %}, {{ user }}.
 
-        - type: 'custom:layout-card'
-          layout_type: 'custom:horizontal-layout'
-          view_layout:
-          place-self: center
-          layout:
-            width: 220
-          cards:
+          - type: 'custom:layout-card'
+            layout_type: 'custom:horizontal-layout'
+            view_layout:
+            place-self: center
+            layout:
+              width: 220
+            cards:
 
-            - type: horizontal-stack
-              cards:
+              - type: horizontal-stack
+                cards:
 
-            - type: 'custom:mushroom-person-card'
-              entity: person.wesley
-              style: 'ha-card {background: none;}'
-              use_entity_picture: true
+              - type: 'custom:mushroom-person-card'
+                entity: person.wesley
+                style: 'ha-card {background: none;}'
+                use_entity_picture: true
 
-            - type: 'custom:mushroom-person-card'
-              entity: person.fenne
-              style: 'ha-card {background: none;}'
-              use_entity_picture: true
+              - type: 'custom:mushroom-person-card'
+                entity: person.fenne
+                style: 'ha-card {background: none;}'
+                use_entity_picture: true
 
       # Summary
       # [Column] Left
@@ -69,7 +69,7 @@ cards:
               - type: vertical-stack
                 cards: !include columns/summary/summary_left.yaml
 
-        # [Column] Midleft
+      # [Column] Midleft
 
       - type: vertical-stack
         cards:
@@ -81,7 +81,7 @@ cards:
               - type: vertical-stack
                 cards: !include columns/summary/summary_midleft.yaml
 
-        # [Column] Midright
+      # [Column] Midright
 
       - type: vertical-stack
         cards:
@@ -93,7 +93,7 @@ cards:
               - type: vertical-stack
                 cards: !include columns/summary/summary_midright.yaml
 
-        # [Column] Right
+      # [Column] Right
 
       - type: vertical-stack
         cards:
