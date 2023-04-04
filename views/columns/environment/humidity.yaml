@@ -143,20 +143,20 @@
       show:
         datalabels: true
 
-#    - entity: sensor.br_precipitation
-#      name: Buienradar Precipation
-#      attribute: precipitation
-#      yaxis_id: main
-#      curve: straight
-#      color: 'var(--primary-color)'
-#      opacity: .5
-#      data_generator: |
-#        const now = new Date();
-#        const data = [];
-#        for(let i = 0; i <= 12; i++) {
-#          data.push([new Date(entity.attributes.forecast[i].datetime).getTime() + i * 1000 * 60 * 60, entity.attributes.forecast[i].precipitation] );
-#        }
-#        return data.reverse();
+    # - entity: sensor.br_precipitation
+    #   name: Buienradar Precipation
+    #   attribute: precipitation
+    #   yaxis_id: main
+    #   curve: straight
+    #   color: 'var(--primary-color)'
+    #   opacity: .5
+    #   data_generator: |
+    #     const now = new Date();
+    #     const data = [];
+    #     for(let i = 0; i <= 12; i++) {
+    #       data.push([new Date(entity.attributes.forecast[i].datetime).getTime() + i * 1000 * 60 * 60, entity.attributes.forecast[i].precipitation] );
+    #     }
+    #     return data.reverse();
 
   yaxis:
     - id: main
