@@ -358,7 +358,7 @@
       - binary_sensor.doorbell_uvc_g4_doorbell
       time_format: '%H:%M'
       cooldown: 60
-      lovelace_view: https://weaselweb.nl/lovelace
+      lovelace_view: https://ha.weaselweb.nl/lovelace
       notify_target_app: notify.wesley_telegram
 - id: '1679057691753'
   alias: UniFi Protect Dynamic Doorbell (old)
