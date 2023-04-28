@@ -45,13 +45,13 @@ cards:
               - type: horizontal-stack
                 cards:
 
-              - type: 'custom:mushroom-entity-card'
-                entity: group.all_on_off
-                name: All Switches ↗
-                icon_color: pink
-                style: 'ha-card {background: none;}'
-                tap_action:
-                  action: more-info
+                  - type: 'custom:mushroom-entity-card'
+                    entity: group.all_on_off
+                    name: All Switches ↗
+                    icon_color: pink
+                    style: 'ha-card {background: none;}'
+                    tap_action:
+                      action: more-info
 
       # [Column] Energy
 

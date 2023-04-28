@@ -71,7 +71,7 @@ cards:
                 style: 'ha-card {background: none;}'
                 tap_action:
                   action: url
-                  url_path: http://192.168.1.199:81/
+                  url_path: http://192.168.1.200/
 
       # [Column] Network Map
       - type: vertical-stack

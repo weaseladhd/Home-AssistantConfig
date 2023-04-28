@@ -47,15 +47,15 @@ cards:
               - type: horizontal-stack
                 cards:
 
-              - type: 'custom:mushroom-person-card'
-                entity: person.wesley
-                style: 'ha-card {background: none;}'
-                use_entity_picture: true
+                  - type: 'custom:mushroom-person-card'
+                    entity: person.wesley
+                    style: 'ha-card {background: none;}'
+                    use_entity_picture: true
 
-              - type: 'custom:mushroom-person-card'
-                entity: person.fenne
-                style: 'ha-card {background: none;}'
-                use_entity_picture: true
+                  - type: 'custom:mushroom-person-card'
+                    entity: person.fenne
+                    style: 'ha-card {background: none;}'
+                    use_entity_picture: true
 
       # [Column] Downstairs
 
