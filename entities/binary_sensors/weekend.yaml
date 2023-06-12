@@ -1,9 +1,0 @@
----
-# Weekend
-platform: workday
-name: weekend
-country: NL
-workdays:
-  - sat
-  - sun
-excludes: []

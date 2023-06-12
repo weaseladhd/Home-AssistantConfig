@@ -1,6 +1,0 @@
----
-# qBittorrent
-platform: qbittorrent
-url: !secret qbit_url
-username: !secret qbit_user
-password: !secret qbit_pass
