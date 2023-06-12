@@ -131,16 +131,16 @@
         func: avg
         duration: 30min
 
-    - entity: sensor.temp_motion_sensor_temperature
-      name: Baby Room
-      stroke_width: 1
-      color: blue
-      yaxis_id: main
-      show:
-        datalabels: true
-      group_by:
-        func: avg
-        duration: 30min
+#    - entity: sensor.temp_motion_sensor_temperature
+#      name: Baby Room
+#      stroke_width: 1
+#      color: blue
+#      yaxis_id: main
+#      show:
+#        datalabels: true
+#      group_by:
+#        func: avg
+#        duration: 30min
 
     - entity: sensor.indoor_avg_temperature
       name: Indoor Avg
@@ -153,7 +153,7 @@
 - type: custom:apexcharts-card
   config_templates: environment_chart
   series:
-    - entity: sensor.lbl_16_aw_cloud_cover
+    - entity: sensor.cloud
       name: Cloud cover
       yaxis_id: main
       color: 'var(--primary-color)'
