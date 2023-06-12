@@ -131,16 +131,16 @@
         func: avg
         duration: 30min
 
-#    - entity: sensor.temp_motion_sensor_temperature
-#      name: Baby Room
-#      stroke_width: 1
-#      color: blue
-#      yaxis_id: main
-#      show:
-#        datalabels: true
-#      group_by:
-#        func: avg
-#        duration: 30min
+    # - entity: sensor.temp_motion_sensor_temperature
+    #   name: Baby Room
+    #   stroke_width: 1
+    #   color: blue
+    #   yaxis_id: main
+    #   show:
+    #     datalabels: true
+    #   group_by:
+    #     func: avg
+    #     duration: 30min
 
     - entity: sensor.indoor_avg_temperature
       name: Indoor Avg
