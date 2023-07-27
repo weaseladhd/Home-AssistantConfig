@@ -233,29 +233,6 @@
     target:
       entity_id: input_boolean.evening_temperature_warning_fired
   mode: single
-- id: '1669983147174'
-  alias: Smart switch study room
-  description: ''
-  use_blueprint:
-    path: vandalon/z2m EnOcean PTM 215Z (Friends of Hue) switch.yaml
-    input:
-      controller: Smart switch study room
-      button_1_pressed: []
-      button_2_pressed: []
-      button_1_and_3_pressed: []
-      button_2_and_4_pressed: []
-      button_3_pressed:
-      - service: light.turn_on
-        data:
-          transition: 1
-        target:
-          device_id: 33fe15ce0a53ea639ef8ca056bd93403
-      button_4_pressed:
-      - service: light.turn_off
-        data:
-          transition: 1
-        target:
-          device_id: 33fe15ce0a53ea639ef8ca056bd93403
 - id: '1669983996137'
   alias: Smart switch bedroom
   description: ''
