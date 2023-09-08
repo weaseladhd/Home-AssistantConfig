@@ -1,28 +1,3 @@
-- type: custom:hui-markdown-card
-  content: |
-    {{ states('sensor.active_devices') }}
-
-- type: entities
-  entities:
-    - entities:
-        - entity: light.living_room
-          type: custom:slider-entity-row
-        - entity: light.middle_room
-          type: custom:slider-entity-row
-        - entity: light.kitchen
-          type: custom:slider-entity-row
-        - entity: light.dining_room
-          type: custom:slider-entity-row
-      head: light.downstairs
-      type: custom:fold-entity-row
-    - entities:
-        - entity: light.study_light
-          type: custom:slider-entity-row
-        - entity: light.bedroom_light
-          type: custom:slider-entity-row
-      head: light.upstairs
-      type: custom:fold-entity-row
-
 - type: horizontal-stack
   cards:
     - hours_to_show: 24
@@ -73,20 +48,36 @@
 - type: entities
   state_color: true
   entities:
+    - entity: sensor.aq_maliskamp_p1
+      name: Air Quality Maliskamp
     - entity: fan.living_room_fan
       secondary_info: last-changed
     - entity: humidifier.living_room_fan
     - entity: fan.bedroom_fan
       secondary_info: last-changed
     - entity: humidifier.bedroom_fan
-    - entity: sensor.living_room_fan_humidity
-      name: Living room humidity
+
+
+- type: custom:apexcharts-card
+  header:
+    show: false
+  series:
     - entity: sensor.study_fan_humidity
     - entity: sensor.bedroom_fan_humidity
-    - entity: sensor.living_room_humidity
-      name: Living room humidity
     - entity: sensor.bathroom_sensor_humidity
-      name: Bathroom humidity
-      secondary_info: none
-    - entity: sensor.aq_maliskamp_p1
-      name: Air Quality Maliskamp
+    - entity: sensor.living_room_fan_humidity
+    - entity: sensor.baby_room_sensor_humidity
+  cache: true
+  apex_config:
+    stroke:
+      show: true
+      width: 3
+      curve: smooth
+    legend:
+      show: true
+      position: top
+    chart:
+      height: 300px
+
+- type: custom:formulaone-card
+  card_type: countdown

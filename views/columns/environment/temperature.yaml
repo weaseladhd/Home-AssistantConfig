@@ -2,7 +2,7 @@
   cards:
 
     - type: entity
-      entity: sensor.downstairs_avg_temperature
+      entity: sensor.avg_temp_downstairs
       name: Indoor Average
       icon: none
       card_mod:
@@ -120,7 +120,7 @@
         func: avg
         duration: 30min
 
-    - entity: sensor.downstairs_avg_temperature
+    - entity: sensor.avg_temp_downstairs
       name: Living Room
       stroke_width: 1
       color: green
@@ -142,7 +142,7 @@
     #     func: avg
     #     duration: 30min
 
-    - entity: sensor.indoor_avg_temperature
+    - entity: sensor.avg_temp_indoor
       name: Indoor Avg
       yaxis_id: main
       color: 'var(--primary-color)'

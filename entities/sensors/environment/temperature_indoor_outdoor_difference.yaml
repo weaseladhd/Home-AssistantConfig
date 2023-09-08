@@ -7,4 +7,4 @@ sensors:
     friendly_name: Temperature Indoor Outdoor Difference
     unit_of_measurement: "°C"
     value_template: >
-      {% set indoor = states.sensor.downstairs_avg_temperature.state|float %}{% set outdoor = states.sensor.wupws_temp.state|float %}{{ (outdoor - indoor)|round(1) }}
+      {% set indoor = states.sensor.avg_temp_downstairs.state|float %}{% set outdoor = states.sensor.wupws_temp.state|float %}{{ (outdoor - indoor)|round(1) }}

@@ -15,6 +15,8 @@
           service: browser_mod.popup
           data:
             title: System
+            hide_header: false
+            deviceID: this
             content:
               type: custom:layout-card
               column_num: 1
@@ -104,6 +106,8 @@
           service: browser_mod.popup
           data:
             title: Updates
+            hide_header: false
+            deviceID: this
             content:
               type: custom:layout-card
               column_num: 1
@@ -132,53 +136,63 @@
                 - type: custom:hui-element
                   card_type: markdown
                   content: >
-                    {% if states('sensor.current_version') | regex_search('b')
-                    %} <span><ha-icon icon="mdi:home-assistant"></ha-icon>
-                    Home Assistant {{ states('sensor.current_version')
-                    }}</span><br> {% if states('sensor.current_version') ==
-                    states('sensor.home_assistant_versions_beta') %} <b>No
-                    updates - {{
+                    {% if states('sensor.current_version') |
+                    regex_search('b') %} <span><ha-icon
+                    icon="mdi:home-assistant"></ha-icon> Home
+                    Assistant {{ states('sensor.current_version')
+                    }}</span><br> {% if
+                    states('sensor.current_version') ==
+                    states('sensor.home_assistant_versions_beta') %}
+                    <b>No updates - {{
                     state_attr('sensor.home_assistant_versions_dev',
                     'friendly_name') }} {{
-                    states('sensor.home_assistant_versions_dev') | lower
-                    }}</b> {% else %} <b>{{
+                    states('sensor.home_assistant_versions_dev') |
+                    lower }}</b> {% else %} <b>{{
                     states('sensor.home_assistant_versions_beta') }}
                     available</b> {{ '\U0001f389' }}
 
-                    {% if states('sensor.home_assistant_versions_beta') ==
+                    {% if
+                    states('sensor.home_assistant_versions_beta') ==
                     states('sensor.hass_release_notes_rc') %} {{-
-                    state_attr('sensor.hass_release_notes_rc', 'body') }} {%
-                    endif %} {% endif %} {% else %} <span><ha-icon
-                    icon="mdi:home-assistant"></ha-icon> Home Assistant {{
-                    states('sensor.current_version') }}</span><br> {% if
+                    state_attr('sensor.hass_release_notes_rc', 'body')
+                    }} {% endif %} {% endif %} {% else %}
+                    <span><ha-icon
+                    icon="mdi:home-assistant"></ha-icon> Home
+                    Assistant {{ states('sensor.current_version')
+                    }}</span><br> {% if
                     states('sensor.current_version') ==
-                    states('sensor.home_assistant_versions') %} <b>No updates
-                    - {{ state_attr('sensor.home_assistant_versions_dev',
+                    states('sensor.home_assistant_versions') %} <b>No
+                    updates - {{
+                    state_attr('sensor.home_assistant_versions_dev',
                     'friendly_name') }} {{
-                    states('sensor.home_assistant_versions_dev') | lower
-                    }}</b> {% else %} <b>{{
-                    states('sensor.home_assistant_versions') }} available</b>
-                    {{ '\U0001f389' }}
+                    states('sensor.home_assistant_versions_dev') |
+                    lower }}</b> {% else %} <b>{{
+                    states('sensor.home_assistant_versions') }}
+                    available</b> {{ '\U0001f389' }}
 
                     {% if states('sensor.home_assistant_versions') ==
                     states('sensor.hass_release_notes') %} {{-
-                    state_attr('sensor.hass_release_notes', 'body') }} {%
-                    endif %} {% endif %} {% endif %}
+                    state_attr('sensor.hass_release_notes', 'body') }}
+                    {% endif %} {% endif %} {% endif %}
                 - type: custom:hui-element
                   card_type: markdown
                   content: >
-                    <span><ha-icon icon="hacs:hacs"></ha-icon> Community Store
-                    {{ states('sensor.hacs_version') }}</span><br> {% if
-                    is_state('sensor.hacs', '0') or is_state('sensor.hacs',
-                    'unknown') %} <b>No Updates</b> {% else %} <b>{{
-                    states('sensor.hacs') }} {{ 'Update available' if
-                    is_state('sensor.hacs', '1')  else 'Updates availablea'
-                    }}</b> {{ '\U0001f389' }} {% for repo in
-                    state_attr('sensor.hacs', 'repositories') %} * {{
-                    repo.display_name }} - Version {{ repo.available_version
-                    }} ([{{ repo.installed_version }}](https://github.com/{{
+                    <span><ha-icon icon="hacs:hacs"></ha-icon>
+                    Community Store {{ states('sensor.hacs_version')
+                    }}</span><br> {% if is_state('sensor.hacs', '0')
+                    or is_state('sensor.hacs', 'unknown') %} <b>No
+                    Updates</b> {% else %} <b>{{ states('sensor.hacs')
+                    }} {{ 'Update available' if
+                    is_state('sensor.hacs', '1')  else 'Updates
+                    availablea' }}</b> {{ '\U0001f389' }} {% for repo
+                    in state_attr('sensor.hacs', 'repositories') %} *
+                    {{ repo.display_name }} - Version {{
+                    repo.available_version }} ([{{
+                    repo.installed_version }}](https://github.com/{{
                     repo.name }}/releases)) {% endfor %} {% endif %}
+
 - type: energy-distribution
+
 - cards:
     - cards:
         - type: gauge
@@ -192,13 +206,10 @@
             red: 0
           name: PV Yield
           min: 0
-        - type: sensor
-          graph: line
-          entity: sensor.solaredge_energy_today
-          name: PV Day
-          detail: 2
+        - type: energy-solar-graph
       type: horizontal-stack
   type: vertical-stack
+
 - type: horizontal-stack
   cards:
     - type: custom:button-card
@@ -214,6 +225,8 @@
           service: browser_mod.popup
           data:
             title: Vacuum
+            hide_header: false
+            deviceID: this
             content:
               type: custom:layout-card
               column_num: 1
@@ -250,26 +263,16 @@
       tap_action:
         action: fire-dom-event
         browser_mod:
-          command: call-service
           service: browser_mod.popup
           data:
             title: Washer
             content:
-              type: custom:layout-card
-              column_num: 1
-              column_width:
-                - 385
-              layout: vertical
-              cards:
-                - type: custom:hui-element
-                  card_type: vertical-stack
-                  cards:
-                    - type: entities
-                      entities:
-                        - entity: switch.washing_machine
-                        - entity: sensor.washing_machine_washer_completion_time
-                        - entity: sensor.washing_machine_washer_job_state
-                        - entity: sensor.washing_machine_washer_machine_state
+              type: entities
+              entities:
+                - entity: switch.washing_machine
+                - entity: sensor.washing_machine_washer_completion_time
+                - entity: sensor.washing_machine_washer_job_state
+                - entity: sensor.washing_machine_washer_machine_state
     - type: custom:button-card
       icon: mdi:tumble-dryer
       show_state: false
@@ -287,6 +290,8 @@
           service: browser_mod.popup
           data:
             title: Dryer
+            hide_header: false
+            deviceID: this
             content:
               type: custom:layout-card
               column_num: 1
@@ -303,30 +308,32 @@
                         - entity: sensor.tumble_dryer_dryer_completion_time
                         - entity: sensor.tumble_dryer_dryer_job_state
                         - entity: sensor.tumble_dryer_dryer_machine_state
+
 - type: custom:hui-markdown-card
   content: >
     {% if is_state('sensor.afvalwijzer_next_in_days', '0') %} <ha-icon
     icon="mdi:trash-can-outline"></ha-icon>
-    {{states("sensor.afvalwijzer_next_type") }} will be picked up today  {%
-    elif is_state('sensor.afvalwijzer_next_in_days', '1') %} <ha-icon
-    icon="mdi:trash-can-outline"></ha-icon>
-    {{states("sensor.afvalwijzer_next_type") }} will be picked up tomorrow  {%
-    elif not is_state('sensor.afvalwijzer_next_in_days', '1') and not
-    is_state('sensor.afvalwijzer_next_in_days', '0') %} <ha-icon
-    icon="mdi:trash-can-outline"></ha-icon>
+    {{states("sensor.afvalwijzer_next_type") }} will be picked up
+    today  {% elif is_state('sensor.afvalwijzer_next_in_days', '1') %}
+    <ha-icon icon="mdi:trash-can-outline"></ha-icon>
+    {{states("sensor.afvalwijzer_next_type") }} will be picked up
+    tomorrow  {% elif not is_state('sensor.afvalwijzer_next_in_days',
+    '1') and not is_state('sensor.afvalwijzer_next_in_days', '0') %}
+    <ha-icon icon="mdi:trash-can-outline"></ha-icon>
     {{states("sensor.afvalwijzer_next_type") }} will be picked up in
     {{states("sensor.afvalwijzer_next_in_days") }} days at
     {{states("sensor.afvalwijzer_next_date") }}  {% else %} No garbage
     disposal data known...  {% endif %}
 - content: >-
-    The gauge meters display the amount of time spent at home in the last 14
-    days. Where Wesley left the house (on average) {{
-    (states("sensor.quarantine_meter_wesley_times_left")|int / 14) | round(1)
-    | default(0)  }} times per day and Fenne {{
-    (states("sensor.quarantine_meter_fenne_times_left")|int / 14) | round(1) |
-    default(0) }} times per day.
+    The gauge meters display the amount of time spent at home in the
+    last 14 days. Where Wesley left the house (on average) {{
+    (states("sensor.quarantine_meter_wesley_times_left")|int / 14) |
+    round(1) | default(0)  }} times per day and Fenne {{
+    (states("sensor.quarantine_meter_fenne_times_left")|int / 14) |
+    round(1) | default(0) }} times per day. 
   title: 'Quarantine-o-meter '
   type: markdown
+
 - cards:
     - entity: sensor.quarantine_meter_wesley
       max: 100

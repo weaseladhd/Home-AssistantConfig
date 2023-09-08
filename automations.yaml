@@ -197,7 +197,7 @@
         entity_id: sensor.wupws_temp
         state: unavailable
     - condition: numeric_state
-      entity_id: sensor.indoor_avg_temperature
+      entity_id: sensor.avg_temp_indoor
       above: 20
   action:
   - service: input_boolean.turn_on
@@ -314,7 +314,7 @@
         entity_id: sensor.wupws_temp
         state: unavailable
     - condition: numeric_state
-      entity_id: sensor.indoor_avg_temperature
+      entity_id: sensor.avg_temp_indoor
       above: 20
   action:
   - service: input_boolean.turn_on
@@ -337,7 +337,7 @@
       doorbell_sensor:
       - binary_sensor.uvc_g4_doorbell_doorbell
       time_format: '%H:%M'
-      notify_target_app: notify.mobile_app_6d34f062b6c1898ca60db74f88c562e6
+      notify_target_app: notify.notify
 - id: '1690491654908'
   alias: UniFi Protect Doorbell Ring Notifications
   description: ''
@@ -347,4 +347,4 @@
       doorbell_sensor:
       - binary_sensor.uvc_g4_doorbell_doorbell
       time_format: '%H:%M'
-      notify_target_app: notify.mobile_app_6d34f062b6c1898ca60db74f88c562e6
+      notify_target_app: notify.notify

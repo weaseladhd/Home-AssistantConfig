@@ -80,7 +80,7 @@
                   var y = 665 - (parseFloat(states['sensor.thermal_comfort_outside_absolutehumidity'].state) / 35 * 665) - 155;
                   return `transform: translate(${x}px, ${y}px);`;
 
-          - entity: sensor.downstairs_avg_temperature
+          - entity: sensor.avg_temp_downstairs
             state_action:
               action: call-service
               service: floorplan.style_set
