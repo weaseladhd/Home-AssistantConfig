@@ -4,7 +4,7 @@ irrigation_unlimited:
   controllers:
     zones:
       name: 'Lawn'
-      entity_id: "switch.irrigation_lawn"
+      entity_id: "input_boolean.irrigation_lawn"
       show:
         timeline: true
       schedules:
