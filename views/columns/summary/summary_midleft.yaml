@@ -57,7 +57,6 @@
       secondary_info: last-changed
     - entity: humidifier.bedroom_fan
 
-
 - type: custom:apexcharts-card
   header:
     show: false

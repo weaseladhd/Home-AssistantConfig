@@ -192,7 +192,6 @@
                     repo.name }}/releases)) {% endfor %} {% endif %}
 
 - type: energy-distribution
-
 - cards:
     - cards:
         - type: gauge
@@ -330,7 +329,7 @@
     (states("sensor.quarantine_meter_wesley_times_left")|int / 14) |
     round(1) | default(0)  }} times per day and Fenne {{
     (states("sensor.quarantine_meter_fenne_times_left")|int / 14) |
-    round(1) | default(0) }} times per day. 
+    round(1) | default(0) }} times per day.
   title: 'Quarantine-o-meter '
   type: markdown
 
