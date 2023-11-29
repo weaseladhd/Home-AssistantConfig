@@ -30,8 +30,10 @@ blueprint:
       selector:
         entity:
           integration: unifiprotect
-          domain: binary_sensor
-          device_class: occupancy
+          domain:
+          - binary_sensor
+          device_class:
+          - occupancy
           multiple: true
     lock_entity:
       name: (Optional) Door Lock or Gate Entity
@@ -106,8 +108,8 @@ blueprint:
           max: 30.0
           min: 0.0
           unit_of_measurement: seconds
-          step: 1.0
           mode: slider
+          step: 1.0
     time_format:
       name: (Optional) Time Format String
       description: 'Python datetime format code string for the event trigger time.
@@ -131,8 +133,8 @@ blueprint:
           max: 300.0
           min: 0.0
           unit_of_measurement: seconds
-          step: 1.0
           mode: slider
+          step: 1.0
     silence_timer:
       name: (Optional) Silence Notifications
       description: 'How long to silence notifications for this camera when requested
@@ -147,8 +149,8 @@ blueprint:
           max: 300.0
           min: 0.0
           unit_of_measurement: minutes
-          step: 1.0
           mode: slider
+          step: 1.0
     lovelace_view:
       name: (Optional) Lovelace View
       description: 'Home Assistant Lovelace view to open when clicking notification.

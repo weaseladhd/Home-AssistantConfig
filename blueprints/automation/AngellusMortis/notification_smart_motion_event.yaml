@@ -30,7 +30,8 @@ blueprint:
       selector:
         entity:
           integration: unifiprotect
-          domain: binary_sensor
+          domain:
+          - binary_sensor
           multiple: true
     presence_filter:
       name: (Optional) Presence Filter
@@ -38,7 +39,8 @@ blueprint:
       default: ''
       selector:
         entity:
-          domain: device_tracker
+          domain:
+          - device_tracker
           multiple: true
     notify_target_app:
       name: (Optional) Notification Target (Mobile App)
@@ -82,8 +84,8 @@ blueprint:
           max: 300.0
           min: 0.0
           unit_of_measurement: seconds
-          step: 1.0
           mode: slider
+          step: 1.0
     silence_timer:
       name: (Optional) Silence Notifications
       description: 'How long to silence notifications for this camera when requested
@@ -98,8 +100,8 @@ blueprint:
           max: 300.0
           min: 0.0
           unit_of_measurement: minutes
-          step: 1.0
           mode: slider
+          step: 1.0
     lovelace_view:
       name: (Optional) Lovelace View
       description: 'Home Assistant Lovelace view to open when clicking notification.

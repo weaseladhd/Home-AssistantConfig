@@ -93,7 +93,7 @@
   action:
   - service: notify.wesley_telegram
     data:
-      message: Home Assistant is shutting down... Bye!
+      message: Home Assistant is shutting down.
   mode: single
 - id: '1649250204764'
   alias: System start notification
@@ -105,7 +105,7 @@
   action:
   - service: notify.wesley_telegram
     data:
-      message: "Home Assistant has started up again \U0001F389"
+      message: Home Assistant has started up again.
   mode: single
 - id: '1649250405677'
   alias: Update Gas Stations
@@ -160,19 +160,6 @@
         if s.object_id.startswith('chore_') %}\n  {% set ns.entities = ns.entities
         + [ s.entity_id ] %}\n{% endfor %}\n{{ ns.entities }}\n"
   mode: single
-- id: '1657870817731'
-  alias: UniFi Protect Dynamic Doorbell
-  description: ''
-  use_blueprint:
-    path: WeaselADHD/push_notification_doorbell_event.yaml
-    input:
-      doorbell: binary_sensor.uvc_g4_doorbell_doorbell
-      notify_telegram: wesley_telegram
-      send_telegram: true
-      time_format: '%H:%M'
-      base_ha_url: https://ha.weaselweb.nl/
-      send_mobile: false
-      base_image_url: https://ha.weaselweb.nl/
 - id: '1658263288463'
   alias: Windows open warning
   description: Sends notification to open windows. Triggered the first time each day
@@ -194,7 +181,7 @@
     - condition: not
       conditions:
       - condition: state
-        entity_id: sensor.wupws_temp
+        entity_id: sensor.irosma27_temperature
         state: unavailable
     - condition: numeric_state
       entity_id: sensor.avg_temp_indoor
@@ -311,7 +298,7 @@
     - condition: not
       conditions:
       - condition: state
-        entity_id: sensor.wupws_temp
+        entity_id: sensor.irosma27_temperature
         state: unavailable
     - condition: numeric_state
       entity_id: sensor.avg_temp_indoor
@@ -328,17 +315,89 @@
         the windows!
       title: Hot outside!
   mode: single
-- id: '1679056053273'
-  alias: Unifi doorbell notification
+- id: '1698659361688'
+  alias: "Awtrix Spotify NowPlaying \U0001F3B9"
+  description: Awtrix Spotify Now Playing
+  trigger:
+  - platform: state
+    entity_id: media_player.spotify_weaseladhd
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: media_player.spotify_weaseladhd
+        state: playing
+      - condition: state
+        entity_id: media_player.spotify_weaseladhd
+        attribute: media_content_type
+        state: music
+      sequence:
+      - service: mqtt.publish
+        data:
+          qos: 0
+          retain: false
+          payload: "{\n  \"text\": \"{{ state_attr('media_player.spotify_weaseladhd',
+            'media_artist') }} - {{ state_attr('media_player.spotify_weaseladhd',
+            'media_title') }}\",\n  \"icon\": \"18207\",\n  \"rainbow\": true,\n  \"repeat\":
+            2,\n  \"pushIcon\": 0,\n  \"textCase\": 0,\n  \"textOffset\": 15,\n  \"progress\":
+            {{ ( states.media_player.spotify_weaseladhd.attributes.media_position
+            / states.media_player.spotify_weaseladhd.attributes.media_duration * 100
+            ) | round() }},\n  \"progressC\": \"18B04C\"\n}"
+          topic: awtrix_ed5c1c/custom/spotify
+    - conditions:
+      - condition: template
+        value_template: '{{ not states.media_player.spotify_weaseladhd.state == ''playing''
+          }}'
+      sequence:
+      - service: mqtt.publish
+        data:
+          qos: 0
+          retain: false
+          topic: awtrix_ed5c1c/custom/spotify
+- id: '1699860413424'
+  alias: Heating Control Living Room
   description: ''
   use_blueprint:
-    path: AngellusMortis/notification_ring_event.yaml
+    path: panhans/heating_control.yaml
     input:
-      doorbell_sensor:
-      - binary_sensor.uvc_g4_doorbell_doorbell
+      heating:
+      - climate.living_room
+      persons:
+      - person.fenne
+      - person.wesley
+      min_temp: 17
+      guest_mode: input_boolean.guest_mode
+      presence_sensor: binary_sensor.activity_in_living_room
+      set_temp: input_number.comfort_temperature
+      party_mode: input_boolean.party_mode
+      scheduler: schedule.heating_schedule
+- id: '1699860953331'
+  alias: Heating Control Study
+  description: ''
+  use_blueprint:
+    path: panhans/heating_control.yaml
+    input:
+      heating:
+      - climate.study
+      persons:
+      - person.wesley
+      scheduler: schedule.heating_schedule_study
+      min_temp: 15
+      set_temp: input_number.comfort_temperature_study
+      window: binary_sensor.study_window_sensor_contact
+      presence_sensor: binary_sensor.activity_in_study
+- id: '1699870936576'
+  alias: UniFi Protect Motion / Smart Detection Notifications
+  description: ''
+  use_blueprint:
+    path: AngellusMortis/notification_smart_motion_event.yaml
+    input:
+      obj_sensor:
+      - binary_sensor.uvc_g4_doorbell_motion
+      presence_filter:
+      - device_tracker.iphone_wv
       time_format: '%H:%M'
-      notify_target_app: notify.notify
-- id: '1690491654908'
+- id: '1699871133965'
   alias: UniFi Protect Doorbell Ring Notifications
   description: ''
   use_blueprint:
@@ -346,5 +405,16 @@
     input:
       doorbell_sensor:
       - binary_sensor.uvc_g4_doorbell_doorbell
+      lock_entity: lock.nuki_locky_lock
       time_format: '%H:%M'
-      notify_target_app: notify.notify
+- id: '1699871224959'
+  alias: Send a camera snapshot when motion is detected
+  description: ''
+  use_blueprint:
+    path: vorion/send-camera-snapshot-notification-on-motion.yaml
+    input:
+      motion_sensor: binary_sensor.uvc_g4_doorbell_motion
+      camera: camera.uvc_g4_doorbell_high
+      notify_device: 6d34f062b6c1898ca60db74f88c562e6
+      is_ios: true
+      delay: 1
