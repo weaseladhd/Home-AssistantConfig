@@ -2,7 +2,7 @@
   cards:
 
     - type: entity
-      entity: sensor.indoor_avg_humidity
+      entity: sensor.avg_humidity_indoor
       name: Indoor Average
       icon: none
       card_mod:
@@ -10,7 +10,7 @@
           ha-card {background: none;}
 
     - type: entity
-      entity: sensor.wupws_humidity
+      entity: sensor.irosma27_relative_humidity
       name: Outdoor
       icon: none
       card_mod:
@@ -66,7 +66,7 @@
         const data = [[now.getTime() - 172800000, 0], [now.getTime(), 0], [now.getTime() + 86400000, 0]];
         return data;
 
-    - entity: sensor.wupws_humidity
+    - entity: sensor.irosma27_relative_humidity
       type: area
       name: Outside
       yaxis_id: main
@@ -110,7 +110,7 @@
         func: avg
         duration: 30min
 
-    - entity: sensor.indoor_avg_humidity
+    - entity: sensor.avg_humidity_indoor
       name: Indoor Avg
       color: 'var(--primary-color)'
       yaxis_id: main

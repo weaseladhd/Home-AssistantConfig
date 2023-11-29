@@ -39,7 +39,7 @@ cards:
 
               Inside it is {{ states('sensor.thermal_comfort_living_room_simmerzone') | regex_replace(find='_', replace=' ') | lower }}
               at {{states('sensor.avg_temp_downstairs')}}°C and it is {{ states('sensor.thermal_comfort_living_room_perception') | regex_replace(find='_', replace=' ') | lower }} at
-              {{states('sensor.indoor_avg_humidity')}}%.
+              {{states('sensor.avg_humidity_indoor')}}%.
               Outside it is {{ states('sensor.thermal_comfort_outside_simmerzone') | regex_replace(find='_', replace=' ') | lower }}
               at {{states('sensor.br_temperature') }}°C and it is {{ states('sensor.thermal_comfort_outside_perception') | regex_replace(find='_', replace=' ') | lower }} at
               {{states('sensor.br_humidity') }}%.

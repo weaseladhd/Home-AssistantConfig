@@ -11,7 +11,7 @@
 
     - type: entity
       entity: >-
-        sensor.wupws_temp
+        sensor.irosma27_temperature
       name: Outdoor
       icon: none
       card_mod:
@@ -24,7 +24,7 @@
         entity: sensor.temperature_indoor_outdoor_difference
         name_template: >
           Difference
-#         {{ state_attr('sensor.wupws_temp', 'description') | capitalize }} by
+#         {{ state_attr('sensor.irosma27_temperature', 'description') | capitalize }} by
         card_mod:
           style: |
             ha-card {background: none;}
@@ -65,7 +65,7 @@
         const data = [[now.getTime() - 172800000, 0], [now.getTime(), 0], [now.getTime() + 86400000, 0]];
         return data;
 
-    - entity: sensor.wupws_temp
+    - entity: sensor.irosma27_temperature
       type: area
       name: Outside
       yaxis_id: main
@@ -153,7 +153,7 @@
 - type: custom:apexcharts-card
   config_templates: environment_chart
   series:
-    - entity: sensor.cloud
+    - entity: sensor.irosma27_cloud
       name: Cloud cover
       yaxis_id: main
       color: 'var(--primary-color)'

@@ -4,21 +4,21 @@
     - type: horizontal-stack
       cards:
         - type: entity
-          entity: sensor.
+          entity: sensor.irosma27_dry_bulb
           name: Dry Bulb
           icon: none
           card_mod:
             style: |
               ha-card {background: none;}
         - type: entity
-          entity: sensor.wupws
+          entity: sensor.irosma27_wet_bulb
           name: Wet Bulb
           icon: none
           card_mod:
             style: |
               ha-card {background: none;}
         - type: entity
-          entity: sensor.wupws_dewpt
+          entity: sensor.irosma27_dewpoint
           name: Dew Point
           icon: none
           card_mod:
@@ -68,7 +68,7 @@
                   var y = 665 - (parseFloat(states['sensor.thermal_comfort_bathroom_absolutehumidity'].state) / 35 * 665) - 155;
                   return `transform: translate(${x}px, ${y}px);`;
 
-          - entity: sensor.wupws_temp
+          - entity: sensor.irosma27_temperature
             state_action:
               action: call-service
               service: floorplan.style_set
