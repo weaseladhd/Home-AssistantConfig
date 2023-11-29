@@ -44,7 +44,7 @@
           - font-size: 13px
           - height: 100px
       type: custom:button-card
-    - entity: binary_sensor.activity_in_study_room
+    - entity: binary_sensor.activity_in_study
       icon: mdi:desk
       name: Study
       state:

@@ -24,20 +24,24 @@
       unit: €
       detail: 2
       hours_to_show: 168
+
 - type: weather-forecast
   entity: weather.lbl_16
   show_forecast: true
+
 - type: custom:neerslag-card
   title: Rain
   entities:
     - sensor.neerslag_buienalarm_regen_data
     - sensor.neerslag_buienradar_regen_data
+
 - type: entities
   entities:
     - entity: input_boolean.sleep_mode
     - entity: input_boolean.guest_mode
     - entity: input_boolean.vacation_mode
   show_header_toggle: false
+
 - type: horizontal-stack
   cards:
     - type: entities
@@ -48,15 +52,3 @@
       entities:
         - entity: sensor.travel_time_wv_parents
           name: WV Parents
-- type: glance
-  entities:
-    - entity: binary_sensor.audi_a3_limousine_wv_doors_lock
-    - entity: sensor.audi_a3_limousine_wv_tank_level
-    - entity: sensor.audi_a3_limousine_wv_range
-    - entity: sensor.audi_a3_limousine_wv_mileage
-    - entity: sensor.car_km_percentage
-  state_color: true
-  show_name: false
-  show_state: true
-  show_icon: true
-  columns: 5
