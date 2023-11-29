@@ -7,4 +7,4 @@ sensors:
     friendly_name: Humidity Indoor Outdoor Difference
     unit_of_measurement: "%"
     value_template: >
-      {% set indoor = states.sensor.indoor_avg_humidity.state|float %}{% set outdoor = states.sensor.wupws_humidity.state|float %}{{ (outdoor - indoor)|round(1) }}
+      {% set indoor = states.sensor.avg_humidity_indoor.state|float %}{% set outdoor = states.sensor.sensor.irosma27_relative_humidity.state|float %}{{ (outdoor - indoor)|round(1) }}
