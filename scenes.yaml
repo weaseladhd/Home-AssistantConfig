@@ -283,15 +283,15 @@
       color_temp_kelvin: 2000
       color_temp: 500
       hs_color:
-      - 30.601
-      - 94.547
+        - 30.601
+        - 94.547
       rgb_color:
-      - 255
-      - 136
-      - 13
+        - 255
+        - 136
+        - 13
       xy_color:
-      - 0.599
-      - 0.382
+        - 0.599
+        - 0.382
       effect:
       entity_id:
         - light.living_room_gradient_floor_lamp_1
