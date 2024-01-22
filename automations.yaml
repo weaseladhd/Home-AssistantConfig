@@ -230,24 +230,27 @@
     path: vandalon/z2m EnOcean PTM 215Z (Friends of Hue) switch.yaml
     input:
       controller: Smart switch bedroom
-      button_3_pressed:
+      button_3_pressed: []
+      button_4_pressed: []
+      button_3_held: []
+      button_1_pressed:
       - service: light.turn_on
         data:
           transition: 1
           brightness_pct: 80
         target:
           device_id: 17249d23849dd37faf257b3fe1d78ca2
-      button_4_pressed:
-      - service: light.turn_off
-        data:
-          transition: 1
-        target:
-          device_id: 17249d23849dd37faf257b3fe1d78ca2
-      button_3_held:
+      button_1_released:
       - service: light.turn_on
         data:
           transition: 1
           brightness_pct: 20
+        target:
+          device_id: 17249d23849dd37faf257b3fe1d78ca2
+      button_2_pressed:
+      - service: light.turn_off
+        data:
+          transition: 1
         target:
           device_id: 17249d23849dd37faf257b3fe1d78ca2
 - id: '1670232852305'
@@ -257,24 +260,27 @@
     path: vandalon/z2m EnOcean PTM 215Z (Friends of Hue) switch.yaml
     input:
       controller: Smart switch dining room
-      button_3_pressed:
+      button_3_pressed: []
+      button_4_pressed: []
+      button_3_held: []
+      button_1_pressed:
       - service: light.turn_on
         data:
           transition: 1
           brightness_pct: 80
         target:
           device_id: 090693b1f4c84bb93c78e4fd9f12bd1f
-      button_4_pressed:
-      - service: light.turn_off
-        data:
-          transition: 1
-        target:
-          device_id: 090693b1f4c84bb93c78e4fd9f12bd1f
-      button_3_held:
+      button_1_released:
       - service: light.turn_on
         data:
           transition: 1
           brightness_pct: 20
+        target:
+          device_id: 090693b1f4c84bb93c78e4fd9f12bd1f
+      button_2_pressed:
+      - service: light.turn_off
+        data:
+          transition: 1
         target:
           device_id: 090693b1f4c84bb93c78e4fd9f12bd1f
 - id: '1679055487698'
@@ -418,3 +424,64 @@
       notify_device: 6d34f062b6c1898ca60db74f88c562e6
       is_ios: true
       delay: 1
+- id: '1702629913359'
+  alias: Smart switch baby room
+  description: ''
+  use_blueprint:
+    path: vandalon/z2m EnOcean PTM 215Z (Friends of Hue) switch.yaml
+    input:
+      controller: Smart switch baby room
+      button_3_pressed: []
+      button_4_pressed: []
+      button_1_pressed:
+      - service: light.turn_on
+        target:
+          device_id: e25f7f3d5552ac7ce09abb25ff223b6e
+        data:
+          transition: 1
+          brightness_pct: 80
+      button_2_pressed:
+      - service: light.turn_off
+        target:
+          device_id: e25f7f3d5552ac7ce09abb25ff223b6e
+        data:
+          transition: 1
+      button_1_released:
+      - service: light.turn_on
+        target:
+          device_id: e25f7f3d5552ac7ce09abb25ff223b6e
+        data:
+          transition: 1
+          brightness_pct: 20
+- id: '1702636615529'
+  alias: Smart switch study
+  description: ''
+  use_blueprint:
+    path: vandalon/z2m EnOcean PTM 215Z (Friends of Hue) switch.yaml
+    input:
+      controller: Smart switch study
+      button_3_pressed: []
+      button_4_pressed: []
+      button_1_pressed:
+      - service: light.turn_on
+        data:
+          transition: 1
+          brightness_pct: 80
+        target:
+          device_id: 33fe15ce0a53ea639ef8ca056bd93403
+      button_2_pressed:
+      - service: light.turn_off
+        data:
+          transition: 1
+        target:
+          device_id: 33fe15ce0a53ea639ef8ca056bd93403
+      button_2_held: []
+      button_1_held: []
+      button_1_released:
+      - service: light.turn_on
+        target:
+          device_id: 33fe15ce0a53ea639ef8ca056bd93403
+        data:
+          transition: 1
+          brightness_pct: 20
+        enabled: true
