@@ -16,6 +16,12 @@
           card_mod:
             style: |
               ha-card {background: none;}
+        - type: entity
+          entity: sensor.current_ozone_level
+          name: Ozone (O₃)
+          card_mod:
+            style: |
+              ha-card {background: none;}
 
     - type: custom:apexcharts-card
       config_templates: environment_chart
@@ -25,18 +31,13 @@
           yaxis_id: second
           show:
             datalabels: true
-        - entity: sensor.current_ozone_level
-          name: Ozone (O₃)
-          yaxis_id: main
-          show:
-            datalabels: true
-        - entity: sensor.living_room_fan_nitrogen_dioxide
-          name: Nitrogen Dioxide (NO₂)
+        - entity: sensor.living_room_fan_pm_10
+          name: Particulate Matter (PM10)
           yaxis_id: main
           show:
             datalabels: true
         - entity: sensor.living_room_fan_pm_2_5
-          name: Particulate Matter (PM25)
+          name: Particulate Matter (PM2.5)
           yaxis_id: main
           show:
             datalabels: true
@@ -53,12 +54,12 @@
 
     - type: sensor
       name: Wind Speed
-      entity: sensor.br_wind_speed
+      entity: sensor.irosma27_wind_speed
 
     - type: custom:apexcharts-card
       config_templates: environment_chart
       series:
-        - entity: sensor.br_wind_speed
+        - entity: sensor.irosma27_wind_speed
           name: km/h
           yaxis_id: main
           color: 'var(--primary-color)'
@@ -67,20 +68,6 @@
           group_by:
             func: avg
             duration: 30min
-        - entity: sensor.br_wind_speed
-          name: Meteo
-          attribute: wind_speed
-          yaxis_id: main
-          curve: straight
-          color: 'var(--primary-color)'
-          opacity: .5
-          data_generator: |
-            const now = new Date();
-            const data = [[now.getTime(), entity.attributes.wind_speed]];
-            for(let i = 0; i <= 12; i++) {
-              data.push([new Date(entity.attributes.forecast[i].datetime).getTime() + i * 1000 * 60 * 60, parseFloat(entity.attributes.forecast[i].wind_speed)] );
-            }
-            return data.reverse();
       yaxis:
         - id: main
           min: 0
@@ -97,23 +84,23 @@
       cards:
         - type: sensor
           entity: sensor.co2_intensity
-          name: CO₂
+          name: CO₂ Intensity
         - type: sensor
-          entity: sensor.study_fan_particulates
-          name: Particulates
+          entity: sensor.living_room_nitrogen_dioxide_index
+          name: Nitrogen Dioxide (NO₂)
         - type: sensor
-          entity: sensor.living_room_fan_volatile_organic_compounds
-          name: VOCs
+          entity: sensor.living_room_volatile_organic_compounds_index
+          name: Volatile Organic Compounds (VOCs)
 
     - type: custom:apexcharts-card
       config_templates: environment_chart
       series:
-        - entity: sensor.study_fan_particulates
-          name: Particulates
+        - entity: sensor.living_room_nitrogen_dioxide_index
+          name: NO₂
           yaxis_id: second
           show:
             datalabels: true
-        - entity: sensor.living_room_fan_volatile_organic_compounds
+        - entity: sensor.living_room_volatile_organic_compounds_index
           name: VOCs
           yaxis_id: second
           show:

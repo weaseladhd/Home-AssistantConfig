@@ -150,22 +150,22 @@
         datalabels: true
         extremas: true
 
-- type: custom:apexcharts-card
-  config_templates: environment_chart
-  series:
-    - entity: sensor.irosma27_cloud
-      name: Cloud cover
-      yaxis_id: main
-      color: 'var(--primary-color)'
-      show:
-        datalabels: true
-  yaxis:
-    - id: main
-      min: 0
-      max: 100
-  apex_config:
-    chart:
-      height: 180px
+#- type: custom:apexcharts-card
+#  config_templates: environment_chart
+#  series:
+#    - entity: sensor.irosma27_cloud
+#      name: Cloud cover
+#      yaxis_id: main
+#      color: 'var(--primary-color)'
+#      show:
+#        datalabels: true
+#  yaxis:
+#    - id: main
+#      min: 0
+#      max: 100
+#  apex_config:
+#    chart:
+#      height: 180px
 
 - type: custom:apexcharts-card
   config_templates: environment_chart

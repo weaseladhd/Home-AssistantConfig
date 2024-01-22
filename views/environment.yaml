@@ -34,6 +34,9 @@ cards:
 
           - type: markdown
             style: !include snippets/style-markdown-page-title.yaml
+            card_mod:
+              style: |
+                ha-card {background: none;}
             content: >
               # Environment
 
@@ -43,11 +46,6 @@ cards:
               Outside it is {{ states('sensor.thermal_comfort_outside_simmerzone') | regex_replace(find='_', replace=' ') | lower }}
               at {{states('sensor.br_temperature') }}°C and it is {{ states('sensor.thermal_comfort_outside_perception') | regex_replace(find='_', replace=' ') | lower }} at
               {{states('sensor.br_humidity') }}%.
-              It is getting {{ iif
-              (states('sensor.valhalla_hourly_forecast_temperature_rising')
-              == 'Falling', 'colder', 'warmer') }} and {{ iif
-              (states('sensor.valhalla_hourly_forecast_wind_speed_increasing')
-              == 'Increasing', 'more windy', 'less windy') }}.
               {%- set is_window_open =
               is_state('binary_sensor.bedroom_window_sensor_contact',
               'on') or
@@ -62,6 +60,11 @@ cards:
               'off') and
               is_state('binary_sensor.bedroom_2_window_sensor_contact',
               'off') -%} {{ iif( is_window_closed and states('sensor.temperature_indoor_outdoor_difference')|int < 0,' You should open your windows.', '') }}
+#              It is getting {{ iif
+#              (states('sensor.valhalla_hourly_forecast_temperature_rising')
+#              == 'Falling', 'colder', 'warmer') }} and {{ iif
+#              (states('sensor.valhalla_hourly_forecast_wind_speed_increasing')
+#              == 'Increasing', 'more windy', 'less windy') }}.
 
           - type: 'custom:layout-card'
             layout_type: 'custom:horizontal-layout'
@@ -78,7 +81,6 @@ cards:
                     entity: fan.living_room_fan
                     icon_animation: true
                     name: Living Room Fan
-                    style: 'ha-card {background: none;}'
                     hold_action:
                       action: more-info
 
@@ -86,7 +88,6 @@ cards:
                     entity: humidifier.living_room_fan
                     icon_animation: true
                     name: Living Room Humidifier
-                    style: 'ha-card {background: none;}'
                     hold_action:
                       action: more-info
 
@@ -141,20 +142,20 @@ cards:
           - type: 'vertical-stack'
             cards: !include columns/environment/humidity.yaml
 
-#      # [Column] Air Quality
-#
-#      - type: 'custom:layout-card'
-#        layout_type: 'custom:grid-layout'
-#        layout:
-#          margin: -1
-#        cards:
-#
-#          - type: 'custom:button-card'
-#            template: header_card_no_link
-#            variables:
-#              name: Air Quality
-#            view_layout:
-#              grid-column: 1/-1
-#
-#          - type: 'vertical-stack'
-#           cards: !include columns/environment/air_quality.yaml
+      # [Column] Air Quality
+
+      - type: 'custom:layout-card'
+        layout_type: 'custom:grid-layout'
+        layout:
+          margin: -1
+        cards:
+
+          - type: 'custom:button-card'
+            template: header_card_no_link
+            variables:
+              name: Air Quality
+            view_layout:
+              grid-column: 1/-1
+
+          - type: 'vertical-stack'
+            cards: !include columns/environment/air_quality.yaml

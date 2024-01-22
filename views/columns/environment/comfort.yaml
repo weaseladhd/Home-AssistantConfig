@@ -4,35 +4,34 @@
     - type: horizontal-stack
       cards:
         - type: entity
-          entity: sensor.irosma27_dry_bulb
-          name: Dry Bulb
-          icon: none
-          card_mod:
-            style: |
-              ha-card {background: none;}
-        - type: entity
-          entity: sensor.irosma27_wet_bulb
-          name: Wet Bulb
-          icon: none
-          card_mod:
-            style: |
-              ha-card {background: none;}
-        - type: entity
           entity: sensor.irosma27_dewpoint
           name: Dew Point
           icon: none
           card_mod:
             style: |
               ha-card {background: none;}
+        - type: entity
+          entity: sensor.thermal_comfort_outside_absolutehumidity
+          name: Absolute Humidity
+          icon: none
+          card_mod:
+            style: |
+              ha-card {background: none;}
+#        - type: entity
+#          entity: sensor.irosma27_dry_bulb
+#          name: Dry Bulb
+#          icon: none
+#          card_mod:
+#            style: |
+#              ha-card {background: none;}
+#        - type: entity
+#          entity: sensor.irosma27_wet_bulb
+#          name: Wet Bulb
+#          icon: none
+#          card_mod:
+#            style: |
+#              ha-card {background: none;}
         - type: custom:gap-card
-
-    - type: entity
-      entity: sensor.thermal_comfort_outside_absolutehumidity
-      name: Absolute Humidity
-      icon: none
-      card_mod:
-        style: |
-          ha-card {background: none;}
 
     - type: 'custom:floorplan-card'
       config:
@@ -106,7 +105,7 @@
 
       card_mod:
         style: |
-          ha-card {margin-top: -200px; }
+          ha-card {margin-top: -100px; background: none;}
 
     - type: markdown
       content: |-
@@ -145,10 +144,9 @@
       card_mod:
       style:
         ha-markdown$: |
-          th, td { padding: 4px 0 8px; border-bottom: 1px solid rgba(var(--rgb-primary-text-color),.05); }
+          th, td { padding: 4px 0 8px; border-bottom: 1px solid,.05); }
           th { font-size: var(--h6-font-size); text-align: left; text-transform: uppercase; padding-top: 0 !important; }
-          th, td:first-child { color: rgba(var(--rgb-primary-text-color), .5); }
-          xth, xtr:last-child td { border-bottom: 1px solid rgba(var(--rgb-primary-text-color),.5) !important; }
+          xth, xtr:last-child td { border-bottom: 1px solid) !important; }
 
     - type: history-graph
       entities:

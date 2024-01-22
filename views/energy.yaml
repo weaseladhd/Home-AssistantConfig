@@ -27,6 +27,9 @@ cards:
 
           - type: markdown
             style: !include snippets/style-markdown-page-title.yaml
+            card_mod:
+              style: |
+                ha-card {background: none;}
             content: >
               # Energy
 
@@ -46,10 +49,12 @@ cards:
                 cards:
 
                   - type: 'custom:mushroom-entity-card'
-                    entity: group.all_on_off
+                    entity: sensor.total_switches
                     name: All Switches ↗
                     icon_color: pink
-                    style: 'ha-card {background: none;}'
+                    card_mod:
+                      style: |
+                        ha-card {background: none;}
                     tap_action:
                       action: more-info
 
