@@ -1,0 +1,8 @@
+---
+# Wake On Lan
+wake_on_lan:
+
+switch:
+  - platform: wake_on_lan
+    mac: 08-BF-B8-19-7A-09
+    name: WV_Desktop
