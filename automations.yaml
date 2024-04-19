@@ -401,8 +401,9 @@
       obj_sensor:
       - binary_sensor.uvc_g4_doorbell_motion
       presence_filter:
-      - device_tracker.iphone_wv
+      - device_tracker.iphone_15_pro_wv
       time_format: '%H:%M'
+      notify_target_app: notify.wesley_ntfy
 - id: '1699871133965'
   alias: UniFi Protect Doorbell Ring Notifications
   description: ''
@@ -485,3 +486,10 @@
           transition: 1
           brightness_pct: 20
         enabled: true
+- id: '1712857726785'
+  alias: Restore Samba Backup sensor on startup
+  description: ''
+  use_blueprint:
+    path: thomasmauerer/restore_samba_backup_sensor.yaml
+    input:
+      addon: 15d21743_samba_backup
