@@ -377,6 +377,21 @@
       set_temp: input_number.comfort_temperature
       party_mode: input_boolean.party_mode
       scheduler: schedule.heating_schedule
+      input_trvs:
+      - climate.living_room
+      input_temperature_minimum_static: 15
+      input_temperature_comfort_static: 19
+      input_persons:
+      - person.fenne
+      - person.wesley
+      input_proximity: d8972e1eae483f50dcfa7741e3df6c00
+      input_schedulers:
+      - schedule.heating_schedule
+      input_away_options: []
+      input_mode_guest: input_boolean.guest_mode
+      input_tweaks:
+      - not_off_but_min
+      - heat_only_if_below_real_temp
 - id: '1699860953331'
   alias: Heating Control Study
   description: ''
@@ -392,6 +407,28 @@
       set_temp: input_number.comfort_temperature_study
       window: binary_sensor.study_window_sensor_contact
       presence_sensor: binary_sensor.activity_in_study
+      input_trvs:
+      - climate.study
+      input_temperature_minimum_static: 15
+      input_temperature_comfort_static: 18.5
+      input_persons:
+      - person.fenne
+      - person.wesley
+      input_schedulers:
+      - schedule.heating_schedule_study
+      input_away_options:
+      - presence
+      input_mode_guest: input_boolean.guest_mode
+      input_mode_outside_temperature: sensor.outside_back_motion_sensor_temperature
+      input_proximity: d8972e1eae483f50dcfa7741e3df6c00
+      input_presence_sensor: binary_sensor.study_motion_sensor_occupancy
+      input_scheduler_presence: schedule.heating_schedule_study
+      input_windows:
+      - binary_sensor.study_window_sensor_contact
+      input_tweaks:
+      - off_instead_min
+      - not_off_but_min
+      - heat_only_if_below_real_temp
 - id: '1699870936576'
   alias: UniFi Protect Motion / Smart Detection Notifications
   description: ''
@@ -403,7 +440,7 @@
       presence_filter:
       - device_tracker.iphone_15_pro_wv
       time_format: '%H:%M'
-      notify_target_app: notify.wesley_ntfy
+      notify_target_app: notify.notify
 - id: '1699871133965'
   alias: UniFi Protect Doorbell Ring Notifications
   description: ''
@@ -414,6 +451,7 @@
       - binary_sensor.uvc_g4_doorbell_doorbell
       lock_entity: lock.nuki_locky_lock
       time_format: '%H:%M'
+      video_cutoff: 5
 - id: '1699871224959'
   alias: Send a camera snapshot when motion is detected
   description: ''
@@ -493,3 +531,134 @@
     path: thomasmauerer/restore_samba_backup_sensor.yaml
     input:
       addon: 15d21743_samba_backup
+- id: '1715907177487'
+  alias: Zone Notification Extended FF
+  description: ''
+  use_blueprint:
+    path: panhans/zone_notification_extended.yaml
+    input:
+      persons:
+      - person.fenne
+      zones: []
+      zones_leaving:
+      - zone.ouders_fenne_vught
+      - zone.work_fenne_nijmegen
+      - zone.work_fenne_vught
+      - zone.home
+      notify_device: 5e20a37ce4434aa9ca25d7462a060cca
+      custom_action_arriving:
+      - service: notify.wesley_telegram
+        data:
+          message: '{{ person }} enters {{ zone }}.'
+      custom_action_leaving:
+      - service: notify.wesley_telegram
+        data:
+          message: '{{ person }} leaves {{ zone }}.'
+- id: '1715908291134'
+  alias: Disable vacuum camera update when docked
+  description: ''
+  use_blueprint:
+    path: PiotrMachowski/disable_vacuum_camera_update_when_docked.yaml
+    input:
+      vacuum: vacuum.roborock_s6
+      camera: camera.xiaomi_cloud_map_extractor
+- id: '1715908600253'
+  alias: Update Map Extractor camera
+  description: ''
+  use_blueprint:
+    path: PiotrMachowski/update_map_extractor.yaml
+    input:
+      vacuum: vacuum.roborock_s6
+      camera: camera.xiaomi_cloud_map_extractor
+      mode_to_handle: two_intervals
+      interval_docked: 3600
+      interval_cleaning: 60
+- id: '1715943648867'
+  alias: Zone Enter/Leave Notification FF
+  description: ''
+  use_blueprint:
+    path: Sjorsa/notify-entering-and-or-leaving-zone.yaml
+    input:
+      person_entity: person.fenne
+      zone_entity: zone.home
+      notify_device: 5e20a37ce4434aa9ca25d7462a060cca
+      notify_when_entering: true
+      notify_when_leaving: true
+- id: '1715952634581'
+  alias: "\U0001F6AA Window Left Open Notification Study"
+  description: ''
+  use_blueprint:
+    path: Raukze/contact-sensor-left-open-notification.yaml
+    input:
+      trigger_entity: binary_sensor.study_window_sensor_contact
+      friendly_name: study window
+      notify_services_string: notify.mobile_app_iphone_15_pro_wv
+      notification_click_url: /lovelace/sensor
+- id: '1715952895082'
+  alias: Doorbell snapshot
+  description: ''
+  use_blueprint:
+    path: TheRealFalseReality/send_snapshot_conditional.yaml
+    input:
+      sensor: binary_sensor.uvc_g4_doorbell_doorbell
+      camera: camera.uvc_g4_doorbell_high
+      notify_device: 5e20a37ce4434aa9ca25d7462a060cca
+      data_clickaction_url: /lovelace/alarm
+- id: '1715957011734'
+  alias: Update notifications HASS
+  description: ''
+  use_blueprint:
+    path: mdegat01/update_notifications.yaml
+    input:
+      update_entities:
+      - update.home_assistant_core_update
+      - update.home_assistant_operating_system_update
+      - update.home_assistant_supervisor_update
+      mobile_app_device: 5e20a37ce4434aa9ca25d7462a060cca
+      send_to_ha: true
+      run_config_check: true
+      mobile_app_device_2: 5e20a37ce4434aa9ca25d7462a060cca
+- id: '1715957599027'
+  alias: _Blueprints Update - Check
+  description: ''
+  trigger:
+  - platform: time_pattern
+    hours: '3'
+  condition: []
+  action:
+  - service: shell_command.blueprints_update
+    data_template:
+      arguments: ''
+  - parallel:
+    - alias: Pull into HA new blueprint code if any were loaded
+      service: automation.reload
+      data: {}
+    - alias: Pull into HA new blueprint code if any were loaded
+      service: script.reload
+      data: {}
+  mode: single
+- id: '1715957659791'
+  alias: _Blueprints Update - Update All
+  description: ''
+  trigger: []
+  condition: []
+  action:
+  - service: shell_command.blueprints_update
+    data_template:
+      arguments: --update
+  - parallel:
+    - alias: Pull into HA new blueprint code if any were loaded
+      service: automation.reload
+    - alias: Pull into HA new blueprint code if any were loaded
+      service: script.reload
+  mode: single
+- id: '1715957672882'
+  alias: _Blueprints Update - Update Self
+  description: ''
+  trigger: []
+  condition: []
+  action:
+  - service: shell_command.blueprints_update
+    data_template:
+      arguments: --update --file 'self'
+  mode: single

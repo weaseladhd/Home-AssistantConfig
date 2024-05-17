@@ -24,3 +24,4 @@ map_transformation:
     bottom: 20
     left: 10
     right: 20
+auto_update: false

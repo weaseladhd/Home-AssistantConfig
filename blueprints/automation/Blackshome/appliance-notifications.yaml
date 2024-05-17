@@ -1,0 +1,498 @@
+blueprint:
+  source_url: 'https://gist.githubusercontent.com/Blackshome/42586b567d243d432887cadf54e18906/raw/appliance-notifications.yaml'
+  name: Appliance Notifications & Actions
+  description: >
+    # 📳 Appliance Notifications & Actions
+    
+    **Version: 1.9**
+
+
+    🤔 Watts your appliance up to, you're always in the know from start to finish!🛎️🔌💸
+    
+    
+    **If you like my blueprints, and would like to show your support or just say thank you?** [Click Here](https://www.paypal.com/donate/?hosted_button_id=WAZS3QSDTPGA8) 🙂
+    
+    
+    <details>
+    <summary><b>The Automation Process:</b> - Click here to expand</summary>
+
+      - **Appliance Trigger:**
+          - Enter the power sensor entity that measures the live current draw of the appliance. Common devices with these sensors include smart plugs, energy meters, etc.
+          - The automation is triggered when the appliance's current draw exceeds a set wattage.
+          - The automation ends when the appliance's current draw falls below a set value.
+
+      - **Notification Options:**
+          - Send notification messages to one or multiple devices when the appliance starts and/or finishes.
+          - Your end message can include estimates of total power consumption and cost.
+          - Notifications are compatible with both Apple iOS and Android devices, ensuring universal accessibility.
+
+      - **Power Tracking:**
+          - Utilize power tracking for estimating total power consumption and cost. 
+          
+          ⚠️ **Disclaimer** - These values are estimates and should only be used as a guide. Please avoid relying solely on these estimates for accuracy and use them at your own risk. We cannot be held responsible for any inaccuracies or resulting losses, damages, inconvenience, or anything else that may occur.
+
+      - **Custom Actions:**
+          - Tailor custom actions to suit your preferences and needs, enhancing the automation's functionality.
+          - Configure actions such as triggering announcements on platforms like The Voice (HA), Google, Alexa, etc., to keep you informed about appliance events.
+
+      - **Time-Based Automation:**
+          - Specify precise start and end times along with weekday selections to define when the automation can run.
+
+      - **Custom Conditions:**
+          - Enter any custom conditions to further customize the automation process.
+    </details>
+    
+    
+    Need help? See our FAQ: [Click Here](https://community.home-assistant.io/t/650166/2)
+  
+    Let us know what you think of this blueprint and for community support including updates: [Click Here](https://community.home-assistant.io/t/650166)
+
+
+    Required = *
+  domain: automation
+  input:
+    power_sensor:
+      name: Power Sensor *
+      description: Please enter the power sensor entity that measures the live current draw of the appliance.
+        Common devices that have these sensors include smart plugs.
+        This sensor is essential for triggering the automation when the appliance starts and when it finishes.
+      selector:
+        entity:
+          domain: sensor
+    start_appliance_power:
+      name: Start - Appliance Power Setpoint
+      description: Specify the current threshold that the power must exceed to indicate the appliance has started.
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 30
+          step: 1
+          unit_of_measurement: watts
+    start_time_delay:
+      name: Start - Power Time Delay
+      description: Specify the duration for which the power must remain above the threshold to indicate the appliance has started.
+        This will prevent a false trigger.
+      default: 1
+      selector:
+        number:
+          min: 0.25
+          max: 5
+          step: 0.25
+          unit_of_measurement: minutes
+    running_dead_zone:
+      name: Running - Dead Zone
+      description: After the appliance starts, implementing a dead zone can prevent false end triggers,
+        especially if the power briefly dips below the appliance's end setpoint during the cycle after startup.
+        Setting the running dead zone beyond this point ensures a reliable conclusion by preventing a premature end trigger.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 120
+          step: 1
+          unit_of_measurement: minutes
+    end_appliance_power:
+      name: End - Appliance Power Setpoint
+      description: Specify the current threshold that the power must stay below to indicate the appliance has finished.
+        It is recommended to set a lower value than the starting power setpoint.
+      default: 5
+      selector:
+        number:
+          min: 1
+          max: 30
+          step: 1
+          unit_of_measurement: watts
+    end_time_delay:
+      name: End - Power Time Delay
+      description: Specify the duration for which the power must remain below the threshold to indicate the appliance has finished.
+      default: 1
+      selector:
+        number:
+          min: 0.25
+          max: 5
+          step: 0.25
+          unit_of_measurement: minutes
+    include_start_notify:
+      name: Use The Start Notify Options (Optional)
+      description: Select 'Enable Start Notify Options' if you would like to receive a notification when the appliance starts. 
+      default: disable_start_notify_options
+      selector:
+        select:
+          options:
+            - label: Enable Start Notify Options
+              value: "enable_start_notify_options"
+            - label: Disable Start Notify Options
+              value: "disable_start_notify_options"
+    start_notify_device:
+      name: Start Notify - Devices Notified When Started
+      description: Select the devices to be notified when the appliance starts.
+      default: []
+      selector:
+        device:
+          filter:
+            - integration: mobile_app
+          multiple: true
+    start_title:
+      name: Start Notify - Title
+      description: Enter in the notification title that you would like to receive when the appliance starts.
+      default: Washing Machine
+      selector:
+        text:
+    start_message:
+      name: Start Notify - Message
+      description: Enter in the notification message that you would like to receive when the appliance starts.
+      default: YES! Another load is ON :)
+      selector:
+        text:
+    include_end_notify:
+      name: Use The End Notify Options (Optional)
+      description: Select 'Enable End Notify Options' if you would like to receive a notification when the appliance finishes. 
+      default: disable_end_notify_options
+      selector:
+        select:
+          options:
+            - label: Enable End Notify Options
+              value: "enable_end_notify_options"
+            - label: Disable End Notify Options
+              value: "disable_end_notify_options"
+    end_notify_device:
+      name: End Notify - Devices Notified When Finished
+      description: Select the devices to be notified when the appliance has finished.
+      default: []
+      selector:
+        device:
+          filter:
+            - integration: mobile_app
+          multiple: true
+    end_message_title:
+      name: End Notify - Title
+      description: Enter in the notification title that you would like to receive when the appliance has finished.
+      default: Washing Machine
+      selector:
+        text:
+    end_message:
+      name: End Notify - Message
+      description: Enter in the notification message that you would like to receive when the appliance has finished.
+      default: Yippee the washing machine is finished!
+      selector:
+        text:
+    include_power_tracking:
+      name: Use The Power Tracking Option (optional)
+      description: Choose whether to enable or disable power consumption tracking.
+        This feature can include power information in your end notify message, or you can choose to only update the start and end helpers for use in your custom actions.
+        The end notify options are to receive either the total kWh used in the cycle or the total kWh used along with an estimated cost for the cycle
+        
+        
+        ⚠️ **Disclaimer** - These values are estimates and should only be used as a guide.
+        Please avoid relying solely on these estimates for accuracy and use them at your own risk.
+        We cannot be held responsible for any inaccuracies or resulting losses, damages, inconvenience, or anything else that may occur.
+      default: disable_power_tracking
+      selector:
+        select:
+          options:
+            - label: Enable - End Notify Power Consumption Tracking
+              value: enable_power_tracking
+            - label: Enable - End Notify Power Consumption Tracking + Total Cost
+              value: enable_power_tracking_and_cost
+            - label: Enable - Update of Start & End Helpers Only
+              value: enable_start_end_helpers
+            - label: Disable - Power Consumption Tracking
+              value: disable_power_tracking
+    power_consumption_sensor:
+      name: Power Tracking - Power Sensor
+      description: Select the sensor that provides a total measurement of power consumption in kWh.
+        This can either be a cumulative total or a daily total. 
+        
+        
+        **Note** If you choose a daily total sensor that spans across two days, the information may not be accurate.
+        This is because the values should increase continuously from the start to the end of the cycle, without resetting back to 0.0 kWh the next day.
+      default: []
+      selector:
+        entity:
+          domain: sensor
+    end_message_kwh:
+      name: Power Tracking - End Notify - Message Power Consumption
+      description: Enter the notification message title for power consumption.
+        This is the description used in the end notification message, just before the kWh reading.
+      default: Consumption 
+      selector:
+        text:
+    end_message_cost:
+      name: Power Tracking - End Notify - Message Cost
+      description: Enter the notification message title for the cost estimate.
+        This is the description used in the end notification message, just before the cost reading.
+      default: Approx Cost $
+      selector:
+        text:
+    cost_per_kwh:
+      name: Power Tracking - Cost per kWh
+      description: Please enter your number helper or a energy sensor to specify the electricity rate per kWh.
+        Keep in mind that the rate used is determined when the appliance ends and remains constant throughout the cycle, even if it varies based on the time of day.
+      default: []
+      selector:
+        entity:
+          domain: 
+            - input_number
+            - sensor
+    start_power_consumption:
+      name: Power Tracking - Start Number Helper
+      description: Enter a number helper that will collect the kWh reading at the start of the cycle.
+        This must be a completely independent number helper and cannot be the same one used in the 'Power Tracking - End Number Helper' input below.
+      default: []
+      selector:
+        entity:
+          domain: input_number
+    end_power_consumption:
+      name: Power Tracking - End Number Helper
+      description: Enter a number helper that will collect the kWh reading at the end of the cycle.
+        This must be a completely independent number helper and cannot be the same one used in the 'Power Tracking - Start Number Helper' input above.
+      default: []
+      selector:
+        entity:
+          domain: input_number
+    include_custom_actions:
+      name: Use The Custom Action Options (Optional)
+      description: You can add any action you'd like to perform at the start and/or end, commonly used for playing announcements on The Voice (HA), Google, Alexa, etc.,
+        when the appliance starts and/or finishes. Additionally, it can be utilized for other notification services or any action you would like to perform.
+      default: []
+      selector:
+        select:
+          options:
+            - label: Enable Custom Actions - Start
+              value: "enable_start_custom_actions"
+            - label: Enable Custom Actions - End
+              value: "enable_end_custom_actions"
+          multiple: true
+    start_custom_actions:
+      name: Custom Actions - Start
+      description: Enter the actions you would like to run at the start.
+      default: []
+      selector:
+        action:
+    end_custom_actions:
+      name: Custom Actions - End
+      description: Enter the actions you would like to run at the end.
+      default: []
+      selector:
+        action:
+    include_time:
+      name: Use The Time Options (Optional)
+      description: This option restricts the automation to run only between the specified start and end times on selected weekdays.
+        This can be useful if you ever run an appliance at night when you are sleeping and don't want to be notified.
+      default: time_disabled
+      selector:
+        select:
+          options:
+            - label: Enable the time options
+              value: "time_enabled"
+            - label: Disable the time options
+              value: "time_disabled"
+    after_time:
+      name: Start Time
+      description: Set the start time.
+      default: 00:00:00
+      selector:
+        time:
+    before_time:
+      name: End Time
+      description: Set the end time.
+      default: 00:00:00
+      selector:
+        time:
+    weekday_options:
+      name: Weekdays
+      description: Select the days of the week you would like the automation to run. You must select "Enable the time options" above for the weekday selections to work.
+      default:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+        - sat
+        - sun
+      selector:
+        select:
+          multiple: true
+          mode: list
+          options:
+            - label: Monday
+              value: "mon"
+            - label: Tuesday
+              value: "tue"
+            - label: Wednesday
+              value: "wed"
+            - label: Thursday
+              value: "thu"
+            - label: Friday
+              value: "fri"
+            - label: Saturday
+              value: "sat"
+            - label: Sunday
+              value: "sun"
+    global_conditions:
+      name: Global Conditions
+      description: Enter any global conditions you would like to apply to the automation.
+      default: []
+      selector:
+        condition:
+
+mode: single
+max_exceeded: silent
+
+variables:
+  power_sensor: !input power_sensor
+  start_appliance_power: !input start_appliance_power
+  start_time_delay: !input start_time_delay
+  end_appliance_power: !input end_appliance_power
+  end_time_delay: !input end_time_delay
+  include_start_notify: !input include_start_notify
+  start_notify_device: !input start_notify_device
+  start_title: !input start_title
+  start_message: !input start_message
+  running_dead_zone: !input running_dead_zone
+  include_end_notify: !input include_end_notify
+  end_notify_device: !input end_notify_device
+  end_message_title: !input end_message_title
+  end_message: !input end_message
+  include_power_tracking: !input include_power_tracking
+  power_consumption_sensor: !input power_consumption_sensor
+  end_message_kwh: !input end_message_kwh
+  end_message_cost: !input end_message_cost
+  cost_per_kwh: !input cost_per_kwh
+  start_power_consumption: !input start_power_consumption
+  end_power_consumption: !input end_power_consumption
+  include_custom_actions: !input include_custom_actions
+  start_custom_actions: !input start_custom_actions
+  end_custom_actions: !input end_custom_actions
+  include_time: !input include_time
+  after_time: !input after_time
+  before_time: !input before_time
+  weekday_options: !input weekday_options
+  global_conditions: !input global_conditions
+
+trigger:
+  - platform: numeric_state
+    id: "t0"
+    entity_id: !input power_sensor
+    above: !input start_appliance_power
+    below: "24000"
+    for:
+      minutes: !input start_time_delay
+
+# All Conditions
+condition:
+# Check The Time Options
+  - condition: or
+    conditions:
+      - "{{ include_time == 'time_disabled' }}"
+      - condition: and
+        conditions:
+        - condition: time
+          after: !input after_time
+          before: !input before_time
+          weekday: !input weekday_options
+        -  "{{ include_time == 'time_enabled' }}"
+
+# Global Conditions
+  - condition: and
+    conditions: !input global_conditions
+
+action:
+  - choose:
+    - alias: "Check if power tracking is enabled"
+      conditions:
+        - "{{ (include_power_tracking == 'enable_power_tracking') or (include_power_tracking == 'enable_power_tracking_and_cost') or (include_power_tracking == 'enable_start_end_helpers') }}"
+      sequence:
+        - service: input_number.set_value
+          target:
+            entity_id: !input start_power_consumption
+          data_template:
+            value: "{{ states(power_consumption_sensor) | float }}"
+  - choose:
+    - alias: "Check if start of notification is enabled"
+      conditions:
+        - "{{ include_start_notify == 'enable_start_notify_options' }}"
+      sequence:
+        - alias: Send a notification to each device
+          repeat:
+            for_each: !input start_notify_device
+            sequence:
+              - service: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                data:
+                  title: !input start_title
+                  message: !input start_message
+  - choose:
+    - alias: "Perform the custom start action"
+      conditions:
+        - condition: template
+          value_template: "{{ 'enable_start_custom_actions' in include_custom_actions }}"
+      sequence: !input start_custom_actions
+  - alias: "Wait the number of minutes set in running dead zone"
+    delay:
+      minutes: !input running_dead_zone
+  - alias: "Wait until appliance has finished"
+    wait_for_trigger:
+      platform: numeric_state
+      entity_id: !input power_sensor
+      below: !input end_appliance_power
+      for:
+        minutes: !input end_time_delay
+  - choose:
+    - alias: "Check if power tracking is enabled"
+      conditions:
+        - "{{ (include_power_tracking == 'enable_power_tracking') or (include_power_tracking == 'enable_power_tracking_and_cost') or (include_power_tracking == 'enable_start_end_helpers') }}"
+      sequence:
+        - service: input_number.set_value
+          target:
+            entity_id: !input end_power_consumption
+          data_template:
+            value: "{{ states(power_consumption_sensor) | float }}"
+  - choose:
+    - alias: "Check if end of notification is enabled"
+      conditions:
+        - "{{ include_end_notify == 'enable_end_notify_options' }}"
+      sequence:
+        - alias: Send a notification to each device
+          repeat:
+            for_each: !input end_notify_device
+            sequence:
+              - choose:
+                - alias: "Check if end of notification is enabled and no power tracking"
+                  conditions:
+                    - "{{ (include_power_tracking == 'disable_power_tracking') or (include_power_tracking == 'enable_start_end_helpers') }}"
+                  sequence:
+                    - service: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                      data:
+                        title: !input end_message_title
+                        message: !input end_message
+                - alias: "Check if end of notification is enabled and no power tracking is total power"
+                  conditions:
+                    - "{{ include_power_tracking == 'enable_power_tracking' }}"
+                  sequence:
+                    - service: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                      data:
+                        title: !input end_message_title
+                        message: >
+                          {{end_message}}
+                          {% set kwh = states(end_power_consumption) | float - states(start_power_consumption) | float %}
+                          {{'\n'}}{{end_message_kwh}} {{kwh | round(2) }} kWh
+                - alias: "Check if end of notification is enabled and no power tracking is total power and cost"
+                  conditions:
+                    - "{{ include_power_tracking == 'enable_power_tracking_and_cost' }}"
+                  sequence:
+                    - service: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                      data:
+                        title: !input end_message_title
+                        message: >
+                          {{end_message}}
+                          {% set kwh = states(end_power_consumption) | float - states(start_power_consumption) | float %}
+                          {{'\n'}}{{end_message_kwh}} {{kwh | round(2) }} kWh
+                          {% set cost = (states(end_power_consumption) | float - states(start_power_consumption) | float) * (states(cost_per_kwh) | float) %}
+                          {{'\n'}}{{end_message_cost}}{{cost | round(2) }}
+  - choose:
+    - alias: "Perform the custom end action"
+      conditions:
+        - condition: template
+          value_template: "{{ 'enable_end_custom_actions' in include_custom_actions }}"
+      sequence: !input end_custom_actions

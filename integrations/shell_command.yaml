@@ -1,0 +1,4 @@
+---
+# Shell Command
+shell_command:
+  blueprints_update: /config/scripts/blueprints_update.sh {{ arguments }}
