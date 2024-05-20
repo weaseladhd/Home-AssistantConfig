@@ -108,20 +108,17 @@
       message: Home Assistant has started up again.
   mode: single
 - id: '1649250405677'
-  alias: Update Gas Stations
-  description: ''
+  alias: Update gas stations
   trigger:
   - platform: time_pattern
-    minutes: '30'
-  condition: []
+    minutes: 30
   action:
   - service: mqtt.publish
     data:
       topic: dgp/gas_stations
       payload_template: '{"fuel_type":"euro95","radius":5,"latitude":{{ state_attr("person.wesley",
         "latitude") }},"longitude":{{ state_attr("person.wesley", "longitude") }},
-        "to_publish":5}'
-  mode: single
+        "to_publish":3}'
 - id: '1649255352767'
   alias: Home Assistant update notification
   description: ''
@@ -387,11 +384,15 @@
       input_proximity: d8972e1eae483f50dcfa7741e3df6c00
       input_schedulers:
       - schedule.heating_schedule
-      input_away_options: []
+      input_away_options:
+      - scheduler
       input_mode_guest: input_boolean.guest_mode
       input_tweaks:
       - not_off_but_min
-      - heat_only_if_below_real_temp
+      input_temperature_sensor: sensor.living_room_fan_temperature
+      input_calibration_options:
+      - generic_calibration
+      input_mode_outside_temperature: sensor.outside_back_motion_sensor_temperature
 - id: '1699860953331'
   alias: Heating Control Study
   description: ''
@@ -427,7 +428,6 @@
       - binary_sensor.study_window_sensor_contact
       input_tweaks:
       - off_instead_min
-      - not_off_but_min
       - heat_only_if_below_real_temp
 - id: '1699870936576'
   alias: UniFi Protect Motion / Smart Detection Notifications
