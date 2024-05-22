@@ -111,7 +111,7 @@
   alias: Update gas stations
   trigger:
   - platform: time_pattern
-    minutes: 30
+    hours: '9'
   action:
   - service: mqtt.publish
     data:
@@ -441,6 +441,7 @@
       - device_tracker.iphone_15_pro_wv
       time_format: '%H:%M'
       notify_target_app: notify.notify
+      alarm_entity: alarm_control_panel.alarmo
 - id: '1699871133965'
   alias: UniFi Protect Doorbell Ring Notifications
   description: ''

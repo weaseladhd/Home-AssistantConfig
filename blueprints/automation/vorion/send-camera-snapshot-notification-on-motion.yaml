@@ -1,8 +1,8 @@
 blueprint:
   source_url: 'https://community.home-assistant.io/t/send-camera-snapshot-notification-on-motion/254565.json'
   name: Send a camera snapshot when motion is detected
-  description: &gt;
-    This automation blueprint creates a camera snapshot if motion is detected 
+  description:
+    This automation blueprint creates a camera snapshot if motion is detected
     and sends a notification to your phone with the picture.
   domain: automation
   input:
@@ -44,7 +44,7 @@ blueprint:
       name: Notification message (Optional)
       description: 'Default: \"{{ motion_sensor_name }} detected movement!\"'
       default: \"{{ motion_sensor_name }} detected movement!\"
-      
+
     delay:
       name: Delay (Optional)
       description: Wait before creating camera snapshot
@@ -87,8 +87,7 @@ action:
     type: notify
     title: \"{{ notification_title }}\"
     message: \"{{ notification_message }}\"
-    data: &gt;
+    data: >
       {% set android_data = {\"image\": \"%s\"} | format(snapshot_access_file_path) %}
       {% set ios_data = {\"attachment\": {\"url\": \"%s\", \"content_type\": \"JPEG\"}} | format(snapshot_access_file_path) %}
       {{ ios_data if is_ios else android_data }}
-
