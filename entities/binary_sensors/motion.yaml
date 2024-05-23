@@ -3,124 +3,64 @@
 platform: template
 sensors:
 
-  motion_detected:
-    friendly_name: Any motion detected
-    value_template: >
-      {{ is_state("binary_sensor.activity_in_living_room", "on")
-        or is_state("binary_sensor.activity_in_kitchen", "on")
-        or is_state("binary_sensor.activity_in_hallway", "on")
-        or is_state("binary_sensor.activity_in_study", "on")
-        or is_state("binary_sensor.activity_in_landing", "on")
-        or is_state("binary_sensor.activity_in_attic", "on") }}
-
   motion_detected_in_last_hour:
-    friendly_name: Any motion detected in last hour
+    friendly_name: Motion detected in last hour
+    unique_id: motion_detected_in_last_hour
     value_template: >
       {{ is_state("binary_sensor.motion_detected", "on") }}
     delay_off: "01:00:00"
 
   someone_in_the_house_in_last_hour:
     friendly_name: Someone in the house in the last hour
+    unique_id: someone_in_the_house_in_last_hour
     value_template: >
       {{ is_state("binary_sensor.motion_detected_in_last_hour", "on")
         or is_state("group.persons", "home") }}
 
   activity_in_living_room:
     friendly_name: Activity in the living room
+    unique_id: activity_in_living_room
     value_template: >
       {{ is_state("binary_sensor.living_room_motion_sensor_occupancy", "on") }}
     delay_off: "00:02:00"
 
   activity_in_kitchen:
     friendly_name: Activity in the kitchen
+    unique_id: activity_in_kitchen
     value_template: >
       {{ is_state("binary_sensor.kitchen_motion_sensor_occupancy", "on") }}
     delay_off: "00:02:00"
 
   activity_in_hallway:
     friendly_name: Activity in the hallway
+    unique_id: activity_in_hallway
     value_template: >
       {{ is_state("binary_sensor.hallway_motion_sensor_occupancy", "on") }}
     delay_off: "00:02:00"
 
   activity_in_study:
     friendly_name: Activity in the study
+    unique_id: activity_in_study
     value_template: >
       {{ is_state("binary_sensor.study_motion_sensor_occupancy", "on") }}
     delay_off: "00:02:00"
 
   activity_in_landing:
     friendly_name: Activity in the landing
+    unique_id: activity_in_landing
     value_template: >
       {{ is_state("binary_sensor.landing_motion_sensor_occupancy", "on") }}
     delay_off: "00:02:00"
 
   activity_in_attic:
     friendly_name: Activity in the attic
+    unique_id: activity_in_attic
     value_template: >
       {{ is_state("binary_sensor.attic_motion_sensor_occupancy", "on") }}
     delay_off: "00:02:00"
 
-  any_light_on:
-    friendly_name: Any light is on
-    value_template: >
-      {% set living_room_lights_on = is_state("light.living_room", "on") %}
-      {% set kitchen_lights_on = is_state("light.kitchen", "on") %}
-      {% set middle_room_lights_on = is_state("light.middle_room", "on") %}
-      {% set dining_lights_on = is_state("light.dining_room", "on") %}
-      {% set hallway_lights_on = is_state("light.hallway", "on") %}
-      {% set study_lights_on = is_state("light.study_light", "on") %}
-      {% set attic_lights_on = is_state("light.attic_light", "on") %}
-      {{ living_room_lights_on or kitchen_lights_on or middle_room_lights_on or dining_room_lights_on or hallway_lights_on or study_lights_on or attic_lights_on }}
-
-  any_fan_on:
-    friendly_name: Any fan is on
-    value_template: >
-      {% set fan_bedroom_on = is_state("fan.bedroom_fan", "on") %}
-      {% set fan_living_room_on = is_state("fan.living_room_fan", "on") %}
-      {% set fan_study_on = is_state("fan.study_fan", "on") %}
-      {{ fan_bedroom_on or fan_living_room_on or fan_study_on }}
-
-  any_media_player_on:
-    friendly_name: Any media player is on
-    value_template: >
-      {% set media_player_downstairs_on = is_state("media_player.downstairs", "on") %}
-      {% set media_player_zeppelin_on = is_state("media_player.zeppelin_living_room", "on") %}
-      {% set media_player_denon_on = is_state("media_player.denon_avr_x1700h", "on") %}
-      {% set media_player_lg_on = is_state("media_player.lg_webos_smart_tv", "on") %}
-      {{ fan_bedroom_on or fan_living_room_on or fan_study_on }}
-
-  anything_on:
-    friendly_name: Anything is on
-    value_template: >
-      {% set light_on = is_state("binary_sensor.any_light_on", "on") %}
-      {% set fan_on = is_state("binary_sensor.any_fan_on", "on") %}
-      {% set media_player_on = is_state("binary_sensor.any_media_player_on", "on") %}
-      {{ light_on or fan_on or media_player_on }}
-
   vacuum_day_tomorrow:
     friendly_name: Vacuum day tomorrow
+    unique_id: vacuum_day_tomorrow
     value_template: >
       {{ as_timestamp(now()) | timestamp_custom("%a") in ("Mon", "Fri") }}
-
-  wesley_home:
-    friendly_name: Wesley is home
-    value_template: >
-      {{ is_state("person.wesley", "home") }}
-
-  fenne_home:
-    friendly_name: Fenne is home
-    value_template: >
-      {{ is_state("person.fenne", "home") }}
-
-  no_one_home:
-    friendly_name: No one is home
-    value_template: >
-      {{ not is_state("person.wesley", "home")
-          and not is_state("person.fenne", "home") }}
-
-  home_occupied:
-    friendly_name: Home occupied
-    value_template: >
-      {{ is_state("person.wesley", "home")
-          or is_state("person.fenne", "home") }}

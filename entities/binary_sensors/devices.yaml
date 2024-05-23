@@ -1,0 +1,45 @@
+---
+# Template binary sensors
+platform: template
+sensors:
+
+  any_light_on:
+    friendly_name: Any light is on
+    unique_id: any_light_on
+    value_template: >
+      {% set living_room_lights_on = is_state("light.living_room", "on") %}
+      {% set kitchen_lights_on = is_state("light.kitchen", "on") %}
+      {% set middle_room_lights_on = is_state("light.middle_room", "on") %}
+      {% set dining_lights_on = is_state("light.dining_room", "on") %}
+      {% set hallway_lights_on = is_state("light.hallway", "on") %}
+      {% set study_lights_on = is_state("light.study_light", "on") %}
+      {% set attic_lights_on = is_state("light.attic_light", "on") %}
+      {{ living_room_lights_on or kitchen_lights_on or middle_room_lights_on or dining_room_lights_on or hallway_lights_on or study_lights_on or attic_lights_on }}
+
+  any_fan_on:
+    friendly_name: Any fan is on
+    unique_id: any_fan_on
+    value_template: >
+      {% set fan_bedroom_on = is_state("fan.bedroom_fan", "on") %}
+      {% set fan_living_room_on = is_state("fan.living_room_fan", "on") %}
+      {% set fan_study_on = is_state("fan.study_fan", "on") %}
+      {{ fan_bedroom_on or fan_living_room_on or fan_study_on }}
+
+  any_media_player_on:
+    friendly_name: Any media player is on
+    unique_id: any_media_player_on
+    value_template: >
+      {% set media_player_downstairs_on = is_state("media_player.downstairs", "on") %}
+      {% set media_player_zeppelin_on = is_state("media_player.zeppelin_living_room", "on") %}
+      {% set media_player_denon_on = is_state("media_player.denon_avr_x1700h", "on") %}
+      {% set media_player_lg_on = is_state("media_player.lg_webos_smart_tv", "on") %}
+      {{ media_player_downstairs_on or media_player_zeppelin_on or media_player_denon_on or media_player_lg_on }}
+
+  any_device_on:
+    friendly_name: Any device is on
+    unique_id: any_device_on
+    value_template: >
+      {% set light_on = is_state("binary_sensor.any_light_on", "on") %}
+      {% set fan_on = is_state("binary_sensor.any_fan_on", "on") %}
+      {% set media_player_on = is_state("binary_sensor.any_media_player_on", "on") %}
+      {{ light_on or fan_on or media_player_on }}
