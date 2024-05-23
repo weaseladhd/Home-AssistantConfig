@@ -71,7 +71,7 @@
     path: sbyx/low-battery-level-detection-notification-for-all-battery-sensors.yaml
     input:
       actions:
-      - service: notify.wesley_telegram
+      - service: notify.gotify
         data:
           message: '{{sensors}} battery is low. Please change the battery!'
 - id: '1623006343409'
@@ -91,7 +91,7 @@
     event: shutdown
   condition: []
   action:
-  - service: notify.wesley_telegram
+  - service: notify.gotify
     data:
       message: Home Assistant is shutting down.
   mode: single
@@ -103,7 +103,7 @@
     event: start
   condition: []
   action:
-  - service: notify.wesley_telegram
+  - service: notify.gotify
     data:
       message: Home Assistant has started up again.
   mode: single
@@ -132,7 +132,7 @@
     to: 'on'
   condition: []
   action:
-  - service: notify.wesley_telegram
+  - service: notify.gotify
     data:
       message: Home Assistant update is available!
       title: HA update available
@@ -188,7 +188,7 @@
     target:
       entity_id: input_boolean.evening_temperature_warning_fired
     data: {}
-  - service: notify.wesley_telegram
+  - service: notify.gotify
     data:
       message: It is now 0.5 degrees cooler outside than inside. Consider opening
         the windows.
@@ -312,7 +312,7 @@
       entity_id:
       - input_boolean.morning_temperature_warning_fired
     data: {}
-  - service: notify.wesley_telegram
+  - service: notify.gotify
     data:
       message: It is now 0.5 degrees warmer outside than inside. Consider closing
         the windows!
@@ -453,6 +453,7 @@
       lock_entity: lock.nuki_locky_lock
       time_format: '%H:%M'
       video_cutoff: 5
+      notify_target_app: notify.notify
 - id: '1699871224959'
   alias: Send a camera snapshot when motion is detected
   description: ''
@@ -548,11 +549,11 @@
       - zone.home
       notify_device: 5e20a37ce4434aa9ca25d7462a060cca
       custom_action_arriving:
-      - service: notify.wesley_telegram
+      - service: notify.gotify
         data:
           message: '{{ person }} enters {{ zone }}.'
       custom_action_leaving:
-      - service: notify.wesley_telegram
+      - service: notify.gotify
         data:
           message: '{{ person }} leaves {{ zone }}.'
 - id: '1715908291134'

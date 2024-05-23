@@ -1,0 +1,6 @@
+---
+# Gotify
+name: gotify
+platform: gotify
+url: !secret gotify_url
+token: !secret gotify_token
