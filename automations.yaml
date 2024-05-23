@@ -454,17 +454,6 @@
       time_format: '%H:%M'
       video_cutoff: 5
       notify_target_app: notify.notify
-- id: '1699871224959'
-  alias: Send a camera snapshot when motion is detected
-  description: ''
-  use_blueprint:
-    path: vorion/send-camera-snapshot-notification-on-motion.yaml
-    input:
-      motion_sensor: binary_sensor.uvc_g4_doorbell_motion
-      camera: camera.uvc_g4_doorbell_high
-      notify_device: 5e20a37ce4434aa9ca25d7462a060cca
-      is_ios: true
-      delay: 1
 - id: '1702629913359'
   alias: Smart switch baby room
   description: ''
@@ -664,3 +653,19 @@
     data_template:
       arguments: --update --file 'self'
   mode: single
+- id: brandstofprijzen_update_notification
+  alias: Send notification when a fuel price changed
+  description: 'Send notification when a fuel price changed'
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.adviesprijs_euro95
+  condition: '{{ trigger.state.to_state != trigger.state.from_state }}'
+  action:
+  - service: notify.gotify
+    data:
+      title: Adviesprijs gewijzigd
+      message: "De adviesprijs voor {{ state_attr(trigger.entity_id, 'friendly_name')
+        }} is {% if trigger.state.to_state > trigger.state.from_state %}\n  verhoogd.\n{%
+        else %}\n  verlaagd.\n{% endif %}\n"
+  mode: queued
