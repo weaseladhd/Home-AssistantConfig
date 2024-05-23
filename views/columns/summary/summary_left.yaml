@@ -26,7 +26,7 @@
       hours_to_show: 168
 
 - type: weather-forecast
-  entity: weather.lbl_16
+  entity: weather.irosma27
   show_forecast: true
 
 - type: custom:neerslag-card
