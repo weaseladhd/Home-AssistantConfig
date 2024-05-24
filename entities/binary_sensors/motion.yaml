@@ -58,9 +58,3 @@ sensors:
     value_template: >
       {{ is_state("binary_sensor.attic_motion_sensor_occupancy", "on") }}
     delay_off: "00:02:00"
-
-  vacuum_day_tomorrow:
-    friendly_name: Vacuum day tomorrow
-    unique_id: vacuum_day_tomorrow
-    value_template: >
-      {{ as_timestamp(now()) | timestamp_custom("%a") in ("Mon", "Fri") }}
