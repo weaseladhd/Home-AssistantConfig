@@ -545,6 +545,10 @@
       - service: notify.gotify
         data:
           message: '{{ person }} leaves {{ zone }}.'
+      title_leaving: '{{ person }} has left'
+      message_leaving: '{{ person }} has left {{ zone }}.'
+      title_arriving: '{{ person }} has arrived'
+      message_arriving: '{{ person }} has arrived at {{ zone }}.'
 - id: '1715908291134'
   alias: Disable vacuum camera update when docked
   description: ''
@@ -655,7 +659,7 @@
   mode: single
 - id: brandstofprijzen_update_notification
   alias: Send notification when a fuel price changed
-  description: 'Send notification when a fuel price changed'
+  description: Send notification when a fuel price changed
   trigger:
   - platform: state
     entity_id:
