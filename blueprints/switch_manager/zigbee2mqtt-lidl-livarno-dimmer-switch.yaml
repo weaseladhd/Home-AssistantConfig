@@ -1,18 +1,30 @@
-name: Ikea Rodret
+name: Lidl Livarno Dimmer Switch (FB21-001)
 service: Zigbee2MQTT
 event_type: mqtt
 mqtt_topic_format: zigbee2mqtt/+/action
-info: |
-  Hold (released) for both buttons receives the same action event
 buttons:
-  - x: 143
-    y: 76
-    width: 42
+  - x: 0
+    y: 0
+    width: 150
+    height: 124
+    actions:
+      - title: init
+        conditions:
+          - key: payload
+            value: 'on'
+      - title: press
+        conditions:
+          - key: payload
+            value: switch_scene
+  - x: 0
+    y: 125
+    width: 75
+    height: 158
     actions:
       - title: press
         conditions:
           - key: payload
-            value: 'on'
+            value: brightness_step_up
       - title: hold
         conditions:
           - key: payload
@@ -21,14 +33,15 @@ buttons:
         conditions:
           - key: payload
             value: brightness_stop
-  - x: 143
-    y: 436
-    width: 42
+  - x: 75
+    y: 125
+    width: 75
+    height: 158
     actions:
       - title: press
         conditions:
           - key: payload
-            value: 'off'
+            value: brightness_step_down
       - title: hold
         conditions:
           - key: payload
@@ -37,3 +50,12 @@ buttons:
         conditions:
           - key: payload
             value: brightness_stop
+  - x: 0
+    y: 284
+    width: 150
+    height: 125
+    actions:
+      - title: press
+        conditions:
+          - key: payload
+            value: 'off'
