@@ -3,8 +3,9 @@
 platform: template
 sensors:
 
-  last_boot_date_time:
-    friendly_name: Last Boot
+  hass_last_boot:
+    friendly_name: Hass Last Boot
+    unique_id: hass_last_boot
     value_template: >
       {% set date = as_timestamp(states('sensor.last_boot')) | timestamp_custom('%d') %}
       {% set date = '{:01}'.format(date | int) %}

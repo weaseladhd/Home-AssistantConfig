@@ -6,6 +6,7 @@ sensors:
   hass_dev_release:
     icon_template: mdi:dev-to
     friendly_name: Upcoming release
+    unique_id: hass_dev_release
     value_template: >
       {% set dev = ((as_timestamp(state_attr('calendar.home_assistant_devs','start_time')) - as_timestamp(now())) / 86400) %}
       {% if dev < -1 %} Released
