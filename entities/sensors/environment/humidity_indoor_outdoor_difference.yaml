@@ -2,9 +2,16 @@
 # Humidity Indoor Outdoor Difference
 platform: template
 sensors:
-
   humidity_indoor_outdoor_difference:
     friendly_name: Humidity Indoor Outdoor Difference
+    unique_id: humidity_indoor_outdoor_difference
     unit_of_measurement: "%"
-    value_template: >
-      {{ states('sensor.avg_humidity_indoor') | float(0) - states('sensor.irosma27_relative_humidity') | float(0) }}
+    device_class: humidity
+    value_template: >-
+      {% set indoor_humidity = states('sensor.avg_humidity_indoor') | float(default=none) %}
+      {% set outdoor_humidity = states('sensor.irosma27_relative_humidity') | float(default=none) %}
+      {% if indoor_humidity is not none and outdoor_humidity is not none %}
+        {{ (indoor_humidity - outdoor_humidity) | round(1) }}
+      {% else %}
+        {{ none }}
+      {% endif %}

@@ -1,10 +1,29 @@
 ---
-# Air quality Opensensemap
+# Air Quality Opensensemap Sensors for Maliskamp
 platform: template
 sensors:
-  aq_maliskamp_p1:
-    value_template: "{{ state_attr('air_quality.maliskamp',
-    'particulate_matter_10') | float | round(2) }}"
-  aq_maliskamp_p2:
-    value_template: "{{ state_attr('air_quality.maliskamp',
-    'particulate_matter_2_5') | float | round(2) }}"
+  aq_maliskamp_pm10:
+    friendly_name: "Maliskamp PM10"
+    unique_id: aq_maliskamp_pm10
+    unit_of_measurement: "µg/m³"
+    device_class: pm10
+    value_template: >-
+      {% set pm10 = state_attr('air_quality.maliskamp', 'particulate_matter_10') %}
+      {% if pm10 is not none %}
+        {{ pm10 | float | round(2) }}
+      {% else %}
+        {{ none }}
+      {% endif %}
+
+  aq_maliskamp_pm25:
+    friendly_name: "Maliskamp PM2.5"
+    unique_id: aq_maliskamp_pm25
+    unit_of_measurement: "µg/m³"
+    device_class: pm25
+    value_template: >-
+      {% set pm25 = state_attr('air_quality.maliskamp', 'particulate_matter_2_5') %}
+      {% if pm25 is not none %}
+        {{ pm25 | float | round(2) }}
+      {% else %}
+        {{ none }}
+      {% endif %}

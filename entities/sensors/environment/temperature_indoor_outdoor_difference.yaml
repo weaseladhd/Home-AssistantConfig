@@ -2,9 +2,16 @@
 # Temperature Indoor Outdoor Difference
 platform: template
 sensors:
-
   temperature_indoor_outdoor_difference:
     friendly_name: Temperature Indoor Outdoor Difference
+    unique_id: temperature_indoor_outdoor_difference
     unit_of_measurement: "°C"
-    value_template: >
-      {{ states('sensor.avg_temp_downstairs') | float(0) - states('sensor.irosma27_temperature') | float(0) }}
+    device_class: temperature
+    value_template: >-
+      {% set indoor_temp = states('sensor.avg_temp_downstairs') | float(default=none) %}
+      {% set outdoor_temp = states('sensor.irosma27_temperature') | float(default=none) %}
+      {% if indoor_temp is not none and outdoor_temp is not none %}
+        {{ (indoor_temp - outdoor_temp) | round(1) }}
+      {% else %}
+        {{ none }}
+      {% endif %}
