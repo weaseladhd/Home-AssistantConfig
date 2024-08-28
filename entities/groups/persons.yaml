@@ -1,7 +1,0 @@
----
-# Persons
-persons:
-  name: People
-  entities:
-    - person.wesley
-    - person.fenne
