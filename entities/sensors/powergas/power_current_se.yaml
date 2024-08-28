@@ -1,8 +1,0 @@
----
-# Template
-platform: template
-sensors:
-  power_current_se:
-    friendly_name: Solaredge Current Power
-    value_template: "{{ states('sensor.solaredge_current_power') | float(0) | round(1) }}"
-    unit_of_measurement: "W"
