@@ -6,7 +6,7 @@ sensors:
     friendly_name: Motion detected in last hour
     unique_id: motion_detected_in_last_hour
     value_template: >
-      {{ expand('group.all_motion_sensors') | selectattr('state', 'eq', 'on') | list | count > 0 }}
+      {{ expand('binary_sensor.all_motion_sensors') | selectattr('state', 'eq', 'on') | list | count > 0 }}
     delay_off: "01:00:00"
 
   someone_in_the_house_in_last_hour:
