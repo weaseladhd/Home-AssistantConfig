@@ -1,21 +1,3 @@
-- id: '1612867372715'
-  alias: Zone Notification (FF Work Nijmegen)
-  description: ''
-  use_blueprint:
-    path: homeassistant/notify_leaving_zone.yaml
-    input:
-      person_entity: person.fenne
-      notify_device: 5e20a37ce4434aa9ca25d7462a060cca
-      zone_entity: zone.work_fenne_nijmegen
-- id: '1612867409866'
-  alias: Zone Notification (FF Work Vught)
-  description: ''
-  use_blueprint:
-    path: homeassistant/notify_leaving_zone.yaml
-    input:
-      person_entity: person.fenne
-      notify_device: 5e20a37ce4434aa9ca25d7462a060cca
-      zone_entity: zone.work_fenne_vught
 - id: '1612980102342'
   alias: Update OpenUV 5 minutes before sunrise and after sunset
   description: ''
@@ -74,15 +56,6 @@
       - service: notify.gotify
         data:
           message: '{{sensors}} battery is low. Please change the battery!'
-- id: '1623006343409'
-  alias: Zone Notification (FF Home)
-  description: ''
-  use_blueprint:
-    path: homeassistant/notify_entering_zone.yaml
-    input:
-      person_entity: person.fenne
-      zone_entity: zone.home
-      notify_device: 5e20a37ce4434aa9ca25d7462a060cca
 - id: '1649250131376'
   alias: System shutdown notification
   description: ''
@@ -109,16 +82,16 @@
   mode: single
 - id: '1649250405677'
   alias: Update gas stations
-  trigger:
-  - platform: time_pattern
-    hours: '9'
-  action:
-  - service: mqtt.publish
-    data:
+  triggers:
+  - hours: '1'
+    trigger: time_pattern
+  actions:
+  - data:
       topic: dgp/gas_stations
       payload_template: '{"fuel_type":"euro95","radius":5,"latitude":{{ state_attr("person.wesley",
         "latitude") }},"longitude":{{ state_attr("person.wesley", "longitude") }},
         "to_publish":3}'
+    action: mqtt.publish
 - id: '1649255352767'
   alias: Home Assistant update notification
   description: ''
@@ -220,66 +193,6 @@
     target:
       entity_id: input_boolean.evening_temperature_warning_fired
   mode: single
-- id: '1669983996137'
-  alias: Smart switch bedroom
-  description: ''
-  use_blueprint:
-    path: vandalon/z2m EnOcean PTM 215Z (Friends of Hue) switch.yaml
-    input:
-      controller: Smart switch bedroom
-      button_3_pressed: []
-      button_4_pressed: []
-      button_3_held: []
-      button_1_pressed:
-      - service: light.turn_on
-        data:
-          transition: 1
-          brightness_pct: 80
-        target:
-          device_id: 17249d23849dd37faf257b3fe1d78ca2
-      button_1_released:
-      - service: light.turn_on
-        data:
-          transition: 1
-          brightness_pct: 20
-        target:
-          device_id: 17249d23849dd37faf257b3fe1d78ca2
-      button_2_pressed:
-      - service: light.turn_off
-        data:
-          transition: 1
-        target:
-          device_id: 17249d23849dd37faf257b3fe1d78ca2
-- id: '1670232852305'
-  alias: Smart switch dining room
-  description: ''
-  use_blueprint:
-    path: vandalon/z2m EnOcean PTM 215Z (Friends of Hue) switch.yaml
-    input:
-      controller: Smart switch dining room
-      button_3_pressed: []
-      button_4_pressed: []
-      button_3_held: []
-      button_1_pressed:
-      - service: light.turn_on
-        data:
-          transition: 1
-          brightness_pct: 80
-        target:
-          device_id: 090693b1f4c84bb93c78e4fd9f12bd1f
-      button_1_released:
-      - service: light.turn_on
-        data:
-          transition: 1
-          brightness_pct: 20
-        target:
-          device_id: 090693b1f4c84bb93c78e4fd9f12bd1f
-      button_2_pressed:
-      - service: light.turn_off
-        data:
-          transition: 1
-        target:
-          device_id: 090693b1f4c84bb93c78e4fd9f12bd1f
 - id: '1679055487698'
   alias: Windows close warning
   description: Sends notification to open windows. Triggered the first time each day
@@ -388,11 +301,26 @@
       - scheduler
       input_mode_guest: input_boolean.guest_mode
       input_tweaks:
+      - heat_only_if_below_real_temp
       - not_off_but_min
-      input_temperature_sensor: sensor.living_room_fan_temperature
+      input_temperature_sensor: sensor.avg_temp_downstairs
       input_calibration_options:
       - generic_calibration
-      input_mode_outside_temperature: sensor.outside_back_motion_sensor_temperature
+      input_people_leaving_home_duration:
+        hours: 0
+        minutes: 5
+        seconds: 0
+      input_people_entering_home_duration:
+        hours: 0
+        minutes: 0
+        seconds: 1
+      input_away_offset: 8
+      input_windows: []
+      input_temperature_minimum: input_number.eco_temperature
+      input_temperature_comfort: input_number.comfort_temperature
+      input_mode_party:
+      - input_boolean.party_mode
+      input_frost_protection_temp: 6
 - id: '1699860953331'
   alias: Heating Control Study
   description: ''
@@ -411,7 +339,7 @@
       input_trvs:
       - climate.study
       input_temperature_minimum_static: 15
-      input_temperature_comfort_static: 18.5
+      input_temperature_comfort_static: 19
       input_persons:
       - person.fenne
       - person.wesley
@@ -420,15 +348,18 @@
       input_away_options:
       - presence
       input_mode_guest: input_boolean.guest_mode
-      input_mode_outside_temperature: sensor.outside_back_motion_sensor_temperature
       input_proximity: d8972e1eae483f50dcfa7741e3df6c00
       input_presence_sensor: binary_sensor.study_motion_sensor_occupancy
-      input_scheduler_presence: schedule.heating_schedule_study
       input_windows:
       - binary_sensor.study_window_sensor_contact
       input_tweaks:
-      - off_instead_min
       - heat_only_if_below_real_temp
+      - not_off_but_min
+      input_away_offset: 10
+      input_temperature_minimum: input_number.eco_temperature_study
+      input_temperature_comfort: input_number.comfort_temperature_study
+      input_mode_party:
+      - input_boolean.party_mode
 - id: '1699870936576'
   alias: UniFi Protect Motion / Smart Detection Notifications
   description: ''
@@ -454,67 +385,6 @@
       time_format: '%H:%M'
       video_cutoff: 5
       notify_target_app: notify.notify
-- id: '1702629913359'
-  alias: Smart switch baby room
-  description: ''
-  use_blueprint:
-    path: vandalon/z2m EnOcean PTM 215Z (Friends of Hue) switch.yaml
-    input:
-      controller: Smart switch baby room
-      button_3_pressed: []
-      button_4_pressed: []
-      button_1_pressed:
-      - service: light.turn_on
-        target:
-          device_id: e25f7f3d5552ac7ce09abb25ff223b6e
-        data:
-          transition: 1
-          brightness_pct: 80
-      button_2_pressed:
-      - service: light.turn_off
-        target:
-          device_id: e25f7f3d5552ac7ce09abb25ff223b6e
-        data:
-          transition: 1
-      button_1_released:
-      - service: light.turn_on
-        target:
-          device_id: e25f7f3d5552ac7ce09abb25ff223b6e
-        data:
-          transition: 1
-          brightness_pct: 20
-- id: '1702636615529'
-  alias: Smart switch study
-  description: ''
-  use_blueprint:
-    path: vandalon/z2m EnOcean PTM 215Z (Friends of Hue) switch.yaml
-    input:
-      controller: Smart switch study
-      button_3_pressed: []
-      button_4_pressed: []
-      button_1_pressed:
-      - service: light.turn_on
-        data:
-          transition: 1
-          brightness_pct: 80
-        target:
-          device_id: 33fe15ce0a53ea639ef8ca056bd93403
-      button_2_pressed:
-      - service: light.turn_off
-        data:
-          transition: 1
-        target:
-          device_id: 33fe15ce0a53ea639ef8ca056bd93403
-      button_2_held: []
-      button_1_held: []
-      button_1_released:
-      - service: light.turn_on
-        target:
-          device_id: 33fe15ce0a53ea639ef8ca056bd93403
-        data:
-          transition: 1
-          brightness_pct: 20
-        enabled: true
 - id: '1712857726785'
   alias: Restore Samba Backup sensor on startup
   description: ''
@@ -568,17 +438,6 @@
       mode_to_handle: two_intervals
       interval_docked: 3600
       interval_cleaning: 60
-- id: '1715943648867'
-  alias: Zone Enter/Leave Notification FF
-  description: ''
-  use_blueprint:
-    path: Sjorsa/notify-entering-and-or-leaving-zone.yaml
-    input:
-      person_entity: person.fenne
-      zone_entity: zone.home
-      notify_device: 5e20a37ce4434aa9ca25d7462a060cca
-      notify_when_entering: true
-      notify_when_leaving: true
 - id: '1715952634581'
   alias: "\U0001F6AA Window Left Open Notification Study"
   description: ''
