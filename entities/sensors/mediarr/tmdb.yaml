@@ -1,0 +1,10 @@
+platform: mediarr
+tmdb:  # Optional
+  api_key: "5e8250e5bb395492f038f25817284399"
+  trending_type: all  # Options: movie, tv, all
+  max_items: 10
+  trending: true          # Default endpoint
+  now_playing: true       # Optional
+  upcoming: true          # Optional
+  on_air: true            # Optional
+  airing_today: false     # Optional

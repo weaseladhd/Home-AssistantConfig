@@ -1,0 +1,8 @@
+platform: mediarr
+sonarr:  # Optional
+  # url: https://sonarr-anime.weaselweb.nl
+  url: http://10.20.30.182:8991
+  api_key: 854d401b6d9644128c8e38e93ca29779
+  max_items: 10
+  days_to_check: 60
+  tmdb_api_key: "5e8250e5bb395492f038f25817284399"

@@ -1,0 +1,7 @@
+platform: mediarr
+radarr:  # Optional
+  # url: https://radarr-4k.weaselweb.nl
+  url: http://10.20.30.182:7879
+  api_key: 36100613a5e0479088343c446fbaa2a0
+  max_items: 10
+  tmdb_api_key: "5e8250e5bb395492f038f25817284399"

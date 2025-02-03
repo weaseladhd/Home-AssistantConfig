@@ -1,0 +1,8 @@
+platform: mediarr
+sonarr:  # Optional
+  # url: https://sonarr-4k.weaselweb.nl
+  url: http://10.20.30.182:8990
+  api_key: b814490005bd416b9e612a6eb7c58252
+  max_items: 10
+  days_to_check: 60
+  tmdb_api_key: "5e8250e5bb395492f038f25817284399"

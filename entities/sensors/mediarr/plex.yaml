@@ -1,0 +1,6 @@
+platform: mediarr
+plex:  # Optional
+  host: 10.20.30.182
+  port: 32400
+  token: CyCa--WiUQKmRLtBBjq7
+  max_items: 10
