@@ -1,8 +1,11 @@
 platform: mediarr
-sonarr:  # Optional
-  # url: https://sonarr-anime.weaselweb.nl
-  url: http://10.20.30.182:8991
-  api_key: 854d401b6d9644128c8e38e93ca29779
+seer:
+  # url: https://request.weaselweb.nl/
+  url: 10.20.30.182:5055
+  api_key: MTY0MjE5Mzg1NDE0OWYxZGVjMWQ4LWNiMDEtNGVlYy1hMzc1LTdmNTEwZmVhOGRjZSk=
   max_items: 10
-  days_to_check: 60
   tmdb_api_key: "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1ZTgyNTBlNWJiMzk1NDkyZjAzOGYyNTgxNzI4NDM5OSIsIm5iZiI6MTI3ODU1NjI0My4wLCJzdWIiOiI0YzM1Mzg1MzdiOWFhMTdkYTgwMDAwM2MiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.9KJq3m1xC7B2psAdzvNv_2gYIAyBDk7AbolkR1QzeXA"
+  trending: true # Optional
+  discover: true  # Optional
+  popular_movies: true  # Optional
+  popular_tv: true # Optional
