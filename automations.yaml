@@ -1,51 +1,3 @@
-- id: '1612980102342'
-  alias: Update OpenUV 5 minutes before sunrise and after sunset
-  description: ''
-  trigger:
-  - platform: sun
-    event: sunrise
-    offset: -00:05:00
-  - platform: sun
-    event: sunset
-    offset: 00:05:00
-  condition: []
-  action:
-  - service: homeassistant.update_entity
-    data: {}
-    target:
-      entity_id: sensor.current_uv_index
-  mode: single
-- id: '1612980243699'
-  alias: Update OpenUV every 30 minutes during daytime
-  description: ''
-  trigger:
-  - platform: time_pattern
-    minutes: '30'
-  condition:
-  - condition: and
-    conditions:
-    - condition: sun
-      before: sunset
-      after: sunrise
-  action:
-  - service: homeassistant.update_entity
-    data: {}
-    target:
-      entity_id: sensor.current_uv_index
-  mode: single
-- id: '1612980343472'
-  alias: Update OpenUV protection window daily
-  description: ''
-  trigger:
-  - platform: time
-    at: 02:12:00
-  condition: []
-  action:
-  - service: homeassistant.update_entity
-    data: {}
-    target:
-      entity_id: binary_sensor.protection_window
-  mode: single
 - id: '1623006218863'
   alias: Low battery level detection & notification for all battery sensors
   description: ''
@@ -80,18 +32,6 @@
     data:
       message: Home Assistant has started up again.
   mode: single
-- id: '1649250405677'
-  alias: Update gas stations
-  triggers:
-  - hours: '1'
-    trigger: time_pattern
-  actions:
-  - data:
-      topic: dgp/gas_stations
-      payload_template: '{"fuel_type":"euro95","radius":5,"latitude":{{ state_attr("person.wesley",
-        "latitude") }},"longitude":{{ state_attr("person.wesley", "longitude") }},
-        "to_publish":3}'
-    action: mqtt.publish
 - id: '1649255352767'
   alias: Home Assistant update notification
   description: ''
@@ -372,7 +312,6 @@
       - device_tracker.iphone_15_pro_wv
       time_format: '%H:%M'
       notify_target_app: notify.notify
-      alarm_entity: alarm_control_panel.alarmo
 - id: '1699871133965'
   alias: UniFi Protect Doorbell Ring Notifications
   description: ''
@@ -385,13 +324,6 @@
       time_format: '%H:%M'
       video_cutoff: 5
       notify_target_app: notify.notify
-- id: '1712857726785'
-  alias: Restore Samba Backup sensor on startup
-  description: ''
-  use_blueprint:
-    path: thomasmauerer/restore_samba_backup_sensor.yaml
-    input:
-      addon: 15d21743_samba_backup
 - id: '1715907177487'
   alias: Zone Notification Extended FF
   description: ''
@@ -454,8 +386,8 @@
   use_blueprint:
     path: TheRealFalseReality/send_snapshot_conditional.yaml
     input:
-      sensor: binary_sensor.uvc_g4_doorbell_doorbell
-      camera: camera.uvc_g4_doorbell_high
+      sensor: binary_sensor.uvc_g4_doorbell_motion
+      camera: camera.uvc_g4_doorbell_high_resolution_channel
       notify_device: 5e20a37ce4434aa9ca25d7462a060cca
       data_clickaction_url: /lovelace/alarm
 - id: '1715957011734'
@@ -516,19 +448,137 @@
     data_template:
       arguments: --update --file 'self'
   mode: single
-- id: brandstofprijzen_update_notification
-  alias: Send notification when a fuel price changed
-  description: Send notification when a fuel price changed
-  trigger:
-  - platform: state
-    entity_id:
-    - sensor.adviesprijs_euro95
-  condition: '{{ trigger.state.to_state != trigger.state.from_state }}'
-  action:
-  - service: notify.gotify
-    data:
-      title: Adviesprijs gewijzigd
-      message: "De adviesprijs voor {{ state_attr(trigger.entity_id, 'friendly_name')
-        }} is {% if trigger.state.to_state > trigger.state.from_state %}\n  verhoogd.\n{%
-        else %}\n  verlaagd.\n{% endif %}\n"
-  mode: queued
+- id: '1741616063691'
+  alias: Update OpenUV
+  description: ''
+  triggers:
+  - trigger: time_pattern
+    minutes: /15
+  conditions:
+  - condition: sun
+    after: sunrise
+    before: sunset
+    before_offset: +00:45:00
+  - condition: template
+    value_template: "{{\n  state_attr('automation.update_openuv', 'last_triggered')
+      == None\n  or (\n    now() - state_attr('automation.update_openuv', 'last_triggered')\n
+      \ ) >= timedelta(hours = 0, minutes = 40)\n}}"
+  actions:
+  - action: homeassistant.update_entity
+    target:
+      entity_id:
+      - binary_sensor.protection_window
+      - sensor.current_uv_index
+- id: '1741616822006'
+  alias: Low Battery Notifications & Actions
+  description: ''
+  use_blueprint:
+    path: Blackshome/low-battery-notifications-and-actions.yaml
+    input:
+      include_button: disable_button_trigger
+      include_easy_notify: enable_easy_notify
+      notify_device:
+      - 5e20a37ce4434aa9ca25d7462a060cca
+      include_persistent_notification: enable_persistent_notification
+      time: '10:00:00'
+      include_time: time_enabled
+- id: '1741618494906'
+  alias: "\U0001F525 Advanced Heating Control V5 - Living Room"
+  description: ''
+  use_blueprint:
+    path: panhans/advanced_heating_control.yaml
+    input:
+      input_trvs:
+      - climate.living_room
+      input_temperature_comfort_static: 19
+      input_temperature_eco_static: 15
+      input_temperature_comfort: input_number.comfort_temperature
+      input_temperature_eco: input_number.eco_temperature
+      input_persons:
+      - person.fenne
+      - person.wesley
+      input_people_leaving_home_duration:
+        hours: 0
+        minutes: 5
+        seconds: 0
+      input_mode_guest: input_boolean.guest_mode
+      input_min_instead_of_off: true
+      input_off_if_nobody_home: true
+      input_mode_party:
+      - input_boolean.party_mode
+      input_schedulers:
+      - schedule.heating_schedule
+      input_presence_reaction_off_time:
+        hours: 0
+        minutes: 15
+        seconds: 0
+      input_presence_sensor: binary_sensor.presence_home
+      input_proximity: d8972e1eae483f50dcfa7741e3df6c00
+      input_mode_outside_temperature: sensor.irosma27_temperature
+      input_temperature_sensor: sensor.avg_temp_downstairs
+      input_people_entering_home_duration:
+        hours: 0
+        minutes: 0
+        seconds: 1
+      input_proximity_distance: 1000
+      input_proximity_duration:
+        hours: 0
+        minutes: 0
+        seconds: 1
+      input_away_offset: 3
+      input_away_scheduler_mode: false
+      input_away_presence_mode: false
+      input_away_presence_ignor_people: false
+      input_presence_reaction_on_time:
+        hours: 0
+        minutes: 15
+        seconds: 0
+      input_frost_protection_temp: 6
+- id: '1741618987066'
+  alias: "\U0001F525 Advanced Heating Control V5 - Study"
+  description: ''
+  use_blueprint:
+    path: panhans/advanced_heating_control.yaml
+    input:
+      input_trvs:
+      - climate.study
+      input_temperature_comfort_static: 19
+      input_temperature_eco_static: 15
+      input_temperature_comfort: input_number.comfort_temperature_study
+      input_temperature_eco: input_number.eco_temperature_study
+      input_min_instead_of_off: true
+      input_off_if_nobody_home: true
+      input_persons:
+      - person.fenne
+      - person.wesley
+      input_people_entering_home_duration:
+        hours: 0
+        minutes: 0
+        seconds: 1
+      input_people_leaving_home_duration:
+        hours: 0
+        minutes: 0
+        seconds: 1
+      input_mode_guest: input_boolean.guest_mode
+      input_schedulers:
+      - schedule.heating_schedule_study
+      input_presence_sensor: binary_sensor.activity_in_study
+      input_presence_reaction_off_time:
+        hours: 0
+        minutes: 15
+        seconds: 0
+      input_presence_reaction_on_time:
+        hours: 0
+        minutes: 15
+        seconds: 0
+      input_proximity: d8972e1eae483f50dcfa7741e3df6c00
+      input_proximity_distance: 1000
+      input_away_offset: 3
+      input_away_presence_mode: false
+      input_away_scheduler_mode: false
+      input_windows:
+      - binary_sensor.study_window_sensor_contact
+      input_window_open_temperature: 0
+      input_mode_outside_temperature: sensor.irosma27_temperature
+      input_mode_party:
+      - input_boolean.party_mode

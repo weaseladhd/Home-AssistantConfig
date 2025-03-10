@@ -3,9 +3,12 @@ blueprint:
     'off' to 'on', with Conditions
   description: This automation blueprint creates a camera snapshot if motion is detected,
     or if a binary sensor's state turns 'off' to 'on', and sends a notification to
-    your phone with the picture. Clicking the navigation will navigate to dashboard
+    your phone with the picture. Clicking the notification will navigate to dashboard
     URL. [More Info](https://community.home-assistant.io/t/camera-send-save-snapshot-to-mobile-device-when-motion-is-detected-with-conditions/604156)
-    (v2.2.2) [Automation]
+    (v2.3) [Automation]
+  author: TheFalseReality
+  homeassistant:
+    min_version: 2024.10.0
   domain: automation
   source_url: https://gist.github.com/TheRealFalseReality/eab315e84f2711783fb7454ac0b42187
   input:
@@ -17,6 +20,12 @@ blueprint:
           domain:
           - binary_sensor
           multiple: false
+    trigger_additional:
+      name: Trigger(s)
+      description: Add Additional Trigger(s)
+      default: []
+      selector:
+        trigger: {}
     camera:
       name: Camera
       description: The camera which creates the snapshot
@@ -25,23 +34,20 @@ blueprint:
           domain:
           - camera
           multiple: false
-    file_path:
-      name: File Path
-      description: The file path to store the most current snapshot. Defaults to **/media/snapshots/<camera_name>**
-        - `/media/snapshots/{{ states[camera].object_id }}/last_motion.jpg`.
-      default: /media/snapshots/{{ states[camera].object_id }}/last_motion.jpg
     delay:
       name: Snapshot Delay
       description: Wait before creating camera snapshot.
-      default: 1
+      default:
+        seconds: 1
       selector:
         duration: {}
-    notify:
-      name: Notify Device
-      description: Notify a device?
-      default: true
+    condition_auto:
+      name: Add Condition(s) to run this Automation
+      description: Add conditions if needed to run this automation at all. Note, if
+        conditions return `false`, no actions will fire.
+      default: []
       selector:
-        boolean: {}
+        condition: {}
     condition:
       name: Add Condition(s) to send Snapshot
       description: Add conditions if needed to send snapshot to device
@@ -61,16 +67,6 @@ blueprint:
         device:
           integration: mobile_app
           multiple: false
-    notify_group:
-      name: Notify a Group or Android TV (EXPERIMENTAL)
-      description: "Enter the name of the group or individual TV for notifications.
-        (example: all_devices) This will override individual device settings above.
-        Device needs to run the official Home Assistant app to receive notifications.
-        To notify multiple devices, create a [Notification Group](https://companion.home-assistant.io/docs/notifications/notifications-basic/#sending-notifications-to-multiple-devices).\n
-        \n\nImportant: Groups containing both mobile devices and TVs won't display
-        snapshots on the TV unless 'Android TV' is enabled. However, this setting
-        prevents Android phones from receiving snapshots"
-      default: ''
     notification_title:
       name: Notification title
       description: 'Default: "Motion detected!"'
@@ -81,307 +77,366 @@ blueprint:
         camera_name }} at {{ time }}."'
       default: '{{ sensor_name }} detected movement! Snapshot from {{ camera_name
         }} at {{ time }}.'
-    delay_notification:
-      name: Notification Delay (Optional)
-      description: Wait before sending another notification, in seconds. (ex. 5 minutes
-        = 300 seconds)
-      default: 60
-      selector:
-        number:
-          min: 0.0
-          max: 86400.0
-          unit_of_measurement: seconds
-          mode: box
-          step: 1.0
-    notification_alert_once:
-      name: Alert Once (Optional)
-      description: Only the first notification for each event will play a sound. Updates
-        will be silent. iOS devices with Critical Notifications enabled above will
-        still hear default critical sounds for updates.
-      default: false
-      selector:
-        boolean: {}
-    notification_video:
-      name: Video (Optional)
-      description: You can optionally attach the clip to the notification which will
-        replace the thumbnail/snapshot above, if available. (local url, [Documentaion](https://companion.home-assistant.io/docs/notifications/notification-attachments))
-      default: ''
-    notification_group:
-      name: Group
-      description: The group name that will determine if notifications are grouped
-        on your mobile device. (default = {{ camera_name }} Snapshot)
-      default: '{{ camera_name }} Snapshot'
-    data_clickaction_url:
-      name: URL to Navigate (Optional)
-      description: The URL to navigate to when clicking on the notification. (default
-        = /lovelace)
-      default: /lovelace
-    notification_channel:
-      name: Notification Channel - Android Only (Optional)
-      description: Create a new channel for notifications to allow custom notification
-        sounds, vibration patterns, and override Do Not Disturb mode. Configured directly
-        on the Android device -> Home Assistant App Setting -> Notifications. (default
-        = {{ camera_name }} Snapshot)
-      default: '{{ camera_name }} Snapshot'
-    notification_sticky:
-      name: Sticky - Android Only (Optional)
-      description: 'When enabled, the notification will stay active on the device
-        after tapping it and remain unless swiped.
+    android_section:
+      name: Android Specific Options
+      description: These are Android specific options
+      icon: mdi:android
+      collapsed: true
+      input:
+        notification_channel:
+          name: Notification Channel - Android Only
+          description: Create a new channel for notifications to allow custom notification
+            sounds, vibration patterns, and override Do Not Disturb mode. Configured
+            directly on the Android device -> Home Assistant App Setting -> Notifications.
+            (default = {{ camera_name }} Snapshot)
+          default: '{{ camera_name }} Snapshot'
+        notification_sticky:
+          name: Sticky - Android Only
+          description: 'When enabled, the notification will stay active on the device
+            after tapping it and remain unless swiped.
 
-        '
-      default: true
-      selector:
-        boolean: {}
-    notification_color:
-      name: Notification Color - Android Only (Optional)
-      description: 'Set the color of the notification on your Android device, in HEX.
-        (default = Steelblue - #03a9f4)'
-      default: '#03a9f4'
-      selector:
-        select:
-          options:
-          - label: 'Steelblue - #03a9f4'
-            value: '#03a9f4'
-          - label: 'Red - #f44336'
-            value: '#f44336'
-          - label: 'Pink - #e91e63'
-            value: '#e91e63'
-          - label: 'Purple - #926bc7'
-            value: '#926bc7'
-          - label: 'Deep Purple - #6e41ab'
-            value: '#6e41ab'
-          - label: 'Indigo - #3f51b5'
-            value: '#3f51b5'
-          - label: 'Blue - #2196f3'
-            value: '#2196f3'
-          - label: 'Light Blue - #03a9f4'
-            value: '#03a9f4'
-          - label: 'Cyan - #00bcd4'
-            value: '#00bcd4'
-          - label: 'Teal - #009688'
-            value: '#009688'
-          - label: 'Green - #4caf50'
-            value: '#4caf50'
-          - label: 'Light Green - #8bc34a'
-            value: '#8bc34a'
-          - label: 'Lime - #cddc39'
-            value: '#cddc39'
-          - label: 'Yellow - #ffeb3b'
-            value: '#ffeb3b'
-          - label: 'Amber - #ffc107'
-            value: '#ffc107'
-          - label: 'Orange - #ff9800'
-            value: '#ff9800'
-          - label: 'Deep Orange - #ff5722'
-            value: '#ff5722'
-          - label: 'Brown - #795548'
-            value: '#795548'
-          - label: 'Light Grey - #bdbdbd'
-            value: '#bdbdbd'
-          - label: 'Grey - #9e9e9e'
-            value: '#9e9e9e'
-          - label: 'Dark Grey - #606060'
-            value: '#606060'
-          - label: 'Blue Grey - #607d8b'
-            value: '#607d8b'
-          - label: 'Black - #000000'
-            value: '#000000'
-          - label: White -#ffffff
-            value: '#ffffff'
-          custom_value: true
-          sort: false
-          multiple: false
-    notification_icon:
-      name: Notification Status Bar Icon - Android Only (Optional)
-      description: Change the icon that displays in the notification.
-      default: mdi:cctv
-      selector:
-        icon:
-          placeholder: mdi:cctv
-    notification_sound:
-      name: Notification Sound - iOS Only (Optional)
-      description: 'You can specify a sound file on your device that will play for
-        the notifications. You can import the sound file into Home Assistant or enter
-        the filename of the [pre-installed notification sound](https://companion.home-assistant.io/docs/notifications/notification-sounds/#pre-installed-notification-sounds)
-        (example: US-EN-Alexa-Motion-Detected-Generic.wav).'
-      default: default
-      selector:
-        select:
-          options:
-          - label: Default
-            value: default
-          - label: None
-            value: none
-          - label: Alexa Motion Detected
-            value: US-EN-Alexa-Motion-Detected-Generic.wav
-          - label: Morgan Freeman Motion Detected
-            value: US-EN-Morgan-Freeman-Motion-Detected.wav
-          custom_value: true
-          sort: false
-          multiple: false
-    notification_volume:
-      name: Volume Sound - iOS Only (Optional)
-      description: Specify a sound level %
-      default: 1
-      selector:
-        number:
-          max: 1.0
-          min: 0.0
-          unit_of_measurement: '%'
-          step: 1.0
-          mode: slider
-    notification_critical:
-      name: Critical Notification - iOS Only (Optional)
-      description: 'Send as a critical notification to the mobile device. This will
-        ignore silent/vibrate modes.'
-      default: false
-      selector:
-        boolean:
-        # select:
-        #   options:
-        #   - label: 'Off'
-        #     value: 'false'
-        #   - label: 'On'
-        #     value: 'true'
-        #   - label: On During the Day
-        #     value: '{{''true'' if is_state(''sun.sun'', ''above_horizon'') else ''false''
-        #       }}'
-        #   - label: On During the Night
-        #     value: '{{''true'' if is_state(''sun.sun'', ''below_horizon'') else ''false''
-        #       }}'
-        #   - label: On Between 6p - 8a
-        #     value: '{{''false'' if now().hour in [8,9,10,11,12,13,14,15,16,17,18]
-        #       else ''true''}}'
-        #   custom_value: true
-        #   sort: false
-        #   multiple: false
-    save_archive_file:
-      name: Save Archive Files?
-      description: Choose to activate saving of old snapshots or not (default = on).
-      default: true
-      selector:
-        boolean: {}
-    conditionSave:
-      name: Add Condition(s) to Archive Snapshot
-      description: Add conditions if needed to save snapshot history files in a directory.
-      default: []
-      selector:
-        condition: {}
-    archive_file_path:
-      name: Archive File Path
-      description: The file path to store the snapshot in an archive folder. Defaults
-        to **/media/snapshots/<camera_name>** - `/media/snapshots/{{ states[camera].object_id
-        }}/archive/motion_{{ now().strftime("%Y%m%d-%H%M%S")`.
-      default: /media/snapshots/{{ states[camera].object_id }}/archive/motion_{{ now().strftime("%Y%m%d-%H%M%S")
-        }}.jpg
-    additional_actions_before:
-      name: Additional Actions Before
-      description: Add additional actions to the script. Will execute before everything
-        else. Useful to turn on a light before the snapshot!
-      default: []
-      selector:
-        action: {}
-    additional_actions:
-      name: Additional Actions After
-      description: Add additional actions to the script. Will execute after everything
-        else.
-      default: []
-      selector:
-        action: {}
-    action_type:
-      name: Action Type (EXPERIMENTAL)
-      description: 'Set action type, see [Actionable Notifications](https://companion.home-assistant.io/docs/notifications/actionable-notifications/).
-        default: URI'
-      default: URI
-    action_title:
-      name: Action Title (EXPERIMENTAL)
-      description: Title of action that will appear with the notification
-      default: Open Dashboard
-    action_uri:
-      name: Action URI (EXPERIMENTAL)
-      description: 'URI to naviagte to. default: /lovelace'
-      default: '{{ clickActionURL }}'
-    android_tv:
-      name: Android TV - LEGACY (EXPERIMENTAL)
-      description: Check if sending notifications to an Android TV type device.
-      default: false
-      selector:
-        boolean: {}
-    tv_position:
-      name: TV Notification Position (Optional) (EXPERIMENTAL)
-      description: Set the position of the notification on your TV
-      default: center
-      selector:
-        select:
-          mode: dropdown
-          options:
-          - bottom-right
-          - bottom-left
-          - top-right
-          - top-left
-          - center
-          sort: false
-          custom_value: false
-          multiple: false
-    tv_size:
-      name: TV Notification Size (Optional) (EXPERIMENTAL)
-      description: Set the size of the notification on your TV.
-      default: large
-      selector:
-        select:
-          mode: dropdown
-          options:
-          - small
-          - medium
-          - large
-          - max
-          sort: false
-          custom_value: false
-          multiple: false
-    tv_duration:
-      name: TV Notification Duration (Optional) (EXPERIMENTAL)
-      description: The duration (in seconds) that the notification will display on
-        your TV.
-      default: 10
-      selector:
-        number:
-          max: 300.0
-          min: 0.0
-          unit_of_measurement: seconds
-          step: 1.0
-          mode: slider
-    tv_transparency:
-      name: TV notification Transparency (Optional) (EXPERIMENTAL)
-      description: Set the transparency of the notification on your TV.
-      default: 0%
-      selector:
-        select:
-          mode: dropdown
-          options:
-          - 0%
-          - 25%
-          - 50%
-          - 75%
-          - 100%
-          sort: false
-          custom_value: false
-          multiple: false
-    tv_interrupt:
-      name: TV Notification Interrupt (Optional) (EXPERIMENTAL)
-      description: If set to true the notification is interactive and can be dismissed
-        or selected to display more details. Depending on the running app (e.g., Netflix),
-        this may stop playback.
-      default: false
-      selector:
-        boolean: {}
-trigger:
+            '
+          default: true
+          selector:
+            boolean: {}
+        notification_color:
+          name: Notification Color - Android Only
+          description: 'Set the color of the notification on your Android device,
+            in HEX. (default = Steelblue - #03a9f4)'
+          default: '#03a9f4'
+          selector:
+            select:
+              options:
+              - label: 'Steelblue - #03a9f4'
+                value: '#03a9f4'
+              - label: 'Red - #f44336'
+                value: '#f44336'
+              - label: 'Pink - #e91e63'
+                value: '#e91e63'
+              - label: 'Purple - #926bc7'
+                value: '#926bc7'
+              - label: 'Deep Purple - #6e41ab'
+                value: '#6e41ab'
+              - label: 'Indigo - #3f51b5'
+                value: '#3f51b5'
+              - label: 'Blue - #2196f3'
+                value: '#2196f3'
+              - label: 'Light Blue - #03a9f4'
+                value: '#03a9f4'
+              - label: 'Cyan - #00bcd4'
+                value: '#00bcd4'
+              - label: 'Teal - #009688'
+                value: '#009688'
+              - label: 'Green - #4caf50'
+                value: '#4caf50'
+              - label: 'Light Green - #8bc34a'
+                value: '#8bc34a'
+              - label: 'Lime - #cddc39'
+                value: '#cddc39'
+              - label: 'Yellow - #ffeb3b'
+                value: '#ffeb3b'
+              - label: 'Amber - #ffc107'
+                value: '#ffc107'
+              - label: 'Orange - #ff9800'
+                value: '#ff9800'
+              - label: 'Deep Orange - #ff5722'
+                value: '#ff5722'
+              - label: 'Brown - #795548'
+                value: '#795548'
+              - label: 'Light Grey - #bdbdbd'
+                value: '#bdbdbd'
+              - label: 'Grey - #9e9e9e'
+                value: '#9e9e9e'
+              - label: 'Dark Grey - #606060'
+                value: '#606060'
+              - label: 'Blue Grey - #607d8b'
+                value: '#607d8b'
+              - label: 'Black - #000000'
+                value: '#000000'
+              - label: White -#ffffff
+                value: '#ffffff'
+              custom_value: true
+              sort: false
+              multiple: false
+        notification_icon:
+          name: Notification Status Bar Icon - Android Only
+          description: Change the icon that displays in the notification.
+          default: mdi:cctv
+          selector:
+            icon:
+              placeholder: mdi:cctv
+    tv_section:
+      name: Android TV Options
+      description: These are Android TV options
+      icon: mdi:youtube-tv
+      collapsed: true
+      input:
+        android_tv:
+          name: Android TV - LEGACY (EXPERIMENTAL)
+          description: Check if sending notifications to an Android TV type device.
+          default: false
+          selector:
+            boolean: {}
+        tv_position:
+          name: TV Notification Position (EXPERIMENTAL)
+          description: Set the position of the notification on your TV
+          default: center
+          selector:
+            select:
+              mode: dropdown
+              options:
+              - bottom-right
+              - bottom-left
+              - top-right
+              - top-left
+              - center
+              sort: false
+              custom_value: false
+              multiple: false
+        tv_size:
+          name: TV Notification Size (EXPERIMENTAL)
+          description: Set the size of the notification on your TV.
+          default: large
+          selector:
+            select:
+              mode: dropdown
+              options:
+              - small
+              - medium
+              - large
+              - max
+              sort: false
+              custom_value: false
+              multiple: false
+        tv_duration:
+          name: TV Notification Duration (EXPERIMENTAL)
+          description: The duration (in seconds) that the notification will display
+            on your TV.
+          default: 10
+          selector:
+            number:
+              max: 300.0
+              min: 0.0
+              unit_of_measurement: seconds
+              step: 1.0
+              mode: slider
+        tv_transparency:
+          name: TV notification Transparency (EXPERIMENTAL)
+          description: Set the transparency of the notification on your TV.
+          default: 0%
+          selector:
+            select:
+              mode: dropdown
+              options:
+              - 0%
+              - 25%
+              - 50%
+              - 75%
+              - 100%
+              sort: false
+              custom_value: false
+              multiple: false
+        tv_interrupt:
+          name: TV Notification Interrupt (EXPERIMENTAL)
+          description: If set to true the notification is interactive and can be dismissed
+            or selected to display more details. Depending on the running app (e.g.,
+            Netflix), this may stop playback.
+          default: false
+          selector:
+            boolean: {}
+    ios_section:
+      name: iOS Specific Options
+      description: These are iOS specific options
+      icon: mdi:apple-ios
+      collapsed: true
+      input:
+        notification_sound:
+          name: Notification Sound - iOS Only
+          description: 'You can specify a sound file on your device that will play
+            for the notifications. You can import the sound file into Home Assistant
+            or enter the filename of the [pre-installed notification sound](https://companion.home-assistant.io/docs/notifications/notification-sounds/#pre-installed-notification-sounds)
+            (example: US-EN-Alexa-Motion-Detected-Generic.wav).'
+          default: default
+          selector:
+            select:
+              options:
+              - label: Default
+                value: default
+              - label: None
+                value: none
+              - label: Alexa Motion Detected
+                value: US-EN-Alexa-Motion-Detected-Generic.wav
+              - label: Morgan Freeman Motion Detected
+                value: US-EN-Morgan-Freeman-Motion-Detected.wav
+              custom_value: true
+              sort: false
+              multiple: false
+        notification_volume:
+          name: Volume Sound - iOS Only
+          description: Specify a sound level %
+          default: 1
+          selector:
+            number:
+              max: 1.0
+              min: 0.0
+              unit_of_measurement: '%'
+              step: 1.0
+              mode: slider
+        notification_critical:
+          name: Critical Notification - iOS Only
+          description: Send as a critical notification to the mobile device. This
+            will ignore silent/vibrate modes.
+          default: false
+          selector:
+            boolean: {}
+    optional_section:
+      name: Optional or Experimental Options
+      description: These are Optional or Experimental options
+      icon: mdi:apple-keyboard-option
+      collapsed: true
+      input:
+        notify:
+          name: Notify Device
+          description: Notify a device?
+          default: true
+          selector:
+            boolean: {}
+        delay_send:
+          name: Send Snapshot Delay
+          description: Wait before sending a notification, in seconds.
+          default: 0
+          selector:
+            duration: {}
+        delay_notification:
+          name: Notification Delay
+          description: Wait before sending another notification, in seconds. (ex.
+            5 minutes = 300 seconds)
+          default: 60
+          selector:
+            number:
+              min: 0.0
+              max: 86400.0
+              unit_of_measurement: seconds
+              mode: box
+              step: 1.0
+        notification_alert_once:
+          name: Alert Once
+          description: Only the first notification for each event will play a sound.
+            Updates will be silent. iOS devices with Critical Notifications enabled
+            above will still hear default critical sounds for updates.
+          default: false
+          selector:
+            boolean: {}
+        notification_group:
+          name: Group
+          description: The group name that will determine if notifications are grouped
+            on your mobile device. (default = {{ camera_name }} Snapshot)
+          default: '{{ camera_name }} Snapshot'
+        data_clickaction_url:
+          name: URL to Navigate
+          description: The URL to navigate to when clicking on the notification. (default
+            = /lovelace)
+          default: /lovelace
+        notify_group:
+          name: Notify a Group or Android TV
+          description: "Enter the name of the group or individual TV for notifications.
+            (example: all_devices) This will override individual device settings above.
+            Device needs to run the official Home Assistant app to receive notifications.
+            To notify multiple devices, create a [Notification Group](https://companion.home-assistant.io/docs/notifications/notifications-basic/#sending-notifications-to-multiple-devices).\n
+            \n\nImportant: Groups containing both mobile devices and TVs won't display
+            snapshots on the TV unless 'Android TV' is enabled. However, this setting
+            prevents Android phones from receiving snapshots"
+          default: ''
+        file_path:
+          name: File Path
+          description: "The file path to store the most current snapshot. \n\nDO NOT
+            ADD `/local`, the blueprint with do that automaticaly with `/media` ->
+            `/media/local`. \n\nDefaults to **/media/snapshots/<camera_name>** `/media/snapshots/{{
+            states[camera].object_id }}/last_motion.jpg`\n\n Try `/config/www/snapshots/{{
+            states[camera].object_id }}/last_motion.jpg` if you are having issues"
+          default: /media/snapshots/{{ states[camera].object_id }}/last_motion.jpg
+        save_archive_file:
+          name: Save Archive Files?
+          description: Choose to activate saving of old snapshots or not (default
+            = off).
+          default: false
+          selector:
+            boolean: {}
+        conditionSave:
+          name: Add Condition(s) to Archive Snapshot
+          description: Add conditions if needed to save snapshot history files in
+            a directory.
+          default: []
+          selector:
+            condition: {}
+        archive_file_path:
+          name: Archive File Path
+          description: 'The file path to store the snapshot in an archive folder.
+
+
+            DO NOT ADD `/local`, the blueprint with do that automaticaly with `/media`
+            -> `/media/local`.
+
+
+            Defaults to **/media/snapshots/<camera_name>** - `/media/snapshots/{{
+            states[camera].object_id }}/archive/motion_{{ now().strftime("%Y%m%d-%H%M%S")`.'
+          default: /media/snapshots/{{ states[camera].object_id }}/archive/motion_{{
+            now().strftime("%Y%m%d-%H%M%S") }}.jpg
+        additional_actions_before:
+          name: Additional Actions Before
+          description: Add additional actions to the script. Will execute before everything
+            else. Useful to turn on a light before the snapshot!
+          default: []
+          selector:
+            action: {}
+        additional_actions:
+          name: Additional Actions After
+          description: Add additional actions to the script. Will execute after everything
+            else.
+          default: []
+          selector:
+            action: {}
+        mode_select:
+          name: Mode Select
+          description: Select mode for automation. (default = Parallel)
+          default: parallel
+          selector:
+            select:
+              options:
+              - label: Single
+                value: single
+              - label: Restart
+                value: restart
+              - label: Queued
+                value: queued
+              - label: Parallel
+                value: parallel
+              sort: false
+              multiple: false
+              custom_value: false
+        action_type:
+          name: Action Type (EXPERIMENTAL)
+          description: 'Set action type, see [Actionable Notifications](https://companion.home-assistant.io/docs/notifications/actionable-notifications/).
+            default: URI'
+          default: URI
+        action_title:
+          name: Action Title (EXPERIMENTAL)
+          description: Title of action that will appear with the notification
+          default: Open Dashboard
+        action_uri:
+          name: Action URI (EXPERIMENTAL)
+          description: 'URI to naviagte to. default: /lovelace'
+          default: '{{ clickActionURL }}'
+triggers:
 - platform: state
   entity_id: !input sensor
   from: 'off'
   to: 'on'
+- triggers: !input trigger_additional
 variables:
   sensor: !input sensor
   sensor_name: '{{ states[sensor].name }}'
+  trigger_additional: !input trigger_additional
   camera: !input camera
   camera_name: '{{ states[camera].name }}'
   notify_device: !input notify_device
@@ -394,10 +449,11 @@ variables:
   delay: !input delay
   delay_notification: !input delay_notification
   snapshot_create_file_path: !input file_path
-  snapshot_access_file_path: '{{ snapshot_create_file_path | replace(''/media'',''/media/local'')
-    }}'
+  snapshot_access_file_path: '{{ snapshot_create_file_path | replace(''/config/www'',
+    ''/local'') | replace(''/media'', ''/media/local'') }}'
   condition: !input condition
   conditionSave: !input conditionSave
+  condition_auto: !input condition_auto
   clickActionURL: !input data_clickaction_url
   save_archive_file: !input save_archive_file
   additional_actions: !input additional_actions
@@ -406,7 +462,6 @@ variables:
   notify_group: !input notify_group
   notify_group_target: '{{ notify_group | lower | regex_replace(''^notify\.'', '''')
     | replace('' '',''_'') }}'
-  notification_video: !input notification_video
   notification_channel: !input notification_channel
   notification_group: !input notification_group
   notification_sticky: !input notification_sticky
@@ -425,29 +480,88 @@ variables:
   tv_duration: !input tv_duration
   tv_transparency: !input tv_transparency
   tv_interrupt: !input tv_interrupt
-action:
-- choose: []
-  default: !input additional_actions_before
-- delay: !input delay
-- service: camera.snapshot
-  entity_id: !input camera
-  data:
-    filename: !input file_path
+  mode_select: !input mode_select
+  delay_send: !input delay_send
+actions:
 - if:
-  - condition: template
-    value_template: !input notify
+  - condition: !input condition_auto
   then:
+  - choose: []
+    default: !input additional_actions_before
+  - delay: !input delay
+  - service: camera.snapshot
+    entity_id: !input camera
+    data:
+      filename: !input file_path
+  - delay: !input delay_send
   - if:
-    - condition: !input condition
+    - condition: template
+      value_template: !input notify
     then:
     - if:
-      - condition: template
-        value_template: '{{ not this.attributes.last_triggered or (now() - this.attributes.last_triggered).seconds
-          > delay_notification }}'
+      - condition: !input condition
       then:
-      - choose:
-        - conditions: '{{ android_tv }}'
-          sequence:
+      - if:
+        - condition: template
+          value_template: '{{ not this.attributes.last_triggered or (now() - this.attributes.last_triggered).seconds
+            > delay_notification }}'
+        then:
+        - choose:
+          - conditions: '{{ android_tv }}'
+            sequence:
+            - service: notify.{{ notify_group_target }}
+              data:
+                title: !input notification_title
+                message: !input notification_message
+                data:
+                  channel: !input notification_channel
+                  group: !input notification_group
+                  color: !input notification_color
+                  clickAction: !input data_clickaction_url
+                  sticky: !input notification_sticky
+                  notification_icon: !input notification_icon
+                  ttl: 0
+                  priority: high
+                  image:
+                    path: '{{ snapshot_access_file_path }}'
+                  fontsize: '{{tv_size}}'
+                  position: '{{tv_position}}'
+                  duration: '{{tv_duration}}'
+                  transparency: '{{tv_transparency}}'
+                  interrupt: '{{tv_interrupt}}'
+                  timeout: 30
+          - conditions: '{{ not notify_group_target }}'
+            sequence:
+            - device_id: !input notify_device
+              domain: mobile_app
+              type: notify
+              title: !input notification_title
+              message: !input notification_message
+              data:
+                channel: !input notification_channel
+                group: !input notification_group
+                color: !input notification_color
+                image: '{{ snapshot_access_file_path }}'
+                clickAction: !input data_clickaction_url
+                sticky: !input notification_sticky
+                alert_once: !input notification_alert_once
+                notification_icon: !input notification_icon
+                ttl: 0
+                priority: high
+                attachment:
+                  url: '{{ snapshot_access_file_path }}'
+                  content_type: JPEG
+                url: !input data_clickaction_url
+                push:
+                  sound:
+                    name: !input notification_sound
+                    volume: !input notification_volume
+                    critical: '{{ notification_critical }}'
+                actions:
+                - action: '{{ action_type }}'
+                  title: '{{ action_title }}'
+                  uri: '{{ action_uri }}'
+          default:
           - service: notify.{{ notify_group_target }}
             data:
               title: !input notification_title
@@ -456,93 +570,37 @@ action:
                 channel: !input notification_channel
                 group: !input notification_group
                 color: !input notification_color
+                image: '{{ snapshot_access_file_path }}'
                 clickAction: !input data_clickaction_url
-                video: !input notification_video
                 sticky: !input notification_sticky
+                alert_once: !input notification_alert_once
                 notification_icon: !input notification_icon
                 ttl: 0
                 priority: high
-                image:
-                  path: '{{ snapshot_create_file_path }}'
-                fontsize: '{{tv_size}}'
-                position: '{{tv_position}}'
-                duration: '{{tv_duration}}'
-                transparency: '{{tv_transparency}}'
-                interrupt: '{{tv_interrupt}}'
-                timeout: 30
-        - conditions: '{{ not notify_group_target }}'
-          sequence:
-          - device_id: !input notify_device
-            domain: mobile_app
-            type: notify
-            title: !input notification_title
-            message: !input notification_message
-            data:
-              channel: !input notification_channel
-              group: !input notification_group
-              color: !input notification_color
-              image: '{{ snapshot_access_file_path }}'
-              clickAction: !input data_clickaction_url
-              video: !input notification_video
-              sticky: !input notification_sticky
-              alert_once: !input notification_alert_once
-              notification_icon: !input notification_icon
-              ttl: 0
-              priority: high
-              attachment:
-                url: '{{ snapshot_access_file_path }}'
-                content_type: JPEG
-              url: !input data_clickaction_url
-              push:
-                sound:
-                  name: !input notification_sound
-                  volume: !input notification_volume
-                  critical: '{{ notification_critical }}'
-              actions:
-              - action: '{{ action_type }}'
-                title: '{{ action_title }}'
-                uri: '{{ action_uri }}'
-        default:
-        - service: notify.{{ notify_group_target }}
-          data:
-            title: !input notification_title
-            message: !input notification_message
-            data:
-              channel: !input notification_channel
-              group: !input notification_group
-              color: !input notification_color
-              image: '{{ snapshot_access_file_path }}'
-              clickAction: !input data_clickaction_url
-              video: !input notification_video
-              sticky: !input notification_sticky
-              alert_once: !input notification_alert_once
-              notification_icon: !input notification_icon
-              ttl: 0
-              priority: high
-              attachment:
-                url: '{{ snapshot_access_file_path }}'
-                content_type: JPEG
-              url: !input data_clickaction_url
-              push:
-                sound:
-                  name: !input notification_sound
-                  volume: !input notification_volume
-                  critical: '{{ iif(notification_critical, 1, 0) }}'
-              actions:
-              - action: '{{ action_type }}'
-                title: '{{ action_title }}'
-                uri: '{{ action_uri }}'
-- if:
-  - condition: template
-    value_template: !input save_archive_file
-  then:
+                attachment:
+                  url: '{{ snapshot_access_file_path }}'
+                  content_type: JPEG
+                url: !input data_clickaction_url
+                push:
+                  sound:
+                    name: !input notification_sound
+                    volume: !input notification_volume
+                    critical: '{{ iif(notification_critical, 1, 0) }}'
+                actions:
+                - action: '{{ action_type }}'
+                  title: '{{ action_title }}'
+                  uri: '{{ action_uri }}'
   - if:
-    - condition: !input conditionSave
+    - condition: template
+      value_template: !input save_archive_file
     then:
-    - service: camera.snapshot
-      entity_id: !input camera
-      data:
-        filename: !input archive_file_path
-- choose: []
-  default: !input additional_actions
-mode: parallel
+    - if:
+      - condition: !input conditionSave
+      then:
+      - service: camera.snapshot
+        entity_id: !input camera
+        data:
+          filename: !input archive_file_path
+  - choose: []
+    default: !input additional_actions
+mode: !input mode_select
