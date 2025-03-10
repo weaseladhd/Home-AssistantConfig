@@ -1,7 +1,7 @@
 platform: mediarr
 seer:
   # url: https://request.weaselweb.nl/
-  url: 10.20.30.182:5055
+  url: http://10.20.30.182:5055
   api_key: MTY0MjE5Mzg1NDE0OWYxZGVjMWQ4LWNiMDEtNGVlYy1hMzc1LTdmNTEwZmVhOGRjZSk=
   max_items: 10
   tmdb_api_key: "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1ZTgyNTBlNWJiMzk1NDkyZjAzOGYyNTgxNzI4NDM5OSIsIm5iZiI6MTI3ODU1NjI0My4wLCJzdWIiOiI0YzM1Mzg1MzdiOWFhMTdkYTgwMDAwM2MiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.9KJq3m1xC7B2psAdzvNv_2gYIAyBDk7AbolkR1QzeXA"
