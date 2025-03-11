@@ -43,8 +43,7 @@ blueprint:
         duration: {}
     condition_auto:
       name: Add Condition(s) to run this Automation
-      description: Add conditions if needed to run this automation at all. Note, if
-        conditions return `false`, no actions will fire.
+      description: Add conditions if needed to run this automation at all. Note, if conditions return `false`, no actions will fire.
       default: []
       selector:
         condition: {}
@@ -306,7 +305,7 @@ blueprint:
           description: Wait before sending a notification, in seconds.
           default: 0
           selector:
-            duration: {}
+            duration:
         delay_notification:
           name: Notification Delay
           description: Wait before sending another notification, in seconds. (ex.
@@ -327,6 +326,11 @@ blueprint:
           default: false
           selector:
             boolean: {}
+        # notification_video:
+        #   name: Video
+        #   description: You can optionally attach the clip to the notification which
+        #     will replace the thumbnail/snapshot above, if available. (local url, [Documentaion](https://companion.home-assistant.io/docs/notifications/notification-attachments))
+        #   default: ''
         notification_group:
           name: Group
           description: The group name that will determine if notifications are grouped
@@ -349,11 +353,10 @@ blueprint:
           default: ''
         file_path:
           name: File Path
-          description: "The file path to store the most current snapshot. \n\nDO NOT
-            ADD `/local`, the blueprint with do that automaticaly with `/media` ->
-            `/media/local`. \n\nDefaults to **/media/snapshots/<camera_name>** `/media/snapshots/{{
-            states[camera].object_id }}/last_motion.jpg`\n\n Try `/config/www/snapshots/{{
-            states[camera].object_id }}/last_motion.jpg` if you are having issues"
+          description: "The file path to store the most current snapshot. \n\nDO NOT ADD `/local`, the blueprint with do that automaticaly with `/media` -> `/media/local`. \n\nDefaults
+            to **/media/snapshots/<camera_name>** `/media/snapshots/{{ states[camera].object_id
+            }}/last_motion.jpg`\n\n Try `/config/www/snapshots/{{ states[camera].object_id
+            }}/last_motion.jpg` if you are having issues"
           default: /media/snapshots/{{ states[camera].object_id }}/last_motion.jpg
         save_archive_file:
           name: Save Archive Files?
@@ -371,15 +374,15 @@ blueprint:
             condition: {}
         archive_file_path:
           name: Archive File Path
-          description: 'The file path to store the snapshot in an archive folder.
-
-
-            DO NOT ADD `/local`, the blueprint with do that automaticaly with `/media`
-            -> `/media/local`.
-
-
-            Defaults to **/media/snapshots/<camera_name>** - `/media/snapshots/{{
-            states[camera].object_id }}/archive/motion_{{ now().strftime("%Y%m%d-%H%M%S")`.'
+          description: The file path to store the snapshot in an archive folder. 
+          
+          
+            DO NOT ADD `/local`, the blueprint with do that automaticaly with `/media` -> `/media/local`.
+          
+          
+            Defaults
+            to **/media/snapshots/<camera_name>** - `/media/snapshots/{{ states[camera].object_id
+            }}/archive/motion_{{ now().strftime("%Y%m%d-%H%M%S")`.
           default: /media/snapshots/{{ states[camera].object_id }}/archive/motion_{{
             now().strftime("%Y%m%d-%H%M%S") }}.jpg
         additional_actions_before:
@@ -403,17 +406,14 @@ blueprint:
           selector:
             select:
               options:
-              - label: Single
-                value: single
-              - label: Restart
-                value: restart
-              - label: Queued
-                value: queued
-              - label: Parallel
-                value: parallel
-              sort: false
-              multiple: false
-              custom_value: false
+              - label: 'Single'
+                value: 'single'
+              - label: 'Restart'
+                value: 'restart'
+              - label: 'Queued'
+                value: 'queued'
+              - label: 'Parallel'
+                value: 'parallel'
         action_type:
           name: Action Type (EXPERIMENTAL)
           description: 'Set action type, see [Actionable Notifications](https://companion.home-assistant.io/docs/notifications/actionable-notifications/).
@@ -460,8 +460,10 @@ variables:
   additional_actions_before: !input additional_actions_before
   notify: !input notify
   notify_group: !input notify_group
-  notify_group_target: '{{ notify_group | lower | regex_replace(''^notify\.'', '''')
-    | replace('' '',''_'') }}'
+  notify_group_target: "{{ notify_group | lower | regex_replace('^notify\\.', '') | replace(' ','_') }}"
+  # notify_group_target: '{{ notify_group | lower | regex_replace(''^notify\.'', '''')
+  #   | replace('' '',''_'') }}'
+  # notification_video: !input notification_video
   notification_channel: !input notification_channel
   notification_group: !input notification_group
   notification_sticky: !input notification_sticky
@@ -518,6 +520,7 @@ actions:
                   group: !input notification_group
                   color: !input notification_color
                   clickAction: !input data_clickaction_url
+                  # video: !input notification_video
                   sticky: !input notification_sticky
                   notification_icon: !input notification_icon
                   ttl: 0
@@ -543,6 +546,7 @@ actions:
                 color: !input notification_color
                 image: '{{ snapshot_access_file_path }}'
                 clickAction: !input data_clickaction_url
+                # video: !input notification_video
                 sticky: !input notification_sticky
                 alert_once: !input notification_alert_once
                 notification_icon: !input notification_icon
@@ -572,6 +576,7 @@ actions:
                 color: !input notification_color
                 image: '{{ snapshot_access_file_path }}'
                 clickAction: !input data_clickaction_url
+                # video: !input notification_video
                 sticky: !input notification_sticky
                 alert_once: !input notification_alert_once
                 notification_icon: !input notification_icon

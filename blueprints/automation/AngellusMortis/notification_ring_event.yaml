@@ -2,169 +2,177 @@ blueprint:
   name: UniFi Protect Doorbell Ring Notifications
   domain: automation
   source_url: https://raw.githubusercontent.com/AngellusMortis/unifiprotect_blueprints/main/blueprints/automation/unifiprotect/notification_ring_event.yaml
-  description: |
-    ## UniFi Protect Doorbell Ring Notifications
-
-    This blueprint will send push notifications to a Home Assistant mobile app when a doorbell ring is detected.
-
-    ### Required Settings
-
-      - UniFi Protect Doorbell Sensor
-
-    ### Optional Settings
-
-      - Notification target for the [mobile app notification target][1].
-      - Cutoff time before ring event for video clips.
-      - Time formatting strings. Timestamp is injected into the notification in case the notification is delay.
-      - Cooldown before sending another notification
-      - Silence timer for muting notifications via Actionable Notification (docs: [Mobile][2])
-      - Configurable lovelace view from notification
-
-    ### Requirements
-
-    To take full effect of this automation blueprint, your Home Assistant instance needs some setup beforehand.
-
-    - An UniFi Protect G4 Doorbell or G4 Doorbell Pro.
-    - A valid HTTPS certificate and [properly configured external URL][3]
-      - If you are using Home Assistant Cloud, this is already set up for you.
-      - If this is not setup correctly, the actionable notifications and attachments will not appear in the notifications.
-      - You do not need your _whole_ Home Assistant to be publicly accessible. Only the paths `/api/unifiprotect/*` and
-        `/api/webhook/*` need to be accessible outside of your network.
-
-    [1]: https://companion.home-assistant.io/docs/notifications/notifications-basic#sending-notifications-to-multiple-devices
-    [2]: https://companion.home-assistant.io/docs/notifications/actionable-notifications/
-    [3]: https://www.home-assistant.io/docs/configuration/remote/
+  description: "## UniFi Protect Doorbell Ring Notifications\n\nThis blueprint will
+    send push notifications to a Home Assistant mobile app when a doorbell ring is
+    detected.\n\n### Required Settings\n\n  - UniFi Protect Doorbell Sensor\n\n###
+    Optional Settings\n\n  - Notification target for the [mobile app notification
+    target][1].\n  - Cutoff time before ring event for video clips.\n  - Time formatting
+    strings. Timestamp is injected into the notification in case the notification
+    is delay.\n  - Cooldown before sending another notification\n  - Silence timer
+    for muting notifications via Actionable Notification (docs: [Mobile][2])\n  -
+    Configurable lovelace view from notification\n\n### Requirements\n\nTo take full
+    effect of this automation blueprint, your Home Assistant instance needs some setup
+    beforehand.\n\n- An UniFi Protect G4 Doorbell or G4 Doorbell Pro.\n- A valid HTTPS
+    certificate and [properly configured external URL][3]\n  - If you are using Home
+    Assistant Cloud, this is already set up for you.\n  - If this is not setup correctly,
+    the actionable notifications and attachments will not appear in the notifications.\n
+    \ - You do not need your _whole_ Home Assistant to be publicly accessible. Only
+    the paths `/api/unifiprotect/*` and\n    `/api/webhook/*` need to be accessible
+    outside of your network.\n\n[1]: https://companion.home-assistant.io/docs/notifications/notifications-basic#sending-notifications-to-multiple-devices\n[2]:
+    https://companion.home-assistant.io/docs/notifications/actionable-notifications/\n[3]:
+    https://www.home-assistant.io/docs/configuration/remote/\n"
   input:
     doorbell_sensor:
       name: Doorbell Sensor Entity
-      description: >
-        The "Doorbell" sensor(s) to use.
+      description: 'The "Doorbell" sensor(s) to use.
+
+        '
       selector:
         entity:
           integration: unifiprotect
-          domain: binary_sensor
-          device_class: occupancy
+          domain:
+          - binary_sensor
+          device_class:
+          - occupancy
           multiple: true
     lock_entity:
       name: (Optional) Door Lock or Gate Entity
-      description: >
-        The entity to provide an actionable notification to unlock on doorbell
-        ring. The time interval you have to respond to the unlock action is controlled
-        by "Cooldown". Short Cooldown timers may prevent you from unlocking the door.
-      default: ""
+      description: 'The entity to provide an actionable notification to unlock on
+        doorbell ring. The time interval you have to respond to the unlock action
+        is controlled by "Cooldown". Short Cooldown timers may prevent you from unlocking
+        the door.
+
+        '
+      default: ''
       selector:
         entity:
-          domain: [ lock, cover ]
+          domain:
+          - lock
+          - cover
+          multiple: false
     tts_target:
       name: (Optional) TTS Service
-      description: >
-        The TTS service you want to use to generate TTS messages
-        https://www.home-assistant.io/integrations/tts/
-      default: ""
+      description: 'The TTS service you want to use to generate TTS messages https://www.home-assistant.io/integrations/tts/
+
+        '
+      default: ''
       selector:
-        text:
+        text: {}
     lock_tts:
       name: (Optional) Unlock TTS message
-      description: >
-        TTS Message for play through doorbell when door is unlocked.
-      default: ""
+      description: 'TTS Message for play through doorbell when door is unlocked.
+
+        '
+      default: ''
       selector:
-        text:
+        text: {}
     wait_tts:
       name: (Optional) TTS message
-      description: >
-        Adds actionable notification to play TTS message to respond to guest. The time
-        interval you have to respond to the TTS action is controlled by "Cooldown".
-        Short Cooldown timers may prevent you from sending a TTS message the door.
-      default: ""
+      description: 'Adds actionable notification to play TTS message to respond to
+        guest. The time interval you have to respond to the TTS action is controlled
+        by "Cooldown". Short Cooldown timers may prevent you from sending a TTS message
+        the door.
+
+        '
+      default: ''
       selector:
-        text:
+        text: {}
     notify_target_app:
       name: (Optional) Notification Target (Mobile App)
-      description: >
-        The notification target for mobile apps notifications. Can be `notifiy.notify` or any Mobile app notify service
-        (starts with `notify.mobile_app_`).
+      description: 'The notification target for mobile apps notifications. Can be
+        `notifiy.notify` or any Mobile app notify service (starts with `notify.mobile_app_`).
         https://companion.home-assistant.io/docs/notifications/notifications-basic#sending-notifications-to-multiple-devices
-      default: "notify.notify"
+
+        '
+      default: notify.notify
       selector:
-        text:
+        text: {}
     channel:
       name: (Optional) Notification Channel
-      description: >
-        Notification channel/tag to use. Will automatically be prepended with
-        "Manual " if action is triggered manually.
-        https://companion.home-assistant.io/docs/notifications/notifications-basic#notification-channels
+      description: 'Notification channel/tag to use. Will automatically be prepended
+        with "Manual " if action is triggered manually. https://companion.home-assistant.io/docs/notifications/notifications-basic#notification-channels
+
+        '
       default: Doorbell
       selector:
-        text:
+        text: {}
     video_cutoff:
       name: (Optional) Video Cutoff
-      description: >
-        Time before the doorbell ring to generate a video for to send. Setting to 0 will disable attaching a video clip.
+      description: 'Time before the doorbell ring to generate a video for to send.
+        Setting to 0 will disable attaching a video clip.
+
+        '
       default: 0
       selector:
         number:
-          max: 30
-          min: 0
+          max: 30.0
+          min: 0.0
           unit_of_measurement: seconds
+          mode: slider
+          step: 1.0
     time_format:
       name: (Optional) Time Format String
-      description: >
-        Python datetime format code string for the event trigger time. This string is
-        the actual time the doorbell event was triggered in case the automation or
-        notification is delayed. Manual triggers will cause this to always be the time
-        of the previous event.
-        https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
-      default: "%I:%M %p"
-      selector:
-        entity:
+      description: 'Python datetime format code string for the event trigger time.
+        This string is the actual time the doorbell event was triggered in case the
+        automation or notification is delayed. Manual triggers will cause this to
+        always be the time of the previous event. https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
 
+        '
+      default: '%I:%M %p'
+      selector:
+        entity: {}
     cooldown:
       name: (Optional) Cooldown
-      description: >
-        Delay before sending another notification for this camera after the last event.
-        Is also the interval you have to respond to actions in notification.
+      description: 'Delay before sending another notification for this camera after
+        the last event. Is also the interval you have to respond to actions in notification.
+
+        '
       default: 120
       selector:
         number:
-          max: 300
-          min: 0
+          max: 300.0
+          min: 0.0
           unit_of_measurement: seconds
+          mode: slider
+          step: 1.0
     silence_timer:
       name: (Optional) Silence Notifications
-      description: >
-        How long to silence notifications for this camera when requested as part of the
-        actionable notification. The time interval you have to respond to the slient
-        action is controlled by "Cooldown". Short Cooldown timers may prevent you from
-        silencing.
+      description: 'How long to silence notifications for this camera when requested
+        as part of the actionable notification. The time interval you have to respond
+        to the slient action is controlled by "Cooldown". Short Cooldown timers may
+        prevent you from silencing.
+
+        '
       default: 30
       selector:
         number:
-          max: 300
-          min: 0
+          max: 300.0
+          min: 0.0
           unit_of_measurement: minutes
+          mode: slider
+          step: 1.0
     lovelace_view:
       name: (Optional) Lovelace View
-      description: |
-        Home Assistant Lovelace view to open when clicking notification.
+      description: 'Home Assistant Lovelace view to open when clicking notification.
+
         If left blank, URI Notification actions will not be generated.
-      default: ""
+
+        '
+      default: ''
       selector:
-        text:
+        text: {}
     debug_event_id:
       name: (Optional) Debug Event ID
-      description: >
-        Debug Event ID for UniFi Protect to use for when manually triggering automation.
-        Will be used to generate a thumbnail for testing notifications.
-      default: ""
-      selector:
-        text:
+      description: 'Debug Event ID for UniFi Protect to use for when manually triggering
+        automation. Will be used to generate a thumbnail for testing notifications.
 
+        '
+      default: ''
+      selector:
+        text: {}
 mode: single
 max_exceeded: silent
-
 variables:
-  # input vars
   input_doorbell: !input doorbell_sensor
   input_lock_entity: !input lock_entity
   input_lock_tts: !input lock_tts
@@ -178,189 +186,164 @@ variables:
   input_debug_event_id: !input debug_event_id
   input_cooldown: !input cooldown
   input_video_cutoff: !input video_cutoff
-  lovelace_view: "{{ input_lovelace_view | trim }}"
-  is_manual: "{{ 'from_state' not in trigger }}"
-  notification_channel: |
-    {% if is_manual %}
-      Manual {{ input_channel }}
-    {% else %}
-      {{ input_channel }}
-    {% endif %}
-  entity_id: "{% if is_manual %}{{ input_doorbell[0] }}{% else %}{{ trigger.entity_id }}{% endif %}"
-  device_id: "{{ device_id(entity_id) }}"
-  device_name: "{{ device_attr(device_id, 'name') }}"
-  camera_entities: '[{% for eid in device_entities(device_id) %}{%if eid.startswith(''camera'') and not ''package'' in eid and not is_state(eid, ''unavailable'') %}"{{ eid }}",{% endif %}{% endfor %}]'
-  camera_entity_id: "{{ camera_entities | default([None]) | first }}"
-  lock_entity_id: "{{ input_lock_entity or '' }}"
-  media_entities: '[{% for eid in device_entities(device_id) %}{%if eid.startswith(''media_player'') and not is_state(eid, ''unavailable'') %}"{{ eid }}",{% endif %}{% endfor %}]'
-  media_entity_id: "{{ media_entities | default([None]) | first }}"
-  event_id: "{% if is_manual %}{{ input_debug_event_id }}{% else %}{{ state_attr(entity_id, 'event_id') }}{% endif %}"
-  video_end: "{{ states[entity_id].last_changed.isoformat() }}"
-  trigger_time: |
-    {% if states[entity_id] == None %}
-      None
-    {% else %}
-      {{ as_local(states[entity_id].last_changed).strftime(input_time_format) }}
-    {% endif %}
-  notification_title: "{{ device_name }}: Doorbell Ring"
-  notification_tag: "{{ notification_channel.lower().replace(' ', '-') }}"
-  notification_message: "{{ device_name }} was rung{% if trigger_time != None %} at {{ trigger_time }}{% endif %}."
-  notification_image: "/api/unifiprotect/thumbnail/{{ config_entry_id(entity_id) }}/{{ event_id }}"
-  notification_url: |
-    {% if lovelace_view == "" %}
-      None
-    {% else %}
-      {{ lovelace_view }}
-    {% endif %}
-  unlock_text: "{% if lock_entity_id.startswith('cover') %}Open Gate{% else %}Unlock Door{% endif %}"
-  unlock_service: "{% if lock_entity_id.startswith('cover') %}cover.open_cover{% else %}lock.unlock{% endif %}"
-  unlock_action: "unlock-ring-{{ lock_entity_id }}"
-  silence_action: "silence-ring-{{ entity_id }}"
-  tts_action: "tts-ring-{{ input_doorbell }}"
-  lock_tts_enabled: "{{ input_tts_target != '' and input_lock_tts != '' and media_entity_id != None }}"
-  wait_tts_enabled: "{{ input_tts_target != '' and input_wait_tts != '' and media_entity_id != None }}"
-
+  lovelace_view: '{{ input_lovelace_view | trim }}'
+  is_manual: '{{ ''from_state'' not in trigger }}'
+  notification_channel: "{% if is_manual %}\n  Manual {{ input_channel }}\n{% else
+    %}\n  {{ input_channel }}\n{% endif %}\n"
+  entity_id: '{% if is_manual %}{{ input_doorbell[0] }}{% else %}{{ trigger.entity_id
+    }}{% endif %}'
+  device_id: '{{ device_id(entity_id) }}'
+  device_name: '{{ device_attr(device_id, ''name'') }}'
+  camera_entities: '[{% for eid in device_entities(device_id) %}{%if eid.startswith(''camera'')
+    and not ''package'' in eid and not is_state(eid, ''unavailable'') %}"{{ eid }}",{%
+    endif %}{% endfor %}]'
+  camera_entity_id: '{{ camera_entities | default([None]) | first }}'
+  lock_entity_id: '{{ input_lock_entity or '''' }}'
+  media_entities: '[{% for eid in device_entities(device_id) %}{%if eid.startswith(''media_player'')
+    and not is_state(eid, ''unavailable'') %}"{{ eid }}",{% endif %}{% endfor %}]'
+  media_entity_id: '{{ media_entities | default([None]) | first }}'
+  event_id: '{% if is_manual %}{{ input_debug_event_id }}{% else %}{{ state_attr(entity_id,
+    ''event_id'') }}{% endif %}'
+  video_end: '{{ states[entity_id].last_changed.isoformat() }}'
+  trigger_time: "{% if states[entity_id] == None %}\n  None\n{% else %}\n  {{ as_local(states[entity_id].last_changed).strftime(input_time_format)
+    }}\n{% endif %}\n"
+  notification_title: '{{ device_name }}: Doorbell Ring'
+  notification_tag: '{{ notification_channel.lower().replace('' '', ''-'') }}'
+  notification_message: '{{ device_name }} was rung{% if trigger_time != None %} at
+    {{ trigger_time }}{% endif %}.'
+  notification_image: /api/unifiprotect/thumbnail/{{ config_entry_id(entity_id) }}/{{
+    event_id }}
+  notification_url: "{% if lovelace_view == \"\" %}\n  None\n{% else %}\n  {{ lovelace_view
+    }}\n{% endif %}\n"
+  unlock_text: '{% if lock_entity_id.startswith(''cover'') %}Open Gate{% else %}Unlock
+    Door{% endif %}'
+  unlock_service: '{% if lock_entity_id.startswith(''cover'') %}cover.open_cover{%
+    else %}lock.unlock{% endif %}'
+  unlock_action: unlock-ring-{{ lock_entity_id }}
+  silence_action: silence-ring-{{ entity_id }}
+  tts_action: tts-ring-{{ input_doorbell }}
+  lock_tts_enabled: '{{ input_tts_target != '''' and input_lock_tts != '''' and media_entity_id
+    != None }}'
+  wait_tts_enabled: '{{ input_tts_target != '''' and input_wait_tts != '''' and media_entity_id
+    != None }}'
 trigger:
-  - platform: state
-    entity_id: !input doorbell_sensor
-    from: "off"
-    to: "on"
-
+- platform: state
+  entity_id: !input doorbell_sensor
+  from: 'off'
+  to: 'on'
 action:
-  - service: "{{ input_notify_target_app }}"
+- service: '{{ input_notify_target_app }}'
+  data:
+    message: '{{ notification_message }}'
+    title: '{{ notification_title }}'
     data:
-      message: "{{ notification_message }}"
-      title: "{{ notification_title }}"
+      tag: '{{ notification_tag }}'
+      channel: '{{ notification_channel }}'
+      ttl: 0
+      priority: high
+      alert_once: "{% if tag != \"\" %}\n  true\n{% else %}\n  false\n{% endif %}\n"
+      time-sensitive: 1
+      image: '{{ notification_image }}'
+      entity_id: '{{ camera_entity_id }}'
+      actions: '[{% if notification_url != None %} { "action": "URI", "title": "Open
+        Camera", "uri": "{{ notification_url }}" }, {% endif %} {% if lock_entity_id
+        != "" %} { "action": "{{ unlock_action }}", "title": "{{ unlock_text }}" },
+        {% endif %} {% if wait_tts_enabled %} { "action": "{{ tts_action }}", "title":
+        "Respond" }, {% endif %} {% if input_silence_timer > 0 %} { "action": "{{
+        silence_action }}", "title": "Silence", "destructive": True }, {% endif %}]
+
+        '
+- choose:
+  - conditions:
+    - condition: template
+      value_template: '{{ input_video_cutoff > 0 }}'
+    sequence:
+    - service: '{{ input_notify_target_app }}'
       data:
-        # Android/iOS notification tag
-        tag: "{{ notification_tag }}"
-        # Android notification Channel
-        channel: "{{ notification_channel }}"
-        # Android high priority
-        ttl: 0
-        priority: high
-        # Android alert once (requires tag to be set)
-        alert_once: |
-          {% if tag != "" %}
-            true
-          {% else %}
-            false
-          {% endif %}
-        # iOS high priority
-        time-sensitive: 1
-        image: "{{ notification_image }}"
-        # only for iOS
-        entity_id: "{{ camera_entity_id }}"
-        actions: >
-          [{% if notification_url != None %}
-          { "action": "URI", "title": "Open Camera", "uri": "{{ notification_url }}" },
-          {% endif %}
-          {% if lock_entity_id != "" %}
-          { "action": "{{ unlock_action }}", "title": "{{ unlock_text }}" },
-          {% endif %}
-          {% if wait_tts_enabled %}
-          { "action": "{{ tts_action }}", "title": "Respond" },
-          {% endif %}
-          {% if input_silence_timer > 0 %}
-          { "action": "{{ silence_action }}", "title": "Silence", "destructive": True },
-          {% endif %}]
-  # send the notification twice, once with video and once without. Second one will replace the first
-  # attaching a video to a notification can delay the notification
-  - choose:
-      - conditions:
-          - condition: template
-            value_template: "{{ input_video_cutoff > 0 }}"
+        message: '{{ notification_message }}'
+        title: '{{ notification_title }}'
+        data:
+          tag: '{{ notification_tag }}'
+          channel: '{{ notification_channel }}'
+          ttl: 0
+          priority: high
+          alert_once: "{% if tag != \"\" %}\n  true\n{% else %}\n  false\n{% endif
+            %}\n"
+          time-sensitive: 1
+          image: '{{ notification_image }}'
+          video: /api/unifiprotect/video/{{ config_entry_id(entity_id) }}/{{ entity_id
+            }}/{{ (as_datetime(video_end) - timedelta(seconds=input_video_cutoff)).isoformat()
+            }}/{{ video_end }}
+          entity_id: '{{ camera_entity_id }}'
+          actions: '[{% if notification_url != None %} { "action": "URI", "title":
+            "Open Camera", "uri": "{{ notification_url }}" }, {% endif %} {% if lock_entity_id
+            != "" %} { "action": "{{ unlock_action }}", "title": "{{ unlock_text }}"
+            }, {% endif %} {% if wait_tts_enabled %} { "action": "{{ tts_action }}",
+            "title": "Respond" }, {% endif %} {% if input_silence_timer > 0 %} { "action":
+            "{{ silence_action }}", "title": "Silence", "destructive": True }, {%
+            endif %}]
+
+            '
+- wait_for_trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: '{{ silence_action }}'
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: '{{ unlock_action }}'
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: '{{ tts_action }}'
+  - platform: event
+    event_type: mobile_app_notification_cleared
+    event_data:
+      message: '{{ notification_message }}'
+  timeout:
+    seconds: '{{ input_cooldown }}'
+  continue_on_timeout: false
+- choose:
+  - conditions:
+    - condition: template
+      value_template: '{{ wait.trigger.platform == ''event'' and wait.trigger.event.event_type
+        == ''mobile_app_notification_action'' and wait.trigger.event.data.action ==
+        silence_action }}'
+    sequence:
+    - delay:
+        minutes: '{{ input_silence_timer }}'
+  - conditions:
+    - condition: template
+      value_template: '{{ wait.trigger.platform == ''event'' and wait.trigger.event.event_type
+        == ''mobile_app_notification_action'' and wait.trigger.event.data.action ==
+        unlock_action }}'
+    sequence:
+    - service: '{{ unlock_service }}'
+      data:
+        entity_id: '{{ lock_entity_id }}'
+    - choose:
+      - conditions: '{{ lock_tts_enabled }}'
         sequence:
-          - service: "{{ input_notify_target_app }}"
-            data:
-              message: "{{ notification_message }}"
-              title: "{{ notification_title }}"
-              data:
-                # Android/iOS notification tag
-                tag: "{{ notification_tag }}"
-                # Android notification Channel
-                channel: "{{ notification_channel }}"
-                # Android high priority
-                ttl: 0
-                priority: high
-                # Android alert once (requires tag to be set)
-                alert_once: |
-                  {% if tag != "" %}
-                    true
-                  {% else %}
-                    false
-                  {% endif %}
-                # iOS high priority
-                time-sensitive: 1
-                image: "{{ notification_image }}"
-                video: "/api/unifiprotect/video/{{ config_entry_id(entity_id) }}/{{ entity_id }}/{{ (as_datetime(video_end) - timedelta(seconds=input_video_cutoff)).isoformat() }}/{{ video_end }}"
-                # only for iOS
-                entity_id: "{{ camera_entity_id }}"
-                actions: >
-                  [{% if notification_url != None %}
-                  { "action": "URI", "title": "Open Camera", "uri": "{{ notification_url }}" },
-                  {% endif %}
-                  {% if lock_entity_id != "" %}
-                  { "action": "{{ unlock_action }}", "title": "{{ unlock_text }}" },
-                  {% endif %}
-                  {% if wait_tts_enabled %}
-                  { "action": "{{ tts_action }}", "title": "Respond" },
-                  {% endif %}
-                  {% if input_silence_timer > 0 %}
-                  { "action": "{{ silence_action }}", "title": "Silence", "destructive": True },
-                  {% endif %}]
-  - wait_for_trigger:
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "{{ silence_action }}"
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "{{ unlock_action }}"
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "{{ tts_action }}"
-      - platform: event
-        event_type: mobile_app_notification_cleared
-        event_data:
-          message: "{{ notification_message }}"
-    timeout:
-      seconds: "{{ input_cooldown }}"
-    continue_on_timeout: false
-  - choose:
-      - conditions:
-          - condition: template
-            value_template: "{{ wait.trigger.platform == 'event' and wait.trigger.event.event_type == 'mobile_app_notification_action' and wait.trigger.event.data.action == silence_action }}"
-        sequence:
-          - delay:
-              minutes: "{{ input_silence_timer }}"
-      - conditions:
-          - condition: template
-            value_template: "{{ wait.trigger.platform == 'event' and wait.trigger.event.event_type == 'mobile_app_notification_action' and wait.trigger.event.data.action == unlock_action }}"
-        sequence:
-          - service: "{{ unlock_service }}"
-            data:
-              entity_id: "{{ lock_entity_id }}"
-          - choose:
-              - conditions: "{{ lock_tts_enabled }}"
-                sequence:
-                  - service: "{{ input_tts_target }}"
-                    data:
-                      entity_id: "{{ media_entity_id }}"
-                      message: "{{ input_lock_tts }}"
-      - conditions:
-          - condition: template
-            value_template: "{{ wait.trigger.platform == 'event' and wait.trigger.event.event_type == 'mobile_app_notification_action' and wait.trigger.event.data.action == tts_action }}"
-        sequence:
-          - service: "{{ input_tts_target }}"
-            data:
-              entity_id: "{{ media_entity_id }}"
-              message: "{{ input_wait_tts }}"
-      - conditions:
-          - condition: template
-            value_template: "{{ wait.trigger.platform == 'event' and wait.trigger.event.event_type == 'mobile_app_notification_cleared' }}"
-        sequence:
-          - delay:
-              seconds: "{{ max([input_cooldown - (wait.trigger.event.time_fired - as_datetime(video_end)).total_seconds(), 5]) }}"
+        - service: '{{ input_tts_target }}'
+          data:
+            entity_id: '{{ media_entity_id }}'
+            message: '{{ input_lock_tts }}'
+  - conditions:
+    - condition: template
+      value_template: '{{ wait.trigger.platform == ''event'' and wait.trigger.event.event_type
+        == ''mobile_app_notification_action'' and wait.trigger.event.data.action ==
+        tts_action }}'
+    sequence:
+    - service: '{{ input_tts_target }}'
+      data:
+        entity_id: '{{ media_entity_id }}'
+        message: '{{ input_wait_tts }}'
+  - conditions:
+    - condition: template
+      value_template: '{{ wait.trigger.platform == ''event'' and wait.trigger.event.event_type
+        == ''mobile_app_notification_cleared'' }}'
+    sequence:
+    - delay:
+        seconds: '{{ max([input_cooldown - (wait.trigger.event.time_fired - as_datetime(video_end)).total_seconds(),
+          5]) }}'

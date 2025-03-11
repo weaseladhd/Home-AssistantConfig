@@ -1,20 +1,51 @@
 blueprint:
-  name: "\U0001F4AC Entity State Notification"
-  description: "\n## \U0001F4A5 New In Version 3\n\U0001F503 support for multiple
-    states or nummeric comarision (above/below)\n\U0001F92F new logic for better troubleshooting
-    and further development\n\U0001F4F1 multiple groups and devices for notifications
-    possible\n\n## \U0001F919 Features\n\U0001F3AF monitor entities for a specific
-    state and trigger a notification\n\U0001F4DD modify message, title, icon, color,
-    channel, group etc\n\U0001F9F7 persistent notification until entity leaves specified
-    state\n\U0001F504 periodical notification with stop functionality\n\U0001F3AC
-    custom actions\n✅ custom conditions\n\nℹ️ **Hints**\nIf you want to test this
-    automation, you need to change the state of an observed entity. You can do this
-    in the developer options. Simply filter for your entity, select it and change
-    the state to the trigger state manually.\n\n\U0001F4D6 **Documentation:** [panhans.github.io/HomeAssistant/](https://panhans.github.io/HomeAssistant/)\n\n⛑️
-    **Help & FAQ**: [Entity State Notification](https://community.home-assistant.io/t/entity-state-notification)\n\n\U0001F4BF
-    **Version**: 3.1.3\n\n[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q3QEH52) "
-  source_url: https://github.com/panhans/homeassistant/blob/main/blueprints/automation/panhans/entity_state_notification.yaml
+  name: "💬 Entity State Notification"
+  description: "
+
+    ## 💥 New In Version 3
+
+    🔃 support for multiple states or nummeric comarision (above/below)
+
+    🤯 new logic for better troubleshooting and further development
+
+    📱 multiple groups and devices for notifications possible
+
+
+    ## 🤙 Features
+
+    🎯 monitor entities for a specific state and trigger a notification
+
+    📝 modify message, title, icon, color, channel, group etc
+
+    🧷 persistent notification until entity leaves specified state
+
+    🔄 periodical notification with stop functionality
+
+    🎬 custom actions
+
+    ✅ custom conditions
+
+
+    ℹ️ **Hints**
+
+    If you want to test this automation, you need to change the state of an observed entity. You can do this in the developer options.
+    Simply filter for your entity, select it and change the state to the trigger state manually.
+
+
+    📖 **Documentation:** [panhans.github.io/HomeAssistant/](https://panhans.github.io/HomeAssistant/)
+
+
+    ⛑️ **Help & FAQ**: [Entity State Notification](https://community.home-assistant.io/t/entity-state-notification)
+
+
+    💿 **Version**: 3.1.3
+
+
+    [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q3QEH52)
+    "
+  source_url: https://github.com/panhans/HomeAssistant/blob/main/blueprints/automation/panhans/entity_state_notification.yaml
   domain: automation
+
   input:
     sensor_section:
       name: Entities / Equal Comparison
@@ -22,369 +53,360 @@ blueprint:
       collapsed: true
       input:
         input_entities:
-          name: "\U0001F5B2️ Observed Entities"
-          description: '`target`
+          name: "🖲️ Observed Entities"
+          description: >
+            `target`
 
 
             Entities which trigger the notification.
-
-            '
           default: []
           selector:
             entity:
               multiple: true
+
         input_entity_states:
-          name: "\U0001F7E2 Entity States"
-          description: '`target`
+          name: "🟢 Entity States"
+          description: >
+            `target`
 
 
             Target state that triggers the automation.
-
-            '
           default: []
           selector:
             text:
               multiple: true
-              multiline: false
+
         input_entity_state_duration:
-          name: ⏲️ State Duration
-          description: '`target`
+          name: "⏲️ State Duration"
+          description: >
+            `target`
 
             Duration the entity must be in target state.
-
-            '
           default:
             hours: 0
             minutes: 0
             seconds: 2
           selector:
-            duration: {}
+            duration:
+
     numeric_entity_section:
       name: Numeric Above/Below Comparison
       icon: mdi:code-greater-than
       collapsed: true
       input:
         input_numeric_entities:
-          name: "\U0001F5B2️ Observed Numeric Entities"
-          description: '`target`
+          name: "🖲️ Observed Numeric Entities"
+          description: >
+            `target`
 
 
             Entities which trigger the notification.
-
-            '
           default: []
           selector:
             entity:
               multiple: true
+
         input_numeric_entity_operator:
-          name: "\U0001F503 Operator"
-          description: '`target`
+          name: "🔃 Operator"
+          description: >
+            `target`
 
 
             Operator to compare the state of the entity.
-
-            '
-          default: above
+          default: "above"
           selector:
             select:
               options:
-              - label: ▶️ above
-                value: above
-              - label: ◀️ below
-                value: below
-              sort: false
-              multiple: false
-              custom_value: false
+                - label: "▶️ above"
+                  value: "above"
+                - label: "◀️ below"
+                  value: "below"
+
         input_numeric_entity_state:
-          name: "\U0001F7E2 Entity State"
-          description: '`target`
+          name: "🟢 Entity State"
+          description: >
+            `target`
 
 
             Target state that triggers the automation.
-
-            '
           default: 0
           selector:
             number:
-              max: 9999999999.0
-              min: -9999999999.0
-              mode: slider
-              step: 1.0
+              max: 9999999999
+              min: -9999999999
+
         input_numeric_entity_state_duration:
-          name: ⏲️ State Duration
-          description: '`target`
+          name: "⏲️ State Duration"
+          description: >
+            `target`
 
 
             Duration the entity must be in target state.
-
-            '
           default:
             hours: 0
             minutes: 0
             seconds: 2
           selector:
-            duration: {}
+            duration:
+
     notifcation_section:
       name: Notification Settings
       icon: mdi:chat
       collapsed: true
       input:
         input_notify_devices:
-          name: "\U0001F4F1 Device to notify"
-          description: '`notification`
+          name: "📱 Device to notify"
+          description: >
+            `notification`
 
 
             Devices that receive the notification.
-
-            '
           default: []
           selector:
             device:
               multiple: true
               filter:
-              - integration: mobile_app
+                integration: mobile_app
+
         input_notify_groups:
-          name: "\U0001FAC2 Notification Group"
-          description: '`notification`
+          name: "🫂 Notification Group"
+          description: >
+            `notification`
 
 
             Name of the notification groups.
-
-            '
           default: []
           selector:
             text:
               multiple: true
-              multiline: false
+
         input_title:
-          name: "\U0001F4D5 Notification Title"
-          description: '`notification`
+          name: "📕 Notification Title"
+          description: >
+            `notification`
 
 
             Title of the notification.
+          default: "{{ entity_name }} is {{ new_state }}"
 
-            '
-          default: '{{ entity_name }} is {{ new_state }}'
         input_message:
-          name: "\U0001F4AC Notification Message"
-          description: '`notification`
+          name: "💬 Notification Message"
+          description: >
+            `notification`
 
 
             Message of the notification.
+          default: "Keep in mind: {{ entity_name }} is {{ new_state }}"
 
-            '
-          default: 'Keep in mind: {{ entity_name }} is {{ new_state }}'
         input_persistent_notification:
-          name: "\U0001FAA8 Persistent Notification"
-          description: '`notification`
+          name: "🪨 Persistent Notification"
+          description: >
+            `notification`
 
-            If turned on you can''t swipe away the notification. It only disappears
-            if the observed entity leave the target state combined with the operator.
-
-            '
+            If turned on you can't swipe away the notification. It only disappears if the observed entity leave the target state combined with the operator.
           default: false
           selector:
-            boolean: {}
+            boolean:
+
         input_notification_auto_delete:
-          name: ❌ Auto Close Notifications
-          description: '`notification`
+          name: "❌ Auto Close Notifications"
+          description: >
+            `notification`
 
 
-            If enabled the notifications will be deleted automatically after the entity
-            leaves the target state condition.
-
-            '
+            If enabled the notifications will be deleted automatically after the entity leaves the target state condition.
           default: true
           selector:
-            boolean: {}
+            boolean:
+
         input_ha_notification:
-          name: "\U0001F3E0 Persistent HomeAssistant Notification"
-          description: '`notification`
+          name: "🏠 Persistent HomeAssistant Notification"
+          description: >
+            `notification`
 
 
             Creates a notification in your home assistant frontend.
-
-            '
           default: false
           selector:
-            boolean: {}
+            boolean:
+
     mobile_appearance_section:
       name: Mobile Notification Appearance
       icon: mdi:palette
       collapsed: true
       input:
         input_status_bar_icon:
-          name: "\U0001F320 Status Bar Icon"
-          description: '`Android` `optional`
+          name: "🌠 Status Bar Icon"
+          description: >
+            `Android` `optional`
 
 
             Sets the status bar icon.
-
-            '
           default: mdi:home-assistant
           selector:
             icon:
               placeholder: mdi:home-assistant
+
         input_notification_color:
-          name: "\U0001F3A8 Notification Color"
-          description: '`Android` `optional`
+          name: "🎨 Notification Color"
+          description: >
+            `Android` `optional`
 
 
             Color of the notification.
-
-            '
-          default:
-          - 100
-          - 200
-          - 240
+          default: [100, 200, 240]
           selector:
-            color_rgb: {}
+            color_rgb:
+
         input_channel:
-          name: "\U0001F4ED Notification Channel"
-          description: '`Android` `optional`
+          name: "📭 Notification Channel"
+          description: >
+            `Android` `optional`
 
 
-            You can set a notification channel. In your companion app you can set
-            e.g. a custom sound for notifications in this channel.
+            You can set a notification channel. In your companion app you can set e.g. a custom sound for notifications in this channel.
+          default: "General"
 
-            '
-          default: General
         input_group:
-          name: "\U0001F4D1 Notification Group"
-          description: '`Android` `optional`
+          name: "📑 Notification Group"
+          description: >
+            `Android` `optional`
 
 
             Group notifications by using this identifier.
+          default: "espn-notification-group"
 
-            '
-          default: espn-notification-group
         input_vibration_pattern:
-          name: "\U0001F4F3 Vibration Pattern"
-          description: '`Android` `optional`
+          name: "📳 Vibration Pattern"
+          description: >
+            `Android` `optional`
 
 
             Pattern of the vibration when notification arrives."
+          default: "100, 100"
 
-            '
-          default: 100, 100
         input_led_color:
-          name: "\U0001F4A1 Notification LED Color"
-          description: '`Android` `optional`
+          name: "💡 Notification LED Color"
+          description: >
+            `Android` `optional`
 
 
             Color of the phone LED after incoming notification."
-
-            '
-          default:
-          - 100
-          - 200
-          - 240
+          default: [100, 200, 240]
           selector:
-            color_rgb: {}
+            color_rgb:
+
     peridodic_notification_section:
       name: Periodic Notification Settings
       icon: mdi:refresh
       collapsed: true
       input:
         input_period:
-          name: "\U0001F504 Periodical Notification"
-          description: '`periodical` `notification`
+          name: "🔄 Periodical Notification"
+          description: >
+            `periodical` `notification`
 
 
             Sends notification periodically. 0 means off.
-
-            '
           default:
             hours: 0
             minutes: 0
             seconds: 0
           selector:
-            duration: {}
+            duration:
+
         input_stop_button_text:
-          name: "\U0001F4AC Stop Button Text"
-          description: '`periodical` `optional`
+          name: "💬 Stop Button Text"
+          description: >
+            `periodical` `optional`
 
 
-            Text for stop button in the notification to interrupt the periodical send
-            notifications.
+            Text for stop button in the notification to interrupt the periodical send notifications.
+          default: "Stop notifying"
 
-            '
-          default: Stop notifying
     custom_section:
       name: Custom Actions / Conditions
       icon: mdi:cog
       collapsed: true
       input:
         input_custom_condition:
-          name: ❌ Conditions
-          description: '`optional`
+          name: "❌ Conditions"
+          description: >
+            `optional`
 
 
             Condition that must be met for the notification to be triggered.
-
-            '
           default: []
           selector:
-            condition: {}
+            condition:
+
         input_custom_action_on:
-          name: "\U0001F3AC Custom Action On"
-          description: '`optional`
+          name: "🎬 Custom Action On"
+          description: >
+            `optional`
 
 
             Custom action when your observed entity enters the target states.
-
-            '
           default: []
           selector:
             action: {}
+
         input_custom_action_off:
-          name: "\U0001F3AC Custom Action Off"
-          description: '`optional`
+          name: "🎬 Custom Action Off"
+          description: >
+            `optional`
 
 
-            Custom action when observed entity leave the target state. Keep in mind
-            this action also will be fired if your custom condition doesn''t match.
-
-            '
+            Custom action when observed entity leave the target state. Keep in mind this action also will be fired if your custom condition doesn't match.
           default: []
           selector:
             action: {}
+
 trigger_variables:
   input_entities: !input input_entities
+
 trigger:
-- id: state_on
-  trigger: state
-  entity_id: !input input_entities
-  to: !input input_entity_states
-  for: !input input_entity_state_duration
-- id: state_off
-  trigger: state
-  entity_id: !input input_entities
-  not_to: !input input_entity_states
-- id: above
-  trigger: numeric_state
-  entity_id: !input input_numeric_entities
-  above: !input input_numeric_entity_state
-  for: !input input_numeric_entity_state_duration
-- id: below
-  trigger: numeric_state
-  entity_id: !input input_numeric_entities
-  below: !input input_numeric_entity_state
-  for: !input input_numeric_entity_state_duration
-- id: above_off
-  trigger: numeric_state
-  entity_id: !input input_numeric_entities
-  above: !input input_numeric_entity_state
-- id: below_off
-  trigger: numeric_state
-  entity_id: !input input_numeric_entities
-  below: !input input_numeric_entity_state
-- id: period
-  trigger: event
-  event_type: esn_event
-  event_data:
-    automation: '{{ this.entity_id }}'
+  - id: "state_on"
+    trigger: state
+    entity_id: !input input_entities
+    to: !input input_entity_states
+    for: !input input_entity_state_duration
+
+  - id: "state_off"
+    trigger: state
+    entity_id: !input input_entities
+    not_to: !input input_entity_states
+
+  - id: "above"
+    trigger: numeric_state
+    entity_id: !input input_numeric_entities
+    above: !input input_numeric_entity_state
+    for: !input input_numeric_entity_state_duration
+
+  - id: "below"
+    trigger: numeric_state
+    entity_id: !input input_numeric_entities
+    below: !input input_numeric_entity_state
+    for: !input input_numeric_entity_state_duration
+
+  - id: "above_off"
+    trigger: numeric_state
+    entity_id: !input input_numeric_entities
+    above: !input input_numeric_entity_state
+
+  - id: "below_off"
+    trigger: numeric_state
+    entity_id: !input input_numeric_entities
+    below: !input input_numeric_entity_state
+
+  - id: "period"
+    trigger: event
+    event_type: esn_event
+    event_data:
+      automation: "{{ this.entity_id }}"
+
 variables:
+  # variables
   input_numeric_entity_operator: !input input_numeric_entity_operator
   input_numeric_entity_state: !input input_numeric_entity_state
   input_period: !input input_period
@@ -395,139 +417,187 @@ variables:
   input_stop_button_text: !input input_stop_button_text
   input_entity_states: !input input_entity_states
   input_notification_auto_delete: !input input_notification_auto_delete
-  is_period_trigger: '{{ trigger.id == ''period'' }}'
-  now_ts: '{{ now() }}'
-  is_perodical: '{{ as_datetime(now_ts) != as_datetime(now_ts) + timedelta(**input_period)
-    }}'
-  entity: "{% if is_period_trigger %}\n  {{ trigger.event.data.entity }}\n{% else
-    %}\n  {{ trigger.entity_id }}\n{% endif %}\n"
-  entity_name: '{{ state_attr(entity, ''friendly_name'') }}'
-  action_tag: STOP_{{ this.entity_id }}_{{ entity }}
-  tag: '{{ this.entity_id.split(''.'')[1] + entity.split(''.'')[1] }}'
-  notification_color_hex: '#{{ ''%02x%02x%02x'' | format(input_notification_color[0],
-    input_notification_color[1], input_notification_color[2]) }}'
-  led_color_hex: '#{{ ''%02x%02x%02x'' | format(input_led_color[0], input_led_color[1],
-    input_led_color[2]) }}'
-  action: "{% if is_perodical %}\n  {{ [{'action': action_tag, 'title': input_stop_button_text}]
-    }}\n{% else %}\n  {{ [] }}\n{% endif %}\n"
-  new_state: "{% if is_period_trigger %}\n  {{ states(entity) }}\n{% else %}\n  {{
-    trigger.to_state.state }}\n{% endif %}\n"
-  old_state: "{% if is_period_trigger %}\n  {{ trigger.event.data.last_state }}\n{%
-    else %}\n  {{ trigger.from_state.state }}\n{% endif %}\n"
-  notify_devices: '{{ input_notify_devices | map(''device_attr'', ''name'') | list
-    }}'
-  notify: "{% set result = namespace(r=[]) %} {% for device in notify_devices %}\n
-    \ {% set result.r = result.r + ['notify.mobile_app_' + device | slugify] %}\n{%
-    endfor %} {% for group in input_notify_groups %}\n  {% set result.r = result.r
-    + ['notify.' + group] %}\n{% endfor %}\n{{ result.r }}\n"
-  create_notifictaion: "{{ \n  trigger.id in ['state_on','period'] or \n  (trigger.id
-    in ['above'] and input_numeric_entity_operator == 'above') or\n  (trigger.id in
-    ['below'] and input_numeric_entity_operator == 'below')\n}}\n"
+
+  # helper
+  is_period_trigger: "{{ trigger.id == 'period' }}"
+  now_ts: "{{ now() }}"
+  is_perodical: "{{ as_datetime(now_ts) != as_datetime(now_ts) + timedelta(**input_period) }}"
+  entity: >
+    {% if is_period_trigger %}
+      {{ trigger.event.data.entity }}
+    {% else %}
+      {{ trigger.entity_id }}
+    {% endif %}
+
+  entity_name: "{{ state_attr(entity, 'friendly_name') }}"
+
+  action_tag: "STOP_{{ this.entity_id }}_{{ entity }}"
+  tag: "{{ this.entity_id.split('.')[1] + entity.split('.')[1] }}"
+  notification_color_hex: "#{{ '%02x%02x%02x' | format(input_notification_color[0], input_notification_color[1], input_notification_color[2]) }}"
+  led_color_hex: "#{{ '%02x%02x%02x' | format(input_led_color[0], input_led_color[1], input_led_color[2]) }}"
+  action: >
+    {% if is_perodical %}
+      {{ [{'action': action_tag, 'title': input_stop_button_text}] }}
+    {% else %}
+      {{ [] }}
+    {% endif %}
+
+  # state evaluation
+  new_state: >
+    {% if is_period_trigger %}
+      {{ states(entity) }}
+    {% else %}
+      {{ trigger.to_state.state }}
+    {% endif %}
+
+  old_state: >
+    {% if is_period_trigger %}
+      {{ trigger.event.data.last_state }}
+    {% else %}
+      {{ trigger.from_state.state }}
+    {% endif %}
+
+  # devices
+  notify_devices: "{{ input_notify_devices | map('device_attr', 'name') | list }}"
+
+  notify: >
+    {% set result = namespace(r=[]) %}
+    {% for device in notify_devices %}
+      {% set result.r = result.r + ['notify.mobile_app_' + device | slugify] %}
+    {% endfor %}
+    {% for group in input_notify_groups %}
+      {% set result.r = result.r + ['notify.' + group] %}
+    {% endfor %}
+
+    {{ result.r }}
+
+  # trigger evaluation
+  create_notifictaion: >
+    {{ 
+      trigger.id in ['state_on','period'] or 
+      (trigger.id in ['above'] and input_numeric_entity_operator == 'above') or
+      (trigger.id in ['below'] and input_numeric_entity_operator == 'below')
+    }}
+
 condition:
-- condition: or
-  conditions:
-  - condition: template
-    value_template: '{{ not create_notifictaion and input_notification_auto_delete
-      }}'
-  - condition: and
+  - condition: or
     conditions:
-    - condition: and
-      conditions: !input input_custom_condition
-    - condition: template
-      value_template: '{{ create_notifictaion }}'
+      - condition: template
+        value_template: "{{ not create_notifictaion and input_notification_auto_delete }}"
+      - condition: and
+        conditions:
+          - condition: and
+            conditions: !input input_custom_condition
+          - condition: template
+            value_template: "{{ create_notifictaion }}"
+
 action:
-- if:
-  - condition: template
-    value_template: '{{ create_notifictaion }}'
-  then:
   - if:
-    - condition: template
-      value_template: !input input_ha_notification
+      - condition: template
+        value_template: "{{ create_notifictaion }}"
     then:
-    - action: persistent_notification.create
-      data:
-        title: !input input_title
-        message: !input input_message
-        notification_id: '{{ tag }}'
-  - variables:
-      custom_action_on: !input input_custom_action_on
-  - if:
-    - condition: template
-      value_template: '{{ custom_action_on != none }}'
-    then:
-    - choose: []
-      default: !input input_custom_action_on
-  - repeat:
-      count: '{{ notify | count | int }}'
-      sequence:
+      # Notify
+      - if:
+          - condition: template
+            value_template: !input input_ha_notification
+        then:
+          - action: persistent_notification.create
+            data:
+              title: !input input_title
+              message: !input input_message
+              notification_id: "{{ tag }}"
+
       - variables:
-          index: '{{ repeat.index-1 }}'
-          notify_device: '{{ notify[index] }}'
-      - action: '{{ notify_device }}'
+          custom_action_on: !input input_custom_action_on
+      - if:
+          - condition: template
+            value_template: "{{ custom_action_on != none }}"
+        then:
+          - choose: []
+            default: !input input_custom_action_on
+
+      - repeat:
+          count: "{{ notify | count | int }}"
+          sequence:
+            - variables:
+                index: "{{ repeat.index-1 }}"
+                notify_device: "{{ notify[index] }}"
+            - action: "{{ notify_device }}"
+              data:
+                title: !input input_title
+                message: !input input_message
+                data:
+                  ttl: 0
+                  priority: high
+                  notification_icon: !input "input_status_bar_icon"
+                  tag: "{{ tag }}"
+                  persistent: !input input_persistent_notification
+                  sticky: !input input_persistent_notification
+                  channel: !input input_channel
+                  group: !input input_group
+                  color: "{{ notification_color_hex }}"
+                  vibrationPattern: !input input_vibration_pattern
+                  ledColor: "{{ led_color_hex }}"
+                  actions: "{{ action }}"
+
+      - if:
+          - condition: template
+            value_template: "{{ is_perodical }}"
+        then:
+          # period logic
+          - wait_for_trigger:
+              - trigger: event
+                event_type: mobile_app_notification_action
+                event_data:
+                  action: "{{ action_tag }}"
+            timeout: !input input_period
+          - variables:
+              latest_state: "{{ states(entity) }}"
+              latest_trigger_id: >
+                {% if is_period_trigger %}
+                  {{ trigger.event.data.trigger_id }}
+                {% else %}
+                  {{ trigger.id }}
+                {% endif %}
+              latest_state_condition: >
+                {% if latest_trigger_id == 'state_on' %}
+                  {{ latest_state in input_entity_states }}
+                {% elif latest_trigger_id == 'above' %}
+                  {{ latest_state | float > input_numeric_entity_state | float }}
+                {% elif latest_trigger_id == 'below' %}
+                  {{ latest_state | float < input_numeric_entity_state | float }}
+                {% endif %}
+          - if:
+              - condition: template
+                value_template: "{{ latest_state_condition }}"
+              - condition: template
+                value_template: "{{ wait.trigger == none }}"
+            then:
+              - event: esn_event
+                event_data:
+                  entity: "{{ entity }}"
+                  automation: "{{ this.entity_id }}"
+                  last_state: "{{ latest_state }}"
+                  trigger_id: "{{ latest_trigger_id }}"
+    else:
+      # Delete Notifications
+      - action: notify.notify
         data:
-          title: !input input_title
-          message: !input input_message
           data:
+            tag: "{{ tag }}"
             ttl: 0
             priority: high
-            notification_icon: !input input_status_bar_icon
-            tag: '{{ tag }}'
-            persistent: !input input_persistent_notification
-            sticky: !input input_persistent_notification
-            channel: !input input_channel
-            group: !input input_group
-            color: '{{ notification_color_hex }}'
-            vibrationPattern: !input input_vibration_pattern
-            ledColor: '{{ led_color_hex }}'
-            actions: '{{ action }}'
-  - if:
-    - condition: template
-      value_template: '{{ is_perodical }}'
-    then:
-    - wait_for_trigger:
-      - trigger: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: '{{ action_tag }}'
-      timeout: !input input_period
-    - variables:
-        latest_state: '{{ states(entity) }}'
-        latest_trigger_id: "{% if is_period_trigger %}\n  {{ trigger.event.data.trigger_id
-          }}\n{% else %}\n  {{ trigger.id }}\n{% endif %}\n"
-        latest_state_condition: "{% if latest_trigger_id == 'state_on' %}\n  {{ latest_state
-          in input_entity_states }}\n{% elif latest_trigger_id == 'above' %}\n  {{
-          latest_state | float > input_numeric_entity_state | float }}\n{% elif latest_trigger_id
-          == 'below' %}\n  {{ latest_state | float < input_numeric_entity_state |
-          float }}\n{% endif %}\n"
-    - if:
-      - condition: template
-        value_template: '{{ latest_state_condition }}'
-      - condition: template
-        value_template: '{{ wait.trigger == none }}'
-      then:
-      - event: esn_event
-        event_data:
-          entity: '{{ entity }}'
-          automation: '{{ this.entity_id }}'
-          last_state: '{{ latest_state }}'
-          trigger_id: '{{ latest_trigger_id }}'
-  else:
-  - action: notify.notify
-    data:
-      data:
-        tag: '{{ tag }}'
-        ttl: 0
-        priority: high
-      message: clear_notification
-  - action: persistent_notification.dismiss
-    data:
-      notification_id: '{{ tag }}'
-  - variables:
-      custom_action_off: !input input_custom_action_off
-  - if:
-    - condition: template
-      value_template: '{{ custom_action_off != none }}'
-    then:
-    - choose: []
-      default: !input input_custom_action_off
+          message: clear_notification
+      - action: persistent_notification.dismiss
+        data:
+          notification_id: "{{ tag }}"
+      - variables:
+          custom_action_off: !input input_custom_action_off
+      - if:
+          - condition: template
+            value_template: "{{ custom_action_off != none }}"
+        then:
+          - choose: []
+            default: !input input_custom_action_off
+
 mode: parallel

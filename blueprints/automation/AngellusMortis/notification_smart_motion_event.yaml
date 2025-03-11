@@ -2,158 +2,163 @@ blueprint:
   name: UniFi Protect Motion / Smart Detection Notifications
   domain: automation
   source_url: https://raw.githubusercontent.com/AngellusMortis/unifiprotect_blueprints/main/blueprints/automation/unifiprotect/notification_smart_motion_event.yaml
-  description: |
-    ## UniFi Protect Motion / Smart Detection Notifications
-
-    This blueprint will send push notifications to a Home Assistant mobile app when a camera detections motion or a
-    smart detection.
-
-    ### Required Settings
-
-      - UniFi Protect Detection Sensor
-
-    ### Optional Settings
-
-      - Notification target for the [mobile app notification target][1].
-      - Presence filter - list of mobile phones or other entities that should be within the "home" zone
-      - Alarm entity to check arm states.
-      - Alarm arm states when the notifications should work. Required if alarm entity is selected.
-      - Time formatting strings. Timestamp is injected into the notification in case the notification is delay.
-      - Cooldown before sending another notification
-      - Silence timer for muting notifications via Actionable Notification (docs: [Mobile][2])
-      - Configurable lovelace view from notification
-
-      The presence filter works together with the alarm entity (you can choose presence filter or alarm entity, you can choose both or nothing at all).
-
-    ### Requirements
-
-    To take full effect of this automation blueprint, your Home Assistant instance needs some setup beforehand.
-
-    - An UniFi Protect camera. Only cameras that are capable of smart detections (G4, AI or G5 Series cameras) will have objection detection sensors.
-    - A valid HTTPS certificate and [properly configured external URL][3]
-      - If you are using Home Assistant Cloud, this is already set up for you.
-      - If this is not setup correctly, the actionable notifications and attachments will not appear in the notifications.
-      - You do not need your _whole_ Home Assistant to be publicly accessible. Only the paths `/api/unifiprotect/*` and
-        `/api/webhook/*` need to be accessible outside of your network.
-
-    [1]: https://companion.home-assistant.io/docs/notifications/notifications-basic#sending-notifications-to-multiple-devices
-    [2]: https://companion.home-assistant.io/docs/notifications/actionable-notifications/
-    [3]: https://www.home-assistant.io/docs/configuration/remote/
+  description: "## UniFi Protect Motion / Smart Detection Notifications\n\nThis blueprint
+    will send push notifications to a Home Assistant mobile app when a camera detections
+    motion or a\nsmart detection.\n\n### Required Settings\n\n  - UniFi Protect Detection
+    Sensor\n\n### Optional Settings\n\n  - Notification target for the [mobile app
+    notification target][1].\n  - Presence filter - list of mobile phones or other
+    entities that should be within the \"home\" zone\n  - Alarm entity to check arm
+    states.\n  - Alarm arm states when the notifications should work. Required if
+    alarm entity is selected.\n  - Time formatting strings. Timestamp is injected
+    into the notification in case the notification is delay.\n  - Cooldown before
+    sending another notification\n  - Silence timer for muting notifications via Actionable
+    Notification (docs: [Mobile][2])\n  - Configurable lovelace view from notification\n\n
+    \ The presence filter works together with the alarm entity (you can choose presence
+    filter or alarm entity, you can choose both or nothing at all).\n\n### Requirements\n\nTo
+    take full effect of this automation blueprint, your Home Assistant instance needs
+    some setup beforehand.\n\n- An UniFi Protect camera. Only cameras that are capable
+    of smart detections (G4, AI or G5 Series cameras) will have objection detection
+    sensors.\n- A valid HTTPS certificate and [properly configured external URL][3]\n
+    \ - If you are using Home Assistant Cloud, this is already set up for you.\n  -
+    If this is not setup correctly, the actionable notifications and attachments will
+    not appear in the notifications.\n  - You do not need your _whole_ Home Assistant
+    to be publicly accessible. Only the paths `/api/unifiprotect/*` and\n    `/api/webhook/*`
+    need to be accessible outside of your network.\n\n[1]: https://companion.home-assistant.io/docs/notifications/notifications-basic#sending-notifications-to-multiple-devices\n[2]:
+    https://companion.home-assistant.io/docs/notifications/actionable-notifications/\n[3]:
+    https://www.home-assistant.io/docs/configuration/remote/\n"
   input:
     obj_sensor:
       name: Detection Sensor
-      description: >
-        The "Motion/Person/etc. Detected" sensor(s) to use.
+      description: 'The "Motion/Person/etc. Detected" sensor(s) to use.
+
+        '
       selector:
         entity:
           integration: unifiprotect
-          domain: binary_sensor
+          domain:
+          - binary_sensor
           multiple: true
     presence_filter:
       name: (Optional) Presence Filter
       description: Only notify if selected presence entity is not "home".
-      default: ""
+      default: ''
       selector:
         entity:
-          domain: device_tracker
+          domain:
+          - device_tracker
           multiple: true
     alarm_entity:
       name: (Optional) Alarm Entity
-      default: ""
+      default: ''
       description: The alarm entity to monitor for state changes.
       selector:
         entity:
-          domain: alarm_control_panel
-
+          domain:
+          - alarm_control_panel
+          multiple: false
     alarm_arm_states:
       name: Alarm Arm States
-      description: Select the alarm arm states for which you want to receive notifications. Required if an Alarm Entity is set.
-      default: ["armed_away", "armed_home", "armed_night", "armed_vacation", "armed_custom_bypass"]
+      description: Select the alarm arm states for which you want to receive notifications.
+        Required if an Alarm Entity is set.
+      default:
+      - armed_away
+      - armed_home
+      - armed_night
+      - armed_vacation
+      - armed_custom_bypass
       selector:
         select:
           options:
-            - armed_away
-            - armed_home
-            - armed_night
-            - armed_vacation
-            - armed_custom_bypass
+          - armed_away
+          - armed_home
+          - armed_night
+          - armed_vacation
+          - armed_custom_bypass
           multiple: true
+          sort: false
+          custom_value: false
     notify_target_app:
       name: (Optional) Notification Target (Mobile App)
-      description: >
-        The notification target for mobile apps notifications. Can be `notifiy.notify` or any Mobile app notify service
-        (starts with `notify.mobile_app_`).
+      description: 'The notification target for mobile apps notifications. Can be
+        `notifiy.notify` or any Mobile app notify service (starts with `notify.mobile_app_`).
         https://companion.home-assistant.io/docs/notifications/notifications-basic#sending-notifications-to-multiple-devices
-      default: "notify.notify"
+
+        '
+      default: notify.notify
       selector:
-        text:
+        text: {}
     channel:
       name: (Optional) Notification Channel
-      description: >
-        Notification channel/tag to use. Will automatically be prepended with
-        "Manual " if action is triggered manually.
-        https://companion.home-assistant.io/docs/notifications/notifications-basic#notification-channels
+      description: 'Notification channel/tag to use. Will automatically be prepended
+        with "Manual " if action is triggered manually. https://companion.home-assistant.io/docs/notifications/notifications-basic#notification-channels
+
+        '
       default: Smart Detection
       selector:
-        text:
+        text: {}
     time_format:
       name: (Optional) Time Format String
-      description: >
-        Python datetime format code string for the event trigger time. This string is
-        the actual time the doorbell event was triggered in case the automation or
-        notification is delayed. Manual triggers will cause this to always be the time
-        of the previous event.
-        https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
-      default: "%I:%M %p"
-      selector:
-        entity:
+      description: 'Python datetime format code string for the event trigger time.
+        This string is the actual time the doorbell event was triggered in case the
+        automation or notification is delayed. Manual triggers will cause this to
+        always be the time of the previous event. https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
 
+        '
+      default: '%I:%M %p'
+      selector:
+        entity: {}
     cooldown:
       name: (Optional) Cooldown
-      description: >
-        Delay before sending another notification for this camera after the last event.
-        Is also the interval you have to respond to actions in notification.
+      description: 'Delay before sending another notification for this camera after
+        the last event. Is also the interval you have to respond to actions in notification.
+
+        '
       default: 120
       selector:
         number:
-          max: 300
-          min: 0
+          max: 300.0
+          min: 0.0
           unit_of_measurement: seconds
+          mode: slider
+          step: 1.0
     silence_timer:
       name: (Optional) Silence Notifications
-      description: >
-        How long to silence notifications for this camera when requested as part of the
-        actionable notification. The time interval you have to respond to the slient
-        action is controlled by "Cooldown". Short Cooldown timers may prevent you from
-        silencing.
+      description: 'How long to silence notifications for this camera when requested
+        as part of the actionable notification. The time interval you have to respond
+        to the slient action is controlled by "Cooldown". Short Cooldown timers may
+        prevent you from silencing.
+
+        '
       default: 30
       selector:
         number:
-          max: 300
-          min: 0
+          max: 300.0
+          min: 0.0
           unit_of_measurement: minutes
+          mode: slider
+          step: 1.0
     lovelace_view:
       name: (Optional) Lovelace View
-      description: |
-        Home Assistant Lovelace view to open when clicking notification.
+      description: 'Home Assistant Lovelace view to open when clicking notification.
+
         If left blank, URI Notification actions will not be generated.
-      default: ""
+
+        '
+      default: ''
       selector:
-        text:
+        text: {}
     debug_event_id:
       name: (Optional) Debug Event ID
-      description: >
-        Debug Event ID for UniFi Protect to use for when manually triggering automation.
-        Will be used to generate a thumbnail for testing notifications.
-      default: ""
-      selector:
-        text:
+      description: 'Debug Event ID for UniFi Protect to use for when manually triggering
+        automation. Will be used to generate a thumbnail for testing notifications.
 
+        '
+      default: ''
+      selector:
+        text: {}
 mode: single
 max_exceeded: silent
-
 variables:
-  # input vars
   input_obj: !input obj_sensor
   input_channel: !input channel
   input_lovelace_view: !input lovelace_view
@@ -165,182 +170,145 @@ variables:
   input_alarm_arm_states: !input alarm_arm_states
   input_debug_event_id: !input debug_event_id
   input_cooldown: !input cooldown
-  lovelace_view: "{{ input_lovelace_view | trim }}"
-  is_manual: "{{ 'from_state' not in trigger }}"
-  entity_id: "{% if is_manual %}{{ input_obj[0] }}{% else %}{{ trigger.entity_id }}{% endif %}"
-  entity_name: "{{ state_attr(entity_id, 'friendly_name') }}"
-  device_id: "{{ device_id(entity_id) }}"
-  camera_entities: '[{% for eid in device_entities(device_id) %}{%if eid.startswith(''camera'') and not ''package'' in eid and not is_state(eid, ''unavailable'') %}"{{ eid }}",{% endif %}{% endfor %}]'
-  camera_entity_id: "{{ camera_entities | default([None]) | first }}"
-  event_id: "{% if is_manual %}{{ input_debug_event_id }}{% else %}{{ state_attr(entity_id, 'event_id') }}{% endif %}"
-  video_start: "{{ states[entity_id].last_changed.isoformat() }}"
-  trigger_time: |
-    {% if states[entity_id] == None %}
-      None
-    {% else %}
-      {{ as_local(states[entity_id].last_changed).strftime(input_time_format) }}
-    {% endif %}
-  notification_channel: |
-    {% if is_manual %}
-      Manual {{ input_channel }}
-    {% else %}
-      {{ input_channel }}
-    {% endif %}
-  notification_title: "{{ entity_name }}"
-  notification_tag: "{{ notification_channel.lower().replace(' ', '-') }}"
-  notification_message: "{{ entity_name }}{% if trigger_time != None %} at {{ trigger_time }}{% endif %}."
-  notification_image: "/api/unifiprotect/thumbnail/{{ config_entry_id(entity_id) }}/{{ event_id }}"
-  notification_url: |
-    {% if lovelace_view == "" %}
-      None
-    {% else %}
-      {{ lovelace_view }}
-    {% endif %}
-  silence_action: "silence-smart-{{ entity_id }}"
-
+  lovelace_view: '{{ input_lovelace_view | trim }}'
+  is_manual: '{{ ''from_state'' not in trigger }}'
+  entity_id: '{% if is_manual %}{{ input_obj[0] }}{% else %}{{ trigger.entity_id }}{%
+    endif %}'
+  entity_name: '{{ state_attr(entity_id, ''friendly_name'') }}'
+  device_id: '{{ device_id(entity_id) }}'
+  camera_entities: '[{% for eid in device_entities(device_id) %}{%if eid.startswith(''camera'')
+    and not ''package'' in eid and not is_state(eid, ''unavailable'') %}"{{ eid }}",{%
+    endif %}{% endfor %}]'
+  camera_entity_id: '{{ camera_entities | default([None]) | first }}'
+  event_id: '{% if is_manual %}{{ input_debug_event_id }}{% else %}{{ state_attr(entity_id,
+    ''event_id'') }}{% endif %}'
+  video_start: '{{ states[entity_id].last_changed.isoformat() }}'
+  trigger_time: "{% if states[entity_id] == None %}\n  None\n{% else %}\n  {{ as_local(states[entity_id].last_changed).strftime(input_time_format)
+    }}\n{% endif %}\n"
+  notification_channel: "{% if is_manual %}\n  Manual {{ input_channel }}\n{% else
+    %}\n  {{ input_channel }}\n{% endif %}\n"
+  notification_title: '{{ entity_name }}'
+  notification_tag: '{{ notification_channel.lower().replace('' '', ''-'') }}'
+  notification_message: '{{ entity_name }}{% if trigger_time != None %} at {{ trigger_time
+    }}{% endif %}.'
+  notification_image: /api/unifiprotect/thumbnail/{{ config_entry_id(entity_id) }}/{{
+    event_id }}
+  notification_url: "{% if lovelace_view == \"\" %}\n  None\n{% else %}\n  {{ lovelace_view
+    }}\n{% endif %}\n"
+  silence_action: silence-smart-{{ entity_id }}
 trigger:
-  - platform: state
-    entity_id: !input obj_sensor
-    from: "off"
-    to: "on"
-
+- platform: state
+  entity_id: !input obj_sensor
+  from: 'off'
+  to: 'on'
 condition:
   condition: and
   conditions:
-    # Ensure either input_alarm_entity is not provided or both are provided and state is valid.
-    - condition: or
+  - condition: or
+    conditions:
+    - condition: template
+      value_template: '{{ input_alarm_entity is not defined or input_alarm_entity
+        == '''' }}'
+    - condition: and
       conditions:
-        # Case when alarm entity is not provided (making it optional)
-        - condition: template
-          value_template: "{{ input_alarm_entity is not defined or input_alarm_entity == '' }}"
-        
-        # Case when both are provided and state is valid
-        - condition: and
-          conditions:
-            # Ensure alarm entity is provided
-            - condition: template
-              value_template: "{{ input_alarm_entity is defined and input_alarm_entity != '' }}"
-            
-            # Ensure alarm arm states is provided and has items
-            - condition: template
-              value_template: "{{ input_alarm_arm_states is defined and input_alarm_arm_states | length > 0 }}"
-            
-            # Ensure current state of alarm entity is in the selected states
-            - condition: template
-              value_template: "{{ states(input_alarm_entity) in input_alarm_arm_states }}"
-
-    # Handle presence filter logic
-    - condition: or
-      conditions:
-        # Case when presence filter is not provided (making it optional)
-        - condition: template
-          value_template: "{{ input_presence_filter is not defined or input_presence_filter == '' }}"
-        
-        # Ensure no user is home if presence filter is defined
-        - condition: template
-          value_template: "{{ (input_presence_filter | select('is_state', 'home') | list | count) == 0 }}"
-
-
-
+      - condition: template
+        value_template: '{{ input_alarm_entity is defined and input_alarm_entity !=
+          '''' }}'
+      - condition: template
+        value_template: '{{ input_alarm_arm_states is defined and input_alarm_arm_states
+          | length > 0 }}'
+      - condition: template
+        value_template: '{{ states(input_alarm_entity) in input_alarm_arm_states }}'
+  - condition: or
+    conditions:
+    - condition: template
+      value_template: '{{ input_presence_filter is not defined or input_presence_filter
+        == '''' }}'
+    - condition: template
+      value_template: '{{ (input_presence_filter | select(''is_state'', ''home'')
+        | list | count) == 0 }}'
 action:
-  - service: "{{ input_notify_target_app }}"
+- service: '{{ input_notify_target_app }}'
+  data:
+    message: '{{ notification_message }}'
+    title: '{{ notification_title }}'
     data:
-      message: "{{ notification_message }}"
-      title: "{{ notification_title }}"
+      tag: '{{ notification_tag }}'
+      channel: '{{ notification_channel }}'
+      ttl: 0
+      priority: high
+      alert_once: "{% if tag != \"\" %}\n  true\n{% else %}\n  false\n{% endif %}\n"
+      time-sensitive: 1
+      image: '{{ notification_image }}'
+      entity_id: '{{ camera_entity_id }}'
+      actions: '[{% if notification_url != None %} { "action": "URI", "title": "Open
+        Camera", "uri": "{{ notification_url }}" }, {% endif %} {% if input_silence_timer
+        > 0 %} { "action": "{{ silence_action }}", "title": "Silence", "destructive":
+        True }, {% endif %}]
+
+        '
+- wait_for_trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: '{{ silence_action }}'
+  - platform: event
+    event_type: mobile_app_notification_cleared
+    event_data:
+      message: '{{ notification_message }}'
+  - platform: state
+    entity_id: !input obj_sensor
+    to: 'off'
+  timeout:
+    seconds: '{{ input_cooldown }}'
+  continue_on_timeout: false
+- choose:
+  - conditions:
+    - condition: template
+      value_template: '{{ wait.trigger.platform == ''state'' }}'
+    sequence:
+    - service: '{{ input_notify_target_app }}'
       data:
-        # Android/iOS notification tag
-        tag: "{{ notification_tag }}"
-        # Android notification Channel
-        channel: "{{ notification_channel }}"
-        # Android high priority
-        ttl: 0
-        priority: high
-        # Android alert once (requires tag to be set)
-        alert_once: |
-          {% if tag != "" %}
-            true
-          {% else %}
-            false
-          {% endif %}
-        # iOS high priority
-        time-sensitive: 1
-        image: "{{ notification_image }}"
-        # only for iOS
-        entity_id: "{{ camera_entity_id }}"
-        actions: >
-          [{% if notification_url != None %}
-          { "action": "URI", "title": "Open Camera", "uri": "{{ notification_url }}" },
-          {% endif %}
-          {% if input_silence_timer > 0 %}
-          { "action": "{{ silence_action }}", "title": "Silence", "destructive": True },
-          {% endif %}]
-  - wait_for_trigger:
+        message: '{{ notification_message }}'
+        title: '{{ notification_title }}'
+        data:
+          tag: '{{ notification_tag }}'
+          channel: '{{ notification_channel }}'
+          ttl: 0
+          priority: high
+          alert_once: "{% if tag != \"\" %}\n  true\n{% else %}\n  false\n{% endif
+            %}\n"
+          time-sensitive: 1
+          image: '{{ notification_image }}'
+          video: /api/unifiprotect/video/{{ config_entry_id(entity_id) }}/{{ entity_id
+            }}/{{ video_start }}/{{ states[entity_id].last_changed.isoformat() }}
+          actions: '[{% if notification_url != None %} { "action": "URI", "title":
+            "Open Camera", "uri": "{{ notification_url }}" }, {% endif %} {% if input_silence_timer
+            > 0 %} { "action": "{{ silence_action }}", "title": "Silence", "destructive":
+            True }, {% endif %}]
+
+            '
+    - wait_for_trigger:
       - platform: event
         event_type: mobile_app_notification_action
         event_data:
-          action: "{{ silence_action }}"
-      - platform: event
-        event_type: mobile_app_notification_cleared
-        event_data:
-          message: "{{ notification_message }}"
-      - platform: state
-        entity_id: !input obj_sensor
-        to: "off"
-    timeout:
-      seconds: "{{ input_cooldown }}"
-    continue_on_timeout: false
-  - choose:
-      - conditions:
-          - condition: template
-            value_template: "{{ wait.trigger.platform == 'state' }}"
-        sequence:
-          - service: "{{ input_notify_target_app }}"
-            data:
-              message: "{{ notification_message }}"
-              title: "{{ notification_title }}"
-              data:
-                # Android/iOS notification tag
-                tag: "{{ notification_tag }}"
-                # Android notification Channel
-                channel: "{{ notification_channel }}"
-                # Android high priority
-                ttl: 0
-                priority: high
-                # Android alert once (requires tag to be set)
-                alert_once: |
-                  {% if tag != "" %}
-                    true
-                  {% else %}
-                    false
-                  {% endif %}
-                # iOS high priority
-                time-sensitive: 1
-                image: "{{ notification_image }}"
-                video: "/api/unifiprotect/video/{{ config_entry_id(entity_id) }}/{{ entity_id }}/{{ video_start }}/{{ states[entity_id].last_changed.isoformat() }}"
-                actions: >
-                  [{% if notification_url != None %}
-                  { "action": "URI", "title": "Open Camera", "uri": "{{ notification_url }}" },
-                  {% endif %}
-                  {% if input_silence_timer > 0 %}
-                  { "action": "{{ silence_action }}", "title": "Silence", "destructive": True },
-                  {% endif %}]
-          - wait_for_trigger:
-              - platform: event
-                event_type: mobile_app_notification_action
-                event_data:
-                  action: "{{ silence_action }}"
-            timeout:
-              seconds: "{{ max([input_cooldown - (states[entity_id].last_changed - as_datetime(video_start)).total_seconds(), 5]) }}"
-            continue_on_timeout: false
-      - conditions:
-          - condition: template
-            value_template: "{{ wait.trigger.platform == 'event' and wait.trigger.event.event_type == 'mobile_app_notification_action' }}"
-        sequence:
-          - delay:
-              minutes: "{{ input_silence_timer }}"
-      - conditions:
-          - condition: template
-            value_template: "{{ wait.trigger.platform == 'event' and wait.trigger.event.event_type == 'mobile_app_notification_cleared' }}"
-        sequence:
-          - delay:
-              seconds: "{{ max([input_cooldown - (wait.trigger.event.time_fired - as_datetime(video_start)).total_seconds(), 5]) }}"
+          action: '{{ silence_action }}'
+      timeout:
+        seconds: '{{ max([input_cooldown - (states[entity_id].last_changed - as_datetime(video_start)).total_seconds(),
+          5]) }}'
+      continue_on_timeout: false
+  - conditions:
+    - condition: template
+      value_template: '{{ wait.trigger.platform == ''event'' and wait.trigger.event.event_type
+        == ''mobile_app_notification_action'' }}'
+    sequence:
+    - delay:
+        minutes: '{{ input_silence_timer }}'
+  - conditions:
+    - condition: template
+      value_template: '{{ wait.trigger.platform == ''event'' and wait.trigger.event.event_type
+        == ''mobile_app_notification_cleared'' }}'
+    sequence:
+    - delay:
+        seconds: '{{ max([input_cooldown - (wait.trigger.event.time_fired - as_datetime(video_start)).total_seconds(),
+          5]) }}'
