@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 🪫 Low Battery Notifications & Actions
 
-    **Version: 2.8**
+    **Version: 2.9**
     
     
     🚀 Stay Charged, Stay Smart! Let's automate and take charge of your battery maintenance!🔋⚡
@@ -166,7 +166,7 @@ blueprint:
             Selecting these batteries here will exclude them from your notifications.
             
           
-            **NOTE** - You can only use entities. Areas, devices and labels are not supported.
+            **NOTE** - You can only use entities and labels. Areas and devices are not supported.
           default: { entity_id: [] }
           selector:
             target:
@@ -183,7 +183,7 @@ blueprint:
             Excluded battery sensors are not linked to this custom group.
             
             
-            **NOTE** - You can only use entities. Areas, devices and labels are not supported.
+            **NOTE** - You can only use entities and labels. Areas and devices are not supported.
           default: { entity_id: [] }
           selector:
             target:
@@ -557,6 +557,28 @@ variables:
   include_custom_actions: !input include_custom_actions
   global_conditions: !input global_conditions
 
+# Excluded sensors for entities and labels
+
+  all_exclude_sensors: >-
+    {% set label_entities_list = label_entities(exclude_sensors.label_id) if exclude_sensors.label_id is defined and label_entities(exclude_sensors.label_id) is not none else [] %}
+    {% set entity_list = exclude_sensors.entity_id if exclude_sensors.entity_id is defined else [] %}
+    {% if entity_list is string %}
+      {% set entity_list = [entity_list] %}
+    {% endif %}
+    {% set all_exclude_sensors = label_entities_list + entity_list %}
+    {{ all_exclude_sensors }}
+
+# Custom Group sensors for entities and labels
+
+  custom_group_sensors: >-
+    {% set label_entities_list = label_entities(custom_group.label_id) if custom_group.label_id is defined and label_entities(custom_group.label_id) is not none else [] %}
+    {% set entity_list = custom_group.entity_id if custom_group.entity_id is defined else [] %}
+    {% if entity_list is string %}
+      {% set entity_list = [entity_list] %}
+    {% endif %}
+    {% set custom_group_sensors = label_entities_list + entity_list %}
+    {{ custom_group_sensors }}
+
 # Notify device option data
 
   device_message_data: >-
@@ -644,7 +666,7 @@ variables:
     {% for state in states.sensor
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery') %}
-      {% if 0 <= state.state | int(-1) <= battery_level | int and state.entity_id not in exclude_sensors.entity_id %}
+      {% if 0 <= state.state | int(-1) <= battery_level | int and state.entity_id not in all_exclude_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' @ ' ~ state.state ~ '%'] %}
       {% endif %}
     {% endfor %}
@@ -652,7 +674,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['on', 'low']) %}
-      {% if state.entity_id not in exclude_sensors.entity_id %}
+      {% if state.entity_id not in all_exclude_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is low!'] %}
       {% endif %}
     {% endfor %}
@@ -660,7 +682,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
-      {% if state.entity_id not in exclude_sensors.entity_id %}
+      {% if state.entity_id not in all_exclude_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
@@ -668,7 +690,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
-      {% if state.entity_id not in exclude_sensors.entity_id %}
+      {% if state.entity_id not in all_exclude_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
@@ -679,7 +701,7 @@ variables:
     {% for state in states.sensor
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery') %}
-      {% if 0 <= state.state | int(-1) <= battery_level | int and state.entity_id not in exclude_sensors.entity_id %}
+      {% if 0 <= state.state | int(-1) <= battery_level | int and state.entity_id not in all_exclude_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' @ ' ~ state.state ~ '%'] %}
       {% endif %}
     {% endfor %}
@@ -687,7 +709,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['on', 'low']) %}
-      {% if state.entity_id not in exclude_sensors.entity_id %}
+      {% if state.entity_id not in all_exclude_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is low!'] %}
       {% endif %}
     {% endfor %}
@@ -699,7 +721,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
-      {% if state.entity_id not in exclude_sensors.entity_id %}
+      {% if state.entity_id not in all_exclude_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
@@ -707,7 +729,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
-      {% if state.entity_id not in exclude_sensors.entity_id %}
+      {% if state.entity_id not in all_exclude_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
@@ -720,7 +742,7 @@ variables:
     {% for state in states.sensor
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery') %}
-      {% if 0 <= state.state | int(-1) <= battery_level | int and state.entity_id not in exclude_sensors.entity_id %}
+      {% if 0 <= state.state | int(-1) <= battery_level | int and state.entity_id not in all_exclude_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name] %}
       {% endif %}
     {% endfor %}
@@ -728,7 +750,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['on', 'low']) %}
-      {% if state.entity_id not in exclude_sensors.entity_id %}
+      {% if state.entity_id not in all_exclude_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name] %}
       {% endif %}
     {% endfor %}
@@ -740,7 +762,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
-      {% if state.entity_id not in exclude_sensors.entity_id %}
+      {% if state.entity_id not in all_exclude_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name] %}
       {% endif %}
     {% endfor %}
@@ -748,7 +770,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
-      {% if state.entity_id not in exclude_sensors.entity_id %}
+      {% if state.entity_id not in all_exclude_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name] %}
       {% endif %}
     {% endfor %}
@@ -761,7 +783,7 @@ variables:
     {% for state in states.sensor
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery') %}
-      {% if 0 <= state.state | int(-1) <= custom_group_battery_level | int and state.entity_id in custom_group.entity_id %}
+      {% if 0 <= state.state | int(-1) <= custom_group_battery_level | int and state.entity_id in custom_group_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' @ ' ~ state.state ~ '%'] %}
       {% endif %}
     {% endfor %}
@@ -769,7 +791,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['on', 'low']) %}
-      {% if state.entity_id in custom_group.entity_id %}
+      {% if state.entity_id in custom_group_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is low!'] %}
       {% endif %}
     {% endfor %}
@@ -777,7 +799,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
-      {% if state.entity_id in custom_group.entity_id %}
+      {% if state.entity_id in custom_group_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
@@ -785,7 +807,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
-      {% if state.entity_id in custom_group.entity_id %}
+      {% if state.entity_id in custom_group_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
@@ -796,7 +818,7 @@ variables:
     {% for state in states.sensor
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery') %}
-      {% if 0 <= state.state | int(-1) <= custom_group_battery_level | int and state.entity_id in custom_group.entity_id %}
+      {% if 0 <= state.state | int(-1) <= custom_group_battery_level | int and state.entity_id in custom_group_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' @ ' ~ state.state ~ '%'] %}
       {% endif %}
     {% endfor %}
@@ -804,7 +826,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['on', 'low']) %}
-      {% if state.entity_id in custom_group.entity_id %}
+      {% if state.entity_id in custom_group_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is low!'] %}
       {% endif %}
     {% endfor %}
@@ -816,7 +838,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
-      {% if state.entity_id in custom_group.entity_id %}
+      {% if state.entity_id in custom_group_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
@@ -824,7 +846,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
-      {% if state.entity_id in custom_group.entity_id %}
+      {% if state.entity_id in custom_group_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
@@ -837,7 +859,7 @@ variables:
     {% for state in states.sensor
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery') %}
-      {% if 0 <= state.state | int(-1) <= custom_group_battery_level | int and state.entity_id in custom_group.entity_id %}
+      {% if 0 <= state.state | int(-1) <= custom_group_battery_level | int and state.entity_id in custom_group_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name] %}
       {% endif %}
     {% endfor %}
@@ -845,7 +867,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['on', 'low']) %}
-      {% if state.entity_id in custom_group.entity_id %}
+      {% if state.entity_id in custom_group_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name] %}
       {% endif %}
     {% endfor %}
@@ -857,7 +879,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
-      {% if state.entity_id in custom_group.entity_id %}
+      {% if state.entity_id in custom_group_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name] %}
       {% endif %}
     {% endfor %}
@@ -865,7 +887,7 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
-      {% if state.entity_id in custom_group.entity_id %}
+      {% if state.entity_id in custom_group_sensors %}
         {% set low_battery.sensors = low_battery.sensors + [state.name] %}
       {% endif %}
     {% endfor %}
