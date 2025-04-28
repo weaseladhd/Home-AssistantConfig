@@ -468,3 +468,24 @@
       input_mode_outside_temperature: sensor.irosma27_temperature
       input_mode_party:
       - input_boolean.party_mode
+- id: '1741704237838'
+  alias: UniFi Protect Doorbell Ring Notifications
+  description: ''
+  use_blueprint:
+    path: AngellusMortis/notification_ring_event.yaml
+    input:
+      doorbell_sensor:
+      - binary_sensor.uvc_g4_doorbell_doorbell
+      lock_entity: lock.nuki_locky_lock
+      notify_target_app: notify.notify
+- id: '1741704320373'
+  alias: UniFi Protect Motion / Smart Detection Notifications
+  description: ''
+  use_blueprint:
+    path: AngellusMortis/notification_smart_motion_event.yaml
+    input:
+      presence_filter:
+      - device_tracker.iphone_15_pro_wv
+      obj_sensor:
+      - binary_sensor.uvc_g3_pro_front_motion
+      alarm_entity: alarm_control_panel.alarmo
