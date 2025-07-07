@@ -1,8 +1,0 @@
----
-# Telegram
-telegram_bot:
-  - platform: broadcast
-    api_key: !secret telegram_bot_token
-    parse_mode: markdown
-    allowed_chat_ids:
-      - !secret telegram_wesley_chat_id
