@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 🔆 Smart Light
 
-    **Version: 2.8**
+    **Version: 3.0**
 
 
     Smart Lighting: Your Lights, Your Way - Take Control and Customize it to Perfection!💡✨
@@ -27,11 +27,11 @@ blueprint:
 
         - **Sun Elevation:**
           - Turn lights ON when the sun's elevation falls below a set value.
-          - Turn lights OFF when the sun's elevation rises above a set value. 
+          - Turn lights OFF when the sun's elevation rises above a set value.
 
         - **Ambient Light:**
           - Turn lights ON when ambient light falls below a set LUX value.
-          - Turn lights OFF when ambient light rises above a set LUX value. 
+          - Turn lights OFF when ambient light rises above a set LUX value.
 
         - **Time-Based Option:**
           - Define start and end times to turn lights ON and OFF.
@@ -742,22 +742,27 @@ blueprint:
         include_bypass:
           name: Use The Bypass Options (Optional)
           description: >
-            Select if you would like to enable an option. Each option allows manual control of your lights but alters its
-            behaviour by either turning ON, OFF, or keeping its current state when the bypass is switched ON. When enabling an option,
-            please enter the bypass switch into the corresponding input below.
+            Select if you would like to enable an option.
+            Each option determines how your lights will behave when the bypass switch is turned ON:
+
+              1 - Turns the lights ON
+              2 - Turns the lights OFF
+              3 - Keeps the lights current state
+
+            If you enable an option, make sure to enter the corresponding bypass switch in the input below.
           default: []
           selector:
             select:
               options:
-                - label: 1 - Enable the Bypass - Turn lights ON
+                - label: 1 - Enable the Bypass - Turn the Lights ON
                   value: "bypass_enabled_turn_on"
-                - label: 2 - Enable the Bypass - Turn lights OFF
+                - label: 2 - Enable the Bypass - Turn the Lights OFF
                   value: "bypass_enabled_turn_off"
-                - label: 3 - Enable the Bypass - Keep the lights current state
+                - label: 3 - Enable the Bypass - Keep the Lights Current State
                   value: "bypass_enabled_stop"
               multiple: true
         bypass_lights_on:
-          name: Bypass Switch - Turn lights ON
+          name: Bypass Switch - Turn the Lights ON
           description: >
             Select the switches that will turn your lights ON, bypass the trigger sensor, and allow your lights to function as normal.
             Please note that the entity cannot be included in the 'Lights - Switches - Scenes - Scripts' or 'Night Lights' selections.
@@ -766,7 +771,7 @@ blueprint:
             entity:
               multiple: true
         bypass_lights_off:
-          name: Bypass Switch - Turn lights OFF
+          name: Bypass Switch - Turn the Lights OFF
           description: >
             Select the switches that will turn your lights OFF, bypass the trigger sensor, and allow your lights to function as normal.
             Please note that the entity cannot be included in the 'Lights - Switches - Scenes - Scripts' or 'Night Lights' selections.
@@ -775,7 +780,7 @@ blueprint:
             entity:
               multiple: true
         bypass_lights_stop:
-          name: Bypass Switch - Keep The Lights Current State
+          name: Bypass Switch - Keep the Lights Current State
           description: >
             Select the switches that will keep your lights current state, bypass the trigger sensor, and allow your lights to function as normal.
             Please note that the entity cannot be included in the 'Lights - Switches - Scenes - Scripts' or 'Night Lights' selections.
@@ -786,10 +791,12 @@ blueprint:
         bypass_time_delay:
           name: Bypass - Time Delay
           description: >
-            This is only used in two bypass scenarios; when the lights are already ON and when the automation turns the lights OFF.
-            The first scenario occurs when you have selected option 2 above to "Enable the Bypass - Turn lights OFF".
-            The second scenario occurs when you turn the bypass OFF, the trigger sensor is OFF, and your lights are ON.
-            In both scenarios, the automation will turn your lights OFF after the set time delay.
+            This is only used in two specific bypass scenarios when your lights are ON:
+
+              1. When you have selected option 2 above to "Enable the Bypass - Turn the Lights OFF" and you turn the bypass ON.
+              2. When the bypass is turned OFF, the trigger sensor is OFF, and your lights are still ON.
+
+            In both cases, the automation will turn your lights OFF after the set time delay.
           default: 0
           selector:
             number:
@@ -800,23 +807,30 @@ blueprint:
         include_bypass_auto_off:
           name: Use The Bypass Auto OFF Option (Optional)
           description: >
-            This is used when you turn ON the bypass and want it to automatically turn OFF after a set time delay.
-            You can choose which bypass option you would like to apply the auto OFF feature to
+            Enable this option if you want the bypass to automatically turn OFF after a set time delay.
+            You can choose which bypass option the auto OFF will apply to:
+
+              1 - Turns the lights ON
+              2 - Turns the lights OFF
+              3 - Keeps the lights current state
+
+            Each option corresponds to one of the bypass options above.
           default: []
           selector:
             select:
               options:
-                - label: Enable the auto OFF for the bypass switch - Turn lights ON
+                - label: A - Enable Auto OFF for Bypass Option 1 - Turn the Lights ON
                   value: "bypass_auto_off_enabled_on"
-                - label: Enable the auto OFF for the bypass switch - Turn lights OFF
+                - label: B - Enable Auto OFF for Bypass Option 2 - Turn the Lights OFF
                   value: "bypass_auto_off_enabled_off"
-                - label: Enable the auto OFF for the bypass switch - Keep The Lights Current State
+                - label: C - Enable Auto OFF for Bypass Option 3 - Keep the Lights Current State
                   value: "bypass_auto_off_enabled_stop"
               multiple: true
         bypass_auto_off_delay:
           name: Bypass Auto OFF - Time Delay
           description: >
-            Set the bypass auto OFF time delay. The time delay starts from the last bypass that was turned ON.
+            Set the bypass auto OFF time delay.
+            The time delay starts from the last bypass that was turned ON.
           default: 60
           selector:
             number:
@@ -1717,10 +1731,21 @@ condition:
           - condition: or
             conditions:
               - "{{ (expand(light_switch.entity_id) | selectattr('state', '==', 'on') | list | count > 0) }}"
+              - "{{ (include_night_lights == 'night_lights_enabled') and (expand(night_lights.entity_id) | selectattr('state', '==', 'on') | list | count > 0) }}"
               - condition: template
                 value_template: >-
                   {% if boolean_scenes_scripts != [] %}
                     {{ is_state(boolean_scenes_scripts, 'on') }}
+                  {% endif %}
+              - condition: template
+                value_template: >-
+                  {% if night_boolean_scenes_scripts != [] %}
+                    {{ is_state(night_boolean_scenes_scripts, 'on') }}
+                  {% endif %}
+              - condition: template
+                value_template: >-
+                  {% if dynamic_lighting_boolean != [] %}
+                    {{ is_state(dynamic_lighting_boolean, 'on') }}
                   {% endif %}
       - condition: and # trigger by the start of night light entity state & check if any lights are on
         conditions:
@@ -1748,6 +1773,11 @@ condition:
                   {% if night_boolean_scenes_scripts != [] %}
                     {{ is_state(night_boolean_scenes_scripts, 'on') }}
                   {% endif %}
+              - condition: template
+                value_template: >-
+                  {% if dynamic_lighting_boolean != [] %}
+                    {{ is_state(dynamic_lighting_boolean, 'on') }}
+                  {% endif %}
       - condition: and # trigger by the start of night lights time & check if any lights are on
         conditions:
           - condition: trigger
@@ -1770,6 +1800,11 @@ condition:
                   {% if night_boolean_scenes_scripts != [] %}
                     {{ is_state(night_boolean_scenes_scripts, 'on') }}
                   {% endif %}
+              - condition: template
+                value_template: >-
+                  {% if dynamic_lighting_boolean != [] %}
+                    {{ is_state(dynamic_lighting_boolean, 'on') }}
+                  {% endif %}
       - condition: and # trigger by the start of night lights sun elevation & check if any lights are on
         conditions:
           - condition: trigger
@@ -1791,6 +1826,11 @@ condition:
                 value_template: >-
                   {% if night_boolean_scenes_scripts != [] %}
                     {{ is_state(night_boolean_scenes_scripts, 'on') }}
+                  {% endif %}
+              - condition: template
+                value_template: >-
+                  {% if dynamic_lighting_boolean != [] %}
+                    {{ is_state(dynamic_lighting_boolean, 'on') }}
                   {% endif %}
       - condition: and # trigger by the end of night lights entity state & check if any lights are on
         conditions:
@@ -1817,6 +1857,11 @@ condition:
                   {% if night_boolean_scenes_scripts != [] %}
                     {{ is_state(night_boolean_scenes_scripts, 'on') }}
                   {% endif %}
+              - condition: template
+                value_template: >-
+                  {% if dynamic_lighting_boolean != [] %}
+                    {{ is_state(dynamic_lighting_boolean, 'on') }}
+                  {% endif %}
       - condition: and # trigger by the end of night lights time & check if any lights are on
         conditions:
           - condition: trigger
@@ -1838,6 +1883,11 @@ condition:
                 value_template: >-
                   {% if night_boolean_scenes_scripts != [] %}
                     {{ is_state(night_boolean_scenes_scripts, 'on') }}
+                  {% endif %}
+              - condition: template
+                value_template: >-
+                  {% if dynamic_lighting_boolean != [] %}
+                    {{ is_state(dynamic_lighting_boolean, 'on') }}
                   {% endif %}
       - condition: and # trigger by the end of night lights sun elevation & check if any lights are on
         conditions:
@@ -1861,14 +1911,29 @@ condition:
                   {% if night_boolean_scenes_scripts != [] %}
                     {{ is_state(night_boolean_scenes_scripts, 'on') }}
                   {% endif %}
+              - condition: template
+                value_template: >-
+                  {% if dynamic_lighting_boolean != [] %}
+                    {{ is_state(dynamic_lighting_boolean, 'on') }}
+                  {% endif %}
       - condition: and # trigger by dynamic lighting state control and check in any normal lights are on
         conditions:
           - condition: trigger
             id: 
               - 't16'
               - 't17'
-          - "{{ dynamic_lighting_state_control == 'enable_state_control' }}"
-          - "{{ (expand(light_switch.entity_id) | selectattr('state', '==', 'on') | list | count > 0) }}"
+          - condition: template
+            value_template: "{{ include_dynamic_lighting != 'disable_dynamic_lighting' }}"
+          - condition: template
+            value_template: "{{ dynamic_lighting_state_control == 'enable_state_control' }}"
+          - condition: or
+            conditions:
+              - "{{ (expand(light_switch.entity_id) | selectattr('state', '==', 'on') | list | count > 0) }}"
+              - condition: template
+                value_template: >-
+                  {% if dynamic_lighting_boolean != [] %}
+                    {{ is_state(dynamic_lighting_boolean, 'on') }}
+                  {% endif %}
       - condition: and # trigger by HA Restart & check if any triggers are on
         conditions:
           - condition: trigger
@@ -1892,6 +1957,11 @@ condition:
                 value_template: >-
                   {% if night_boolean_scenes_scripts != [] %}
                     {{ is_state(night_boolean_scenes_scripts, 'on') }}
+                  {% endif %}
+              - condition: template
+                value_template: >-
+                  {% if dynamic_lighting_boolean != [] %}
+                    {{ is_state(dynamic_lighting_boolean, 'on') }}
                   {% endif %}
       - condition: and # trigger by HA Restart & check if by-pass auto off is enabled and any by-passes are on
         conditions:
@@ -2009,9 +2079,8 @@ action:
           - condition: and
             conditions:
               - alias: "Check if night lights is enabled"
-                condition: or
-                conditions:
-                  - "{{ 'night_lights_enabled' in include_night_lights }}"
+                condition: template
+                value_template: "{{ include_night_lights == 'night_lights_enabled' }}"
               - alias: "Check if night lights entity state is enabled"
                 condition: or
                 conditions:
@@ -2042,6 +2111,21 @@ action:
                   - "{{ ('time_enabled' in night_lights_conditions) and not ('sun_enabled' in night_lights_conditions) }}"
                   - "{{ ('sun_enabled' in night_lights_conditions) and (((is_state_attr('sun.sun', 'rising', false)) and (state_attr('sun.sun','elevation') <= night_lights_sun_elevation | float(90))) or ((is_state_attr('sun.sun', 'rising', true)) and (state_attr('sun.sun','elevation') <= night_lights_sun_elevation_rising | float(90)))) }}"
         sequence:
+          - choose:
+            - alias: "Dynamic Lighting - Check if Input Boolean Helper is ON"
+              conditions:
+                - condition: template
+                  value_template: "{{ include_dynamic_lighting != 'disable_dynamic_lighting' }}"
+                - condition: template
+                  value_template: >-
+                    {% if dynamic_lighting_boolean != [] %}
+                      {{ is_state(dynamic_lighting_boolean, 'on') }}
+                    {% endif %}
+              sequence:
+                - alias: "Turn off the boolean for dynamic lighting"
+                  action: input_boolean.turn_off
+                  data:
+                    entity_id: !input dynamic_lighting_boolean
           - choose:
             - alias: "By-pass is turned on & check by-pass option - Turn lights off"
               conditions:
@@ -2817,7 +2901,15 @@ action:
                 - choose:
                   - alias: "light - switch - scene - script is ON"
                     conditions:
-                      - "{{ (expand(light_switch.entity_id) | selectattr('state', '==', 'on') | list | count > 0) or (expand(night_lights.entity_id) | selectattr('state', '==', 'on') | list | count > 0) or (is_state(boolean_scenes_scripts, 'on')) }}"
+                      - condition: or
+                        conditions:
+                          - "{{ (expand(light_switch.entity_id) | selectattr('state', '==', 'on') | list | count > 0) }}"
+                          - "{{ (include_night_lights == 'night_lights_enabled') and (expand(night_lights.entity_id) | selectattr('state', '==', 'on') | list | count > 0) }}"
+                          - condition: template
+                            value_template: >-
+                              {% if boolean_scenes_scripts != [] %}
+                                {{ is_state(boolean_scenes_scripts, 'on') }}
+                              {% endif %}
                     sequence:
                       - choose:
                         - alias: "If transition is selected"
@@ -3498,6 +3590,21 @@ action:
               action: input_boolean.turn_off
               data:
                 entity_id: !input night_boolean_scenes_scripts
+            - choose:
+              - alias: "Dynamic Lighting - Check if Input Boolean Helper is ON"
+                conditions:
+                  - condition: template
+                    value_template: "{{ include_dynamic_lighting != 'disable_dynamic_lighting' }}"
+                  - condition: template
+                    value_template: >-
+                      {% if dynamic_lighting_boolean != [] %}
+                        {{ is_state(dynamic_lighting_boolean, 'on') }}
+                      {% endif %}
+                sequence:
+                  - alias: "Turn off the boolean for dynamic lighting"
+                    action: input_boolean.turn_off
+                    data:
+                      entity_id: !input dynamic_lighting_boolean
             - alias: "Check by-pass settings and preform the correct action"
               if:
                 - alias: "Check if the by-pass auto off is enabled"
@@ -3711,6 +3818,21 @@ action:
                     action: input_boolean.turn_off
                     data:
                       entity_id: !input night_boolean_scenes_scripts
+                  - choose:
+                    - alias: "Dynamic Lighting - Check if Input Boolean Helper is ON"
+                      conditions:
+                        - condition: template
+                          value_template: "{{ include_dynamic_lighting != 'disable_dynamic_lighting' }}"
+                        - condition: template
+                          value_template: >-
+                            {% if dynamic_lighting_boolean != [] %}
+                              {{ is_state(dynamic_lighting_boolean, 'on') }}
+                            {% endif %}
+                      sequence:
+                        - alias: "Turn off the boolean for dynamic lighting"
+                          action: input_boolean.turn_off
+                          data:
+                            entity_id: !input dynamic_lighting_boolean
                   - stop: "Stop the automation"
               - alias: "Trigger is off and check if any by-passes are on"
                 conditions:
@@ -3902,6 +4024,21 @@ action:
                     action: input_boolean.turn_off
                     data:
                       entity_id: !input boolean_scenes_scripts
+                  - choose:
+                    - alias: "Dynamic Lighting - Check if Input Boolean Helper is ON"
+                      conditions:
+                        - condition: template
+                          value_template: "{{ include_dynamic_lighting != 'disable_dynamic_lighting' }}"
+                        - condition: template
+                          value_template: >-
+                            {% if dynamic_lighting_boolean != [] %}
+                              {{ is_state(dynamic_lighting_boolean, 'on') }}
+                            {% endif %}
+                      sequence:
+                        - alias: "Turn off the boolean for dynamic lighting"
+                          action: input_boolean.turn_off
+                          data:
+                            entity_id: !input dynamic_lighting_boolean
                   - stop: "Stop the automation"
               - alias: "Check all by-pass are off and check conditions if enabled"
                 conditions:
@@ -4013,6 +4150,21 @@ action:
                     action: input_boolean.turn_off
                     data:
                       entity_id: !input boolean_scenes_scripts
+                  - choose:
+                    - alias: "Dynamic Lighting - Check if Input Boolean Helper is ON"
+                      conditions:
+                        - condition: template
+                          value_template: "{{ include_dynamic_lighting != 'disable_dynamic_lighting' }}"
+                        - condition: template
+                          value_template: >-
+                            {% if dynamic_lighting_boolean != [] %}
+                              {{ is_state(dynamic_lighting_boolean, 'on') }}
+                            {% endif %}
+                      sequence:
+                        - alias: "Turn off the boolean for dynamic lighting"
+                          action: input_boolean.turn_off
+                          data:
+                            entity_id: !input dynamic_lighting_boolean
                   - stop: "Stop the automation"
               - alias: "Trigger is on and check if any by-passes are on"
                 conditions:
@@ -4227,6 +4379,21 @@ action:
                           target:
                             entity_id: "{{ crossover_lights_light_on }}"
                           data: "{{ light_data }}"
+                        - choose:
+                          - alias: "Dynamic Lighting - Check if Input Boolean Helper is ON"
+                            conditions:
+                              - condition: template
+                                value_template: "{{ include_dynamic_lighting != 'disable_dynamic_lighting' }}"
+                              - condition: template
+                                value_template: >-
+                                  {% if dynamic_lighting_boolean != [] %}
+                                    {{ is_state(dynamic_lighting_boolean, 'on') }}
+                                  {% endif %}
+                            sequence:
+                              - alias: "Turn off the boolean for dynamic lighting"
+                                action: input_boolean.turn_off
+                                data:
+                                  entity_id: !input dynamic_lighting_boolean
       - choose:
         - alias: "Turn off night lights when trigger by end night lights conditions"
           conditions:
@@ -4492,6 +4659,21 @@ action:
                           action: input_boolean.turn_off
                           data:
                             entity_id: !input night_boolean_scenes_scripts
+                        - choose:
+                          - alias: "Dynamic Lighting - Check if Input Boolean Helper is ON"
+                            conditions:
+                              - condition: template
+                                value_template: "{{ include_dynamic_lighting != 'disable_dynamic_lighting' }}"
+                              - condition: template
+                                value_template: >-
+                                  {% if dynamic_lighting_boolean != [] %}
+                                    {{ is_state(dynamic_lighting_boolean, 'on') }}
+                                  {% endif %}
+                            sequence:
+                              - alias: "Turn off the boolean for dynamic lighting"
+                                action: input_boolean.turn_off
+                                data:
+                                  entity_id: !input dynamic_lighting_boolean
                         - stop: "Stop the automation"
               - alias: "Check if any by-passes are on"
                 conditions:
@@ -4698,6 +4880,21 @@ action:
                     action: input_boolean.turn_off
                     data:
                       entity_id: !input night_boolean_scenes_scripts
+                  - choose:
+                    - alias: "Dynamic Lighting - Check if Input Boolean Helper is ON"
+                      conditions:
+                        - condition: template
+                          value_template: "{{ include_dynamic_lighting != 'disable_dynamic_lighting' }}"
+                        - condition: template
+                          value_template: >-
+                            {% if dynamic_lighting_boolean != [] %}
+                              {{ is_state(dynamic_lighting_boolean, 'on') }}
+                            {% endif %}
+                      sequence:
+                        - alias: "Turn off the boolean for dynamic lighting"
+                          action: input_boolean.turn_off
+                          data:
+                            entity_id: !input dynamic_lighting_boolean
                   - stop: "Stop the automation"
       - choose:
           - conditions:
@@ -4906,7 +5103,11 @@ action:
                                           delay:
                                             minutes: !input dynamic_lighting_heartbeat
                                     - alias: "If dynamic lighting brightness is in the dead zone"
-                                      conditions: "{{ in_dead_zone }}"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ in_dead_zone }}"
+                                        - condition: template
+                                          value_template: "{{ repeat.index != 1 }}"
                                       sequence:
                                         - alias: "Dynamic lighting heartbeat"
                                           delay:
@@ -5060,7 +5261,11 @@ action:
                                           delay:
                                             minutes: !input dynamic_lighting_heartbeat
                                     - alias: "If dynamic lighting brightness is in the dead zone"
-                                      conditions: "{{ in_dead_zone }}"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ in_dead_zone }}"
+                                        - condition: template
+                                          value_template: "{{ repeat.index != 1 }}"
                                       sequence:
                                         - alias: "Dynamic lighting heartbeat"
                                           delay:
@@ -6063,7 +6268,11 @@ action:
                                                   delay:
                                                     minutes: !input dynamic_lighting_heartbeat
                                             - alias: "If dynamic lighting brightness is in the dead zone"
-                                              conditions: "{{ in_dead_zone }}"
+                                              conditions:
+                                                - condition: template
+                                                  value_template: "{{ in_dead_zone }}"
+                                                - condition: template
+                                                  value_template: "{{ repeat.index != 1 }}"
                                               sequence:
                                                 - alias: "Dynamic lighting heartbeat"
                                                   delay:
@@ -6405,7 +6614,11 @@ action:
                                                   delay:
                                                     minutes: !input dynamic_lighting_heartbeat
                                             - alias: "If dynamic lighting brightness is in the dead zone"
-                                              conditions: "{{ in_dead_zone }}"
+                                              conditions:
+                                                - condition: template
+                                                  value_template: "{{ in_dead_zone }}"
+                                                - condition: template
+                                                  value_template: "{{ repeat.index != 1 }}"
                                               sequence:
                                                 - alias: "Dynamic lighting heartbeat"
                                                   delay:
@@ -7319,11 +7532,26 @@ action:
                           conditions:
                             - condition: trigger
                               id: 't17'
+                            - condition: template
+                              value_template: "{{ include_dynamic_lighting != 'disable_dynamic_lighting' }}"
                           sequence:
                             - action: light.turn_on
                               target:
                                 entity_id: "{{ light_entities }}"
                               data: "{{ light_data }}"
+                            - choose:
+                              - alias: "Dynamic Lighting - Check if Input Boolean Helper is ON"
+                                conditions:
+                                  - condition: template
+                                    value_template: >-
+                                      {% if dynamic_lighting_boolean != [] %}
+                                        {{ is_state(dynamic_lighting_boolean, 'on') }}
+                                      {% endif %}
+                                sequence:
+                                  - alias: "Turn off the boolean for dynamic lighting"
+                                    action: input_boolean.turn_off
+                                    data:
+                                      entity_id: !input dynamic_lighting_boolean
                       - choose:
                         - alias: "If transition is selected"
                           conditions:
@@ -7417,10 +7645,15 @@ action:
                   - 't7'
             sequence:
               - choose:
-                - alias: "Dynamic Lighting - Input Boolean Helper"
+                - alias: "Dynamic Lighting - Check if Input Boolean Helper is ON"
                   conditions:
                     - condition: template
-                      value_template: "{{ dynamic_lighting_boolean != [] }}"
+                      value_template: "{{ include_dynamic_lighting != 'disable_dynamic_lighting' }}"
+                    - condition: template
+                      value_template: >-
+                        {% if dynamic_lighting_boolean != [] %}
+                          {{ is_state(dynamic_lighting_boolean, 'on') }}
+                        {% endif %}
                   sequence:
                     - alias: "Turn off the boolean for dynamic lighting"
                       action: input_boolean.turn_off
