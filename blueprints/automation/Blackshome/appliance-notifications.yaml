@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 📳 Appliance Notifications & Actions
     
-    **Version: 3.4**
+    **Version: 3.7**
 
 
     🤔 Watts your appliance up to, you're always in the know from start to finish! 🛎️🔌💸
@@ -28,6 +28,12 @@ blueprint:
           - Opt to sends a repeated notifications to remind you when the appliance cycle is complete.
           - Limit when notifications can be sent by using Notify Time Restrictions - helpful for avoiding alerts while you're asleep.
           - Notifications are compatible with both Apple iOS and Android devices, ensuring universal accessibility.
+
+      - **Run Status:**
+          - Display your appliance's run status on your dashboard.
+
+      - **Notify Time Restrictions:**
+          - Restrict notifications to the specified start and end times on the selected days. Notifications outside this time range will be skipped.
 
       - **Energy Tracking:**
           - Use energy tracking to estimate the total energy usage (kWh) for each completed cycle. You can also choose to include the estimated cost of that cycle in the end notification.
@@ -575,6 +581,102 @@ blueprint:
             the **Reminder Notification Entity** turns ON and the
             **Enable Reminder Notification + Notify When Done** option is selected above.
           default: YES! Fresh laundry on the move, let the drying begin!
+          selector:
+            text:
+    run_status_settings:
+      name: "Run Status"
+      icon: mdi:list-status
+      collapsed: true
+      input:
+        include_run_status:
+          name: Use the Run Status Option (Optional)
+          description: >
+            Enable this option to display your appliance's run status on your dashboard.
+
+
+            For more information on how to use Run Status [Click Here](https://community.home-assistant.io/t/650166/690)
+          default: run_status_disabled
+          selector:
+            select:
+              options:
+                - label: Enable run status
+                  value: "run_status_enabled"
+                - label: Disable run status
+                  value: "run_status_disabled"
+        run_status_entity:
+          name: Run Status Entity
+          description: >
+            Select the **Dropdown Helper** that contains all your run statuses.
+
+
+            ⚠️ The statuses must match exactly (including case sensitivity) with the ones defined below.
+            If they don't, the automation will stop running and an error will be logged.
+
+
+            Each status input includes examples to get you started, but you can be as creative as you like... have some fun with it!
+          default: []
+          selector:
+            entity:
+              filter:
+                domain: input_select
+        run_status_start:
+          name: Start Status
+          description: >
+            Enter the status you want to display when the appliance starts.
+
+
+            For example: `Washing`, `Scrubbing Away!`, `Drying` etc
+          default: []
+          selector:
+            text:
+        run_status_watchdog:
+          name: Watchdog Status
+          description: >
+            Enter the status you want to display when the watchdog is triggered.
+
+
+            If you are not using the watchdog then you can leave this input blank.
+
+
+            For example: `Error`, `Drama in the Drum!`, etc
+          default: []
+          selector:
+            text:
+        run_status_end:
+          name: End Status
+          description: >
+            Enter the status you want to display when the appliance has finished.
+
+
+            This can be the final “Finished” status when your **not** using the **Reminder Notification Options**.
+
+
+            For example: `Finished`, `All Done!`, etc
+          default: []
+          selector:
+            text:
+        run_status_end_reminder:
+          name: End Reminder Status
+          description: >
+            Enter the status to display when all reminders have been sent and the appliance has not been attended.
+
+
+            For example: `Still Waiting`, `Wrinkle Risk Rising!`, `Please Unload Me!` etc
+          default: []
+          selector:
+            text:
+        run_status_end_attended:
+          name: End - Attended Status
+          description: >
+            Enter the status to display when the **Reminder Notification Entity**
+            detects the appliance has been attended to (e.g., door opened, lid lifted, etc.).
+
+            
+            This is the final “Ready” status of your appliance when you are using the **Reminder Notification Options**.
+
+
+            For example: `Ready`, `Next Load Please!`, `Ready & Waiting!`, etc.
+          default: []
           selector:
             text:
     notify_time_restrictions_settings:
@@ -1236,6 +1338,13 @@ variables:
   end_reminder_notification_time_delay: !input end_reminder_notification_time_delay
   end_reminder_notification_max_count: !input end_reminder_notification_max_count
   end_attended_notification_message: !input end_attended_notification_message
+  include_run_status: !input include_run_status
+  run_status_entity: !input run_status_entity
+  run_status_start: !input run_status_start
+  run_status_watchdog: !input run_status_watchdog
+  run_status_end: !input run_status_end
+  run_status_end_reminder: !input run_status_end_reminder
+  run_status_end_attended: !input run_status_end_attended
   include_time: !input include_time
   after_time: !input after_time
   before_time: !input before_time
@@ -1423,7 +1532,8 @@ actions:
   - choose:
     - alias: "Check if power tracking is enabled"
       conditions:
-        - "{{ include_power_tracking != 'disable_power_tracking' }}"
+        - condition: template
+          value_template: "{{ include_power_tracking != 'disable_power_tracking' }}"
       sequence:
         - action: input_number.set_value
           target:
@@ -1433,18 +1543,21 @@ actions:
   - choose:
     - alias: "Check if start of notification is enabled"
       conditions:
-        - "{{ include_start_notify == 'enable_start_notify_options' }}"
+        - condition: template
+          value_template: "{{ include_start_notify == 'enable_start_notify_options' }}"
         - alias: "Check if notify time restriction is enabled before sending the message"
           condition: or
           conditions:
-            - "{{ include_time == 'time_disabled' }}"
+            - condition: template
+              value_template: "{{ include_time == 'time_disabled' }}"
             - condition: and
               conditions:
-              - condition: time
-                after: !input after_time
-                before: !input before_time
-                weekday: !input weekday_options
-              -  "{{ include_time == 'time_enabled' }}"
+                - condition: time
+                  after: !input after_time
+                  before: !input before_time
+                  weekday: !input weekday_options
+                - condition: template
+                  value_template: "{{ include_time == 'time_enabled' }}"
       sequence:
         - variables:
             zone_filtered_start_devices: >
@@ -1477,6 +1590,19 @@ actions:
                   message: !input start_message
                   data: "{{ start_message_data }}"
   - choose:
+    - alias: "Perform the run status action"
+      conditions:
+        - condition: template
+          value_template: "{{ include_run_status == 'run_status_enabled' }}"
+        - condition: template
+          value_template: "{{ run_status_start != [] }}"
+      sequence:
+        - action: input_select.select_option
+          target:
+            entity_id: !input run_status_entity
+          data:
+            option: !input run_status_start
+  - choose:
     - alias: "Perform the custom start action"
       conditions:
         - condition: template
@@ -1486,7 +1612,9 @@ actions:
     delay:
       minutes: !input running_dead_zone
   - choose:
-      - conditions: "{{ include_watchdog == 'enable_watchdog' }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ include_watchdog == 'enable_watchdog' }}"
         sequence:
           - alias: "Wait until appliance has finished"
             repeat:
@@ -1500,21 +1628,25 @@ actions:
                         minutes: !input end_time_delay
                   timeout: "{{ watchdog_duration }}"
           - choose:
-              - conditions: "{{ wait.trigger is none }}"
+              - conditions:
+                  - condition: template
+                    value_template: "{{ wait.trigger is none }}"
                 sequence:
                   - choose:
                     - alias: "Check if notify time restriction is enabled before sending the message"
                       conditions:
                         - condition: or
                           conditions:
-                            - "{{ include_time == 'time_disabled' }}"
+                            - condition: template
+                              value_template: "{{ include_time == 'time_disabled' }}"
                             - condition: and
                               conditions:
-                              - condition: time
-                                after: !input after_time
-                                before: !input before_time
-                                weekday: !input weekday_options
-                              -  "{{ include_time == 'time_enabled' }}"
+                                - condition: time
+                                  after: !input after_time
+                                  before: !input before_time
+                                  weekday: !input weekday_options
+                                - condition: template
+                                  value_template: "{{ include_time == 'time_enabled' }}"
                       sequence:
                         - variables:
                             zone_filtered_watchdog_devices: >
@@ -1547,13 +1679,28 @@ actions:
                                   message: "{{watchdog_message}}"
                                   data: "{{ watchdog_message_data }}"
                   - choose:
+                    - alias: "Perform the run status action"
+                      conditions:
+                        - condition: template
+                          value_template: "{{ include_run_status == 'run_status_enabled' }}"
+                        - condition: template
+                          value_template: "{{ run_status_watchdog != [] }}"
+                      sequence:
+                        - action: input_select.select_option
+                          target:
+                            entity_id: !input run_status_entity
+                          data:
+                            option: !input run_status_watchdog
+                  - choose:
                     - alias: "Perform the custom watchdoog action"
                       conditions:
                         - condition: template
                           value_template: "{{ 'enable_watchdog_custom_actions' in include_custom_actions }}"
                       sequence: !input watchdog_custom_actions
                   - stop: "Stop the automation"
-      - conditions: "{{ include_watchdog == 'disable_watchdog' }}"
+      - conditions:
+        - condition: template
+          value_template: "{{ include_watchdog == 'disable_watchdog' }}"
         sequence:
           - alias: "Wait until appliance has finished"
             repeat:
@@ -1568,7 +1715,8 @@ actions:
   - choose:
     - alias: "Check if power tracking is enabled"
       conditions:
-        - "{{ include_power_tracking != 'disable_power_tracking' }}"
+        - condition: template
+          value_template: "{{ include_power_tracking != 'disable_power_tracking' }}"
       sequence:
         - action: input_number.set_value
           target:
@@ -1578,7 +1726,8 @@ actions:
   - choose:
     - alias: "Check if Runtime tracking is enabled"
       conditions:
-        - "{{ include_runtime_tracking != 'disable_runtime_tracking' }}"
+        - condition: template
+          value_template: "{{ include_runtime_tracking != 'disable_runtime_tracking' }}"
       sequence:
         - variables:
             current_run_time_total: >
@@ -1603,7 +1752,8 @@ actions:
   - choose:
     - alias: "Check if time-based service reminder is enabled"
       conditions:
-        - "{{ include_time_service_reminder != 'disable_time_service_reminder' }}"
+        - condition: template
+          value_template: "{{ include_time_service_reminder != 'disable_time_service_reminder' }}"
       sequence:
         - variables:
             current_service_time_total: >
@@ -1628,7 +1778,8 @@ actions:
   - choose:
     - alias: "Check if cycle count is enabled"
       conditions:
-        - "{{ include_cycle_counter != 'disable_cycle_counter' }}"
+        - condition: template
+          value_template: "{{ include_cycle_counter != 'disable_cycle_counter' }}"
       sequence:
         - action: counter.increment
           target:
@@ -1636,126 +1787,76 @@ actions:
   - choose:
     - alias: "Check if service cycle count is enabled"
       conditions:
-        - "{{ include_service_reminder != 'disable_service_reminder' }}"
+        - condition: template
+          value_template: "{{ include_service_reminder != 'disable_service_reminder' }}"
       sequence:
         - action: counter.increment
           target:
             entity_id: !input service_reminder_counter_helper
   - choose:
-    - alias: "Perform the custom end action"
+    - alias: "Perform the run status action"
       conditions:
         - condition: template
-          value_template: "{{ 'enable_end_custom_actions' in include_custom_actions }}"
-      sequence: !input end_custom_actions
-  - choose:
-    - alias: "Check if end of notification is enabled"
-      conditions:
-        - "{{ include_end_notify == 'enable_end_notify_options' }}"
-        - alias: "Check if notify time restriction is enabled before sending the message"
-          condition: or
-          conditions:
-            - "{{ include_time == 'time_disabled' }}"
-            - condition: and
-              conditions:
-              - condition: time
-                after: !input after_time
-                before: !input before_time
-                weekday: !input weekday_options
-              -  "{{ include_time == 'time_enabled' }}"
+          value_template: "{{ include_run_status == 'run_status_enabled' }}"
+        - condition: template
+          value_template: "{{ run_status_end != [] }}"
       sequence:
-        - variables:
-            zone_filtered_end_devices: >
-              {% if 'zone_end' in include_device_tracker %}
-                {% set zone_short_name = notify_zone.split('.')[-1] | lower | trim %}
-                {% set ns = namespace(devices=[]) %}
-                {% for device in end_notify_device %}
-                  {% set device_status = namespace(in_zone=false) %}
-                  {% set trackers = device_entities(device) | select('search', '^device_tracker\\.') | list %}
-                  {% for tracker in trackers %}
-                    {% if (states(tracker) | string).lower().strip() == zone_short_name %}
-                      {% set device_status.in_zone = true %}
-                    {% endif %}
-                  {% endfor %}
-                  {% if device_status.in_zone %}
-                    {% set ns.devices = ns.devices + [device] %}
-                  {% endif %}
-                {% endfor %}
-                {{ ns.devices }}
-              {% else %}
-                {{ end_notify_device }}
-              {% endif %}
-            message: >-
-              {% set message = namespace(text='') %}
-              {% if include_service_reminder == 'enable_service_reminder_and_notify' %}
-                {% set service_count = states(service_reminder_counter_helper) | int(0) %}
-                {% set service_threshold = service_reminder_cycles | int %}
-                {% if service_count >= service_threshold %}
-                  {% set message.text = message.text + service_reminder_end_message + '\n' %}
-                {% endif %}
-              {% endif %}
-              {% if include_time_service_reminder == 'enable_time_service_reminder_and_notify' %}
-                {% set service_reminder_helper_value = states(service_reminder_time_helper) %}
-                {% if ':' in service_reminder_helper_value %}
-                  {% set time = service_reminder_helper_value.split(':') %}
-                  {% set service_reminder_helper_seconds = (time[0] | int * 3600) + (time[1] | int * 60) + (time[2] | int) %}
-                {% else %}
-                  {% set service_reminder_helper_seconds = 0 %}
-                {% endif %}
-                {% set service_reminder_time_threshold_seconds =
-                  (service_reminder_time_threshold.hours | int * 3600) +
-                  (service_reminder_time_threshold.minutes | int * 60) +
-                  (service_reminder_time_threshold.seconds | int)
-                %}
-                {% if service_reminder_helper_seconds >= service_reminder_time_threshold_seconds %}
-                  {% set message.text = message.text + service_reminder_time_end_message + '\n' %}
-                {% endif %}
-              {% endif %}
-              {% set message.text = message.text + end_message %}
-              {% if include_power_tracking == 'enable_power_tracking' %}
-                {% set kwh = (states(end_power_consumption) | float - states(start_power_consumption) | float) %}
-                {% set message.text = message.text + '\n' + end_message_kwh + ' ' + (kwh | round(2) | string) + ' kWh' %}
-              {% endif %}
-              {% if include_power_tracking == 'enable_power_tracking_and_cost' %}
-                {% set kwh = (states(end_power_consumption) | float - states(start_power_consumption) | float) %}
-                {% set cost = kwh * (states(cost_per_kwh) | float) %}
-                {% set message.text = message.text + '\n' + end_message_kwh + ' ' + (kwh | round(2) | string) + ' kWh' %}
-                {% set message.text = message.text + '\n' + end_message_cost + (cost | round(2) | string) %}
-              {% endif %}
-              {% if include_runtime_tracking == 'enable_runtime_tracking_and_notify' %}
-                {% set run_time = states(runtime_tracking_helper) %}
-                {% set message.text = message.text + '\n' + runtime_tracking_end_message + ' ' + run_time %}
-              {% endif %}
-              {% if include_duration_tracking == 'enable_duration_tracking' %}
-                {% set end_time = now().timestamp() %}
-                {% set duration = (end_time - start_time) | int %}
-                {% set hours = (duration // 3600) %}
-                {% set minutes = ((duration % 3600) // 60) %}
-                {% set seconds = (duration % 60) %}
-                {% set message.text = message.text + '\n' + end_message_duration_tracking + ' ' + '%02d:%02d:%02d' | format(hours, minutes, seconds) %}
-              {% endif %}
-              {% if include_cycle_counter == 'enable_cycle_counter_and_notify' %}
-                {% set cycle_count = states(cycle_counter_helper) | int(0) %}
-                {% set message.text = message.text + '\n' + cycle_counter_end_message + ' ' + (cycle_count | string) %}
-              {% endif %}
-              {{ message.text }}
-        - alias: "Send a notification to each device"
-          repeat:
-            for_each: "{{ zone_filtered_end_devices }}"
-            sequence:
-              - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-                data:
-                  title: !input end_message_title
-                  message: >
-                    {{message}}
-                  data: "{{ end_message_data }}"
-        - choose:
-            - alias: "Check if end reminder notification is enabled"
+        - action: input_select.select_option
+          target:
+            entity_id: !input run_status_entity
+          data:
+            option: !input run_status_end
+  - alias: "Parallel actions for custom end actions & end notification"
+    parallel:
+      - sequence:
+          - choose:
+            - alias: "Perform the custom end action"
               conditions:
                 - condition: template
-                  value_template: "{{ end_reminder_notification != 'disable_reminder_notification' }}"
+                  value_template: "{{ 'enable_end_custom_actions' in include_custom_actions }}"
+              sequence: !input end_custom_actions
+      - sequence:
+          - choose:
+            - alias: "Check if end of notification is enabled"
+              conditions:
+                - condition: template
+                  value_template: "{{ include_end_notify == 'enable_end_notify_options' }}"
+                - alias: "Check if notify time restriction is enabled before sending the message"
+                  condition: or
+                  conditions:
+                    - condition: template
+                      value_template: "{{ include_time == 'time_disabled' }}"
+                    - condition: and
+                      conditions:
+                      - condition: time
+                        after: !input after_time
+                        before: !input before_time
+                        weekday: !input weekday_options
+                      - condition: template
+                        value_template: "{{ include_time == 'time_enabled' }}"
               sequence:
                 - variables:
-                    reminder_message: >-
+                    zone_filtered_end_devices: >
+                      {% if 'zone_end' in include_device_tracker %}
+                        {% set zone_short_name = notify_zone.split('.')[-1] | lower | trim %}
+                        {% set ns = namespace(devices=[]) %}
+                        {% for device in end_notify_device %}
+                          {% set device_status = namespace(in_zone=false) %}
+                          {% set trackers = device_entities(device) | select('search', '^device_tracker\\.') | list %}
+                          {% for tracker in trackers %}
+                            {% if (states(tracker) | string).lower().strip() == zone_short_name %}
+                              {% set device_status.in_zone = true %}
+                            {% endif %}
+                          {% endfor %}
+                          {% if device_status.in_zone %}
+                            {% set ns.devices = ns.devices + [device] %}
+                          {% endif %}
+                        {% endfor %}
+                        {{ ns.devices }}
+                      {% else %}
+                        {{ end_notify_device }}
+                      {% endif %}
+                    message: >-
                       {% set message = namespace(text='') %}
                       {% if include_service_reminder == 'enable_service_reminder_and_notify' %}
                         {% set service_count = states(service_reminder_counter_helper) | int(0) %}
@@ -1781,94 +1882,52 @@ actions:
                           {% set message.text = message.text + service_reminder_time_end_message + '\n' %}
                         {% endif %}
                       {% endif %}
-                      {% set message.text = message.text + end_reminder_notification_message %}
+                      {% set message.text = message.text + end_message %}
+                      {% if include_power_tracking == 'enable_power_tracking' %}
+                        {% set kwh = (states(end_power_consumption) | float - states(start_power_consumption) | float) %}
+                        {% set message.text = message.text + '\n' + end_message_kwh + ' ' + (kwh | round(2) | string) + ' kWh' %}
+                      {% endif %}
+                      {% if include_power_tracking == 'enable_power_tracking_and_cost' %}
+                        {% set kwh = (states(end_power_consumption) | float - states(start_power_consumption) | float) %}
+                        {% set cost = kwh * (states(cost_per_kwh) | float) %}
+                        {% set message.text = message.text + '\n' + end_message_kwh + ' ' + (kwh | round(2) | string) + ' kWh' %}
+                        {% set message.text = message.text + '\n' + end_message_cost + (cost | round(2) | string) %}
+                      {% endif %}
+                      {% if include_runtime_tracking == 'enable_runtime_tracking_and_notify' %}
+                        {% set run_time = states(runtime_tracking_helper) %}
+                        {% set message.text = message.text + '\n' + runtime_tracking_end_message + ' ' + run_time %}
+                      {% endif %}
+                      {% if include_duration_tracking == 'enable_duration_tracking' %}
+                        {% set end_time = now().timestamp() %}
+                        {% set duration = (end_time - start_time) | int %}
+                        {% set hours = (duration // 3600) %}
+                        {% set minutes = ((duration % 3600) // 60) %}
+                        {% set seconds = (duration % 60) %}
+                        {% set message.text = message.text + '\n' + end_message_duration_tracking + ' ' + '%02d:%02d:%02d' | format(hours, minutes, seconds) %}
+                      {% endif %}
+                      {% if include_cycle_counter == 'enable_cycle_counter_and_notify' %}
+                        {% set cycle_count = states(cycle_counter_helper) | int(0) %}
+                        {% set message.text = message.text + '\n' + cycle_counter_end_message + ' ' + (cycle_count | string) %}
+                      {% endif %}
                       {{ message.text }}
-                - wait_for_trigger:
-                    - trigger: state
-                      entity_id: !input end_reminder_notification_entity
-                      to: 'on'
-                  timeout:
-                    minutes: !input end_reminder_notification_time_delay
-                - repeat:
-                    while:
-                      - condition: template
-                        value_template: "{{ (is_state(end_reminder_notification_entity, 'off')) and (repeat.index <= end_reminder_notification_max_count) }}"
+                - alias: "Send a notification to each device"
+                  repeat:
+                    for_each: "{{ zone_filtered_end_devices }}"
                     sequence:
-                      - variables:
-                          zone_filtered_end_devices: >
-                            {% if 'zone_end' in include_device_tracker %}
-                              {% set zone_short_name = notify_zone.split('.')[-1] | lower | trim %}
-                              {% set ns = namespace(devices=[]) %}
-                              {% for device in end_notify_device %}
-                                {% set device_status = namespace(in_zone=false) %}
-                                {% set trackers = device_entities(device) | select('search', '^device_tracker\\.') | list %}
-                                {% for tracker in trackers %}
-                                  {% if (states(tracker) | string).lower().strip() == zone_short_name %}
-                                    {% set device_status.in_zone = true %}
-                                  {% endif %}
-                                {% endfor %}
-                                {% if device_status.in_zone %}
-                                  {% set ns.devices = ns.devices + [device] %}
-                                {% endif %}
-                              {% endfor %}
-                              {{ ns.devices }}
-                            {% else %}
-                              {{ end_notify_device }}
-                            {% endif %}
-                      - repeat:
-                          for_each: "{{ zone_filtered_end_devices }}"
-                          sequence:
-                            - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-                              data:
-                                title: !input end_message_title
-                                message: >
-                                  {{reminder_message}}
-                                data: "{{ end_message_data }}"
-                      - wait_for_trigger:
-                          - trigger: state
-                            entity_id: !input end_reminder_notification_entity
-                            to: 'on'
-                        timeout:
-                          minutes: !input end_reminder_notification_time_delay
+                      - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                        data:
+                          title: !input end_message_title
+                          message: >
+                            {{message}}
+                          data: "{{ end_message_data }}"
                 - choose:
-                    - alias: "Check if end reminder notification + notify is enabled"
+                    - alias: "Check if end reminder notification is enabled"
                       conditions:
                         - condition: template
-                          value_template: "{{ end_reminder_notification == 'enable_reminder_notification_notify' }}"
+                          value_template: "{{ end_reminder_notification != 'disable_reminder_notification' }}"
                       sequence:
-                        - choose:
-                            - alias: "Entity is OFF, wait for it to turn ON"
-                              conditions:
-                                - condition: state
-                                  entity_id: !input end_reminder_notification_entity
-                                  state: 'off'
-                              sequence:
-                                - wait_for_trigger:
-                                    - trigger: state
-                                      entity_id: !input end_reminder_notification_entity
-                                      to: 'on'
                         - variables:
-                            zone_filtered_end_devices: >
-                              {% if 'zone_end' in include_device_tracker %}
-                                {% set zone_short_name = notify_zone.split('.')[-1] | lower | trim %}
-                                {% set ns = namespace(devices=[]) %}
-                                {% for device in end_notify_device %}
-                                  {% set device_status = namespace(in_zone=false) %}
-                                  {% set trackers = device_entities(device) | select('search', '^device_tracker\\.') | list %}
-                                  {% for tracker in trackers %}
-                                    {% if (states(tracker) | string).lower().strip() == zone_short_name %}
-                                      {% set device_status.in_zone = true %}
-                                    {% endif %}
-                                  {% endfor %}
-                                  {% if device_status.in_zone %}
-                                    {% set ns.devices = ns.devices + [device] %}
-                                  {% endif %}
-                                {% endfor %}
-                                {{ ns.devices }}
-                              {% else %}
-                                {{ end_notify_device }}
-                              {% endif %}
-                            attended_message: >-
+                            reminder_message: >-
                               {% set message = namespace(text='') %}
                               {% if include_service_reminder == 'enable_service_reminder_and_notify' %}
                                 {% set service_count = states(service_reminder_counter_helper) | int(0) %}
@@ -1894,25 +1953,97 @@ actions:
                                   {% set message.text = message.text + service_reminder_time_end_message + '\n' %}
                                 {% endif %}
                               {% endif %}
-                              {% set message.text = message.text + end_attended_notification_message %}
+                              {% set message.text = message.text + end_reminder_notification_message %}
                               {{ message.text }}
-                        - alias: "Send a notification to each device to notify it has been attended to"
-                          repeat:
-                            for_each: "{{ zone_filtered_end_devices }}"
+                        - wait_for_trigger:
+                            - trigger: state
+                              entity_id: !input end_reminder_notification_entity
+                              to: 'on'
+                          timeout:
+                            minutes: !input end_reminder_notification_time_delay
+                        - repeat:
+                            while:
+                              - condition: template
+                                value_template: "{{ (is_state(end_reminder_notification_entity, 'off')) and (repeat.index <= end_reminder_notification_max_count) }}"
                             sequence:
-                              - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-                                data:
-                                  title: !input end_message_title
-                                  message: >
-                                    {{attended_message}}
-                                  data: "{{ end_message_data }}"
-                - choose:
-                    - alias: "Check if end reminder notification + clear is enabled"
-                      conditions:
-                        - condition: template
-                          value_template: "{{ end_reminder_notification == 'enable_reminder_notification_clear' }}"
-                      sequence:
+                              - variables:
+                                  zone_filtered_end_devices: >
+                                    {% if 'zone_end' in include_device_tracker %}
+                                      {% set zone_short_name = notify_zone.split('.')[-1] | lower | trim %}
+                                      {% set ns = namespace(devices=[]) %}
+                                      {% for device in end_notify_device %}
+                                        {% set device_status = namespace(in_zone=false) %}
+                                        {% set trackers = device_entities(device) | select('search', '^device_tracker\\.') | list %}
+                                        {% for tracker in trackers %}
+                                          {% if (states(tracker) | string).lower().strip() == zone_short_name %}
+                                            {% set device_status.in_zone = true %}
+                                          {% endif %}
+                                        {% endfor %}
+                                        {% if device_status.in_zone %}
+                                          {% set ns.devices = ns.devices + [device] %}
+                                        {% endif %}
+                                      {% endfor %}
+                                      {{ ns.devices }}
+                                    {% else %}
+                                      {{ end_notify_device }}
+                                    {% endif %}
+                              - repeat:
+                                  for_each: "{{ zone_filtered_end_devices }}"
+                                  sequence:
+                                    - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                                      data:
+                                        title: !input end_message_title
+                                        message: >
+                                          {{reminder_message}}
+                                        data: "{{ end_message_data }}"
+                              - choose:
+                                - alias: "Check reminder notification entity is OFF and max count is less before waiting"
+                                  conditions:
+                                    - condition: template
+                                      value_template: "{{ (is_state(end_reminder_notification_entity, 'off')) and (repeat.index <= end_reminder_notification_max_count - 1) }}"
+                                  sequence:
+                                    - wait_for_trigger:
+                                        - trigger: state
+                                          entity_id: !input end_reminder_notification_entity
+                                          to: 'on'
+                                      timeout:
+                                        minutes: !input end_reminder_notification_time_delay
                         - choose:
+                          - alias: "Perform the run status action"
+                            conditions:
+                              - condition: template
+                                value_template: "{{ include_run_status == 'run_status_enabled' }}"
+                              - condition: template
+                                value_template: "{{ run_status_end_reminder != [] }}"
+                              - condition: state
+                                entity_id: !input end_reminder_notification_entity
+                                state: 'off'
+                            sequence:
+                              - action: input_select.select_option
+                                target:
+                                  entity_id: !input run_status_entity
+                                data:
+                                  option: !input run_status_end_reminder
+                        - choose:
+                            - alias: "Entity is ON, check run status options"
+                              conditions:
+                                - condition: state
+                                  entity_id: !input end_reminder_notification_entity
+                                  state: 'on'
+                              sequence:
+                                - choose:
+                                  - alias: "Perform the run status action"
+                                    conditions:
+                                      - condition: template
+                                        value_template: "{{ include_run_status == 'run_status_enabled' }}"
+                                      - condition: template
+                                        value_template: "{{ run_status_end_attended != [] }}"
+                                    sequence:
+                                      - action: input_select.select_option
+                                        target:
+                                          entity_id: !input run_status_entity
+                                        data:
+                                          option: !input run_status_end_attended
                             - alias: "Entity is OFF, wait for it to turn ON"
                               conditions:
                                 - condition: state
@@ -1923,12 +2054,96 @@ actions:
                                     - trigger: state
                                       entity_id: !input end_reminder_notification_entity
                                       to: 'on'
-                        - alias: "Send a notification to each device to clear notification"
-                          repeat:
-                            for_each: !input end_notify_device
-                            sequence:
-                              - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-                                data:
-                                  message: clear_notification
-                                  data:
-                                    tag: !input end_notify_tag
+                                - choose:
+                                  - alias: "Perform the run status action"
+                                    conditions:
+                                      - condition: template
+                                        value_template: "{{ include_run_status == 'run_status_enabled' }}"
+                                      - condition: template
+                                        value_template: "{{ run_status_end_attended != [] }}"
+                                    sequence:
+                                      - action: input_select.select_option
+                                        target:
+                                          entity_id: !input run_status_entity
+                                        data:
+                                          option: !input run_status_end_attended
+                        - choose:
+                            - alias: "Check if end reminder notification + notify is enabled"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ end_reminder_notification == 'enable_reminder_notification_notify' }}"
+                              sequence:
+                                - variables:
+                                    zone_filtered_end_devices: >
+                                      {% if 'zone_end' in include_device_tracker %}
+                                        {% set zone_short_name = notify_zone.split('.')[-1] | lower | trim %}
+                                        {% set ns = namespace(devices=[]) %}
+                                        {% for device in end_notify_device %}
+                                          {% set device_status = namespace(in_zone=false) %}
+                                          {% set trackers = device_entities(device) | select('search', '^device_tracker\\.') | list %}
+                                          {% for tracker in trackers %}
+                                            {% if (states(tracker) | string).lower().strip() == zone_short_name %}
+                                              {% set device_status.in_zone = true %}
+                                            {% endif %}
+                                          {% endfor %}
+                                          {% if device_status.in_zone %}
+                                            {% set ns.devices = ns.devices + [device] %}
+                                          {% endif %}
+                                        {% endfor %}
+                                        {{ ns.devices }}
+                                      {% else %}
+                                        {{ end_notify_device }}
+                                      {% endif %}
+                                    attended_message: >-
+                                      {% set message = namespace(text='') %}
+                                      {% if include_service_reminder == 'enable_service_reminder_and_notify' %}
+                                        {% set service_count = states(service_reminder_counter_helper) | int(0) %}
+                                        {% set service_threshold = service_reminder_cycles | int %}
+                                        {% if service_count >= service_threshold %}
+                                          {% set message.text = message.text + service_reminder_end_message + '\n' %}
+                                        {% endif %}
+                                      {% endif %}
+                                      {% if include_time_service_reminder == 'enable_time_service_reminder_and_notify' %}
+                                        {% set service_reminder_helper_value = states(service_reminder_time_helper) %}
+                                        {% if ':' in service_reminder_helper_value %}
+                                          {% set time = service_reminder_helper_value.split(':') %}
+                                          {% set service_reminder_helper_seconds = (time[0] | int * 3600) + (time[1] | int * 60) + (time[2] | int) %}
+                                        {% else %}
+                                          {% set service_reminder_helper_seconds = 0 %}
+                                        {% endif %}
+                                        {% set service_reminder_time_threshold_seconds =
+                                          (service_reminder_time_threshold.hours | int * 3600) +
+                                          (service_reminder_time_threshold.minutes | int * 60) +
+                                          (service_reminder_time_threshold.seconds | int)
+                                        %}
+                                        {% if service_reminder_helper_seconds >= service_reminder_time_threshold_seconds %}
+                                          {% set message.text = message.text + service_reminder_time_end_message + '\n' %}
+                                        {% endif %}
+                                      {% endif %}
+                                      {% set message.text = message.text + end_attended_notification_message %}
+                                      {{ message.text }}
+                                - alias: "Send a notification to each device to notify it has been attended to"
+                                  repeat:
+                                    for_each: "{{ zone_filtered_end_devices }}"
+                                    sequence:
+                                      - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                                        data:
+                                          title: !input end_message_title
+                                          message: >
+                                            {{attended_message}}
+                                          data: "{{ end_message_data }}"
+                        - choose:
+                            - alias: "Check if end reminder notification + clear is enabled"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ end_reminder_notification == 'enable_reminder_notification_clear' }}"
+                              sequence:
+                                - alias: "Send a notification to each device to clear notification"
+                                  repeat:
+                                    for_each: !input end_notify_device
+                                    sequence:
+                                      - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                                        data:
+                                          message: clear_notification
+                                          data:
+                                            tag: !input end_notify_tag

@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 💡 Sensor Light
 
-    **Version: 8.2**
+    **Version: 8.3**
 
 
     Your lighting experience, your way - take control and customize it to perfection! 💡✨
@@ -43,7 +43,10 @@ blueprint:
         - Set up an Ambient Light Sensor for activation in low-light conditions, customizable with specified LUX values.
 
       - **Time-Based Options:**
-        - Specify precise start and end times along with weekday selections to define when the automation should run.
+        - Specify precise start and end times along with weekday selections to define when the automation can run.
+
+      - **State Control Option:**
+        - Allows the automation to run when the entity is in its selected activation state (ON or OFF).
 
       - **Device Tracker Options:**
         - Utilize "Device Tracker" to activate automation when home or within specified zones, preventing unnecessary activations. This feature is particularly useful to prevent unnecessary lighting activations when pets trigger sensors while no one is home.
@@ -878,6 +881,42 @@ blueprint:
                   value: "sat"
                 - label: Sunday
                   value: "sun"
+    state_control_settings:
+      name: "State Control"
+      icon: mdi:toggle-switch-outline
+      collapsed: true
+      input:
+        include_state_control:
+          name: Use The State Control Option (Optional)
+          description: >
+            This option is used to add a condition that only allows the automation to run when the entity is in its selected activation state below.
+          default: state_control_disabled
+          selector:
+            select:
+              options:
+                - label: Enable State Control Option
+                  value: "state_control_enabled"
+                - label: Disable State Control Option
+                  value: "state_control_disabled"
+        state_control_activation_state:
+          name: Activation State
+          description: >
+            Select the state (ON or OFF) the entity must be in so the automation can run.
+          default: "off"
+          selector:
+            select:
+              options:
+                - label: ON State
+                  value: "on"
+                - label: OFF State
+                  value: "off"
+        state_control_entity:
+          name: Control Entity
+          description: >
+            If State Control is enabled, select the entity that will allow the automation to run based on the activation state selected above.
+          default: []
+          selector:
+            entity:
     device_tracker_settings:
       name: "Device Tracker"
       icon: mdi:account-multiple-check-outline
@@ -1382,6 +1421,9 @@ variables:
   after_time: !input after_time
   before_time: !input before_time
   weekday_options: !input weekday_options
+  include_state_control: !input include_state_control
+  state_control_activation_state: !input state_control_activation_state
+  state_control_entity: !input state_control_entity
   include_device_tracker: !input include_device_tracker
   zone: !input zone
   people: !input people
@@ -1845,8 +1887,16 @@ triggers:
     id: "t16"
     entity_id: !input dynamic_lighting_state_control_entity
     from: !input dynamic_lighting_state_control_activation_state
-  - trigger: homeassistant
+  - trigger: state
     id: "t17"
+    entity_id: !input state_control_entity
+    to: !input state_control_activation_state
+  - trigger: state
+    id: "t18"
+    entity_id: !input state_control_entity
+    from: !input state_control_activation_state
+  - trigger: homeassistant
+    id: "t19"
     event: start
 
 # All Conditions
@@ -1888,7 +1938,7 @@ condition:
             entity_id: !input motion_trigger
             state: 'on'
             match: any
-          -  "{{ include_time == 'time_enabled' }}"
+          - "{{ include_time == 'time_enabled' }}"
       - condition: and # trigger by the start of night light entity state & check if any lights are on excluding glow lights
         conditions:
           - condition: trigger
@@ -2187,10 +2237,46 @@ condition:
                   {% if dynamic_lighting_boolean != [] %}
                     {{ is_state(dynamic_lighting_boolean, 'on') }}
                   {% endif %}
-      - condition: and # trigger by HA Restart & check if any lights are on
+      - condition: and # trigger by state control entity & check motion trigger is on
         conditions:
           - condition: trigger
             id: 't17'
+          - condition: state
+            entity_id: !input motion_trigger
+            state: 'on'
+            match: any
+          - condition: template
+            value_template: "{{ include_state_control == 'state_control_enabled' }}"
+      - condition: and # trigger by state control entity & check if the lights are on
+        conditions:
+          - condition: trigger
+            id: 't18'
+          - condition: template
+            value_template: "{{ include_state_control == 'state_control_enabled' }}"
+          - condition: or
+            conditions:
+              - "{{ (expand(light_switch.entity_id) | selectattr('state', '==', 'on') | list | count > 0) }}"
+              - "{{ (include_night_lights == 'night_lights_enabled') and (expand(night_lights.entity_id) | selectattr('state', '==', 'on') | list | count > 0) }}"
+              - "{{ (include_night_lights == 'night_lights_enabled') and (include_night_glow == 'night_glow_enabled') and (expand(night_glow_lights.entity_id) | selectattr('state', '==', 'on') | list | count > 0) }}"
+              - condition: template
+                value_template: >-
+                  {% if boolean_scenes_scripts != [] %}
+                    {{ is_state(boolean_scenes_scripts, 'on') }}
+                  {% endif %}
+              - condition: template
+                value_template: >-
+                  {% if night_boolean_scenes_scripts != [] %}
+                    {{ is_state(night_boolean_scenes_scripts, 'on') }}
+                  {% endif %}
+              - condition: template
+                value_template: >-
+                  {% if dynamic_lighting_boolean != [] %}
+                    {{ is_state(dynamic_lighting_boolean, 'on') }}
+                  {% endif %}
+      - condition: and # trigger by HA Restart & check if any lights are on
+        conditions:
+          - condition: trigger
+            id: 't19'
           - condition: or
             conditions:
               - "{{ (expand(light_switch.entity_id) | selectattr('state', '==', 'on') | list | count > 0) }}"
@@ -2213,7 +2299,7 @@ condition:
       - condition: and # trigger by HA Restart & check if any triggers are on
         conditions:
           - condition: trigger
-            id: 't17'
+            id: 't19'
           - condition: state
             entity_id: !input motion_trigger
             match: any
@@ -2221,7 +2307,7 @@ condition:
       - condition: and # trigger by HA Restart & check if by-pass auto off is enabled and any by-passes are on
         conditions:
           - condition: trigger
-            id: 't17'
+            id: 't19'
           - "{{ ('bypass_auto_off_enabled_on' in include_bypass_auto_off) or ('bypass_auto_off_enabled_off' in include_bypass_auto_off) or ('bypass_auto_off_enabled_stop' in include_bypass_auto_off) }}"
           - condition: or
             conditions:
@@ -2307,7 +2393,7 @@ condition:
           - 't8_on'
           - 't8_off'
           - 't8_stop'
-          - 't17'
+          - 't19'
 
 # Check Sun Elevation
   - condition: or
@@ -2384,11 +2470,11 @@ condition:
       - "{{ include_time == 'time_disabled' }}"
       - condition: and
         conditions:
-        - condition: time
-          after: !input after_time
-          before: !input before_time
-          weekday: !input weekday_options
-        -  "{{ include_time == 'time_enabled' }}"
+          - condition: time
+            after: !input after_time
+            before: !input before_time
+            weekday: !input weekday_options
+          - "{{ include_time == 'time_enabled' }}"
       - condition: trigger
         id:
           - 't7_on'
@@ -2398,6 +2484,28 @@ condition:
           - 't8_off'
           - 't8_stop'
           - 't11'
+
+# Check The State Control
+  - condition: or
+    conditions:
+      - condition: template
+        value_template: "{{ include_state_control == 'state_control_disabled' }}"
+      - condition: and
+        conditions:
+          - condition: template
+            value_template: "{{ include_state_control == 'state_control_enabled' }}"
+          - condition: state
+            entity_id: !input state_control_entity
+            state: !input state_control_activation_state
+      - condition: trigger
+        id:
+          - 't7_on'
+          - 't7_off'
+          - 't7_stop'
+          - 't8_on'
+          - 't8_off'
+          - 't8_stop'
+          - 't18'
 
 # Check the Device Tracker Options
   - condition: or
@@ -3106,16 +3214,24 @@ action:
                                 state: 'off'
                       - condition: or
                         conditions:
-                        - "{{ (include_sun == 'sun_enabled') and (state_attr('sun.sun','elevation') >= sun_elevation | float(90)) }}"
-                        - "{{ (include_ambient == 'ambient_enabled') and (ambient_light_options == 'ambient_light_option_disabled') and ((states(ambient_light_sensor) | int) > (ambient_light_value | int)) }}"
-                        - "{{ (include_ambient == 'ambient_enabled') and (ambient_light_options == 'ambient_light_option_enabled') and ((states(ambient_light_sensor) | int) > (ambient_light_value | int)) and (expand(night_lights.entity_id) | selectattr('state', '==', 'off') | list | count > 0) }}"
-                        - "{{ (include_ambient == 'ambient_enabled') and (ambient_light_options == 'ambient_light_option_enabled') and ((states(ambient_light_sensor) | int) > (ambient_light_value | int)) and (is_state(night_boolean_scenes_scripts, 'off')) }}"
-                        - condition: and
-                          conditions:
-                          -  "{{ include_time == 'time_enabled' }}"
-                          - condition: time
-                            after: !input before_time
-                            before: !input after_time
+                          - "{{ (include_sun == 'sun_enabled') and (state_attr('sun.sun','elevation') >= sun_elevation | float(90)) }}"
+                          - "{{ (include_ambient == 'ambient_enabled') and (ambient_light_options == 'ambient_light_option_disabled') and ((states(ambient_light_sensor) | int) > (ambient_light_value | int)) }}"
+                          - "{{ (include_ambient == 'ambient_enabled') and (ambient_light_options == 'ambient_light_option_enabled') and ((states(ambient_light_sensor) | int) > (ambient_light_value | int)) and (expand(night_lights.entity_id) | selectattr('state', '==', 'off') | list | count > 0) }}"
+                          - "{{ (include_ambient == 'ambient_enabled') and (ambient_light_options == 'ambient_light_option_enabled') and ((states(ambient_light_sensor) | int) > (ambient_light_value | int)) and (is_state(night_boolean_scenes_scripts, 'off')) }}"
+                          - condition: and
+                            conditions:
+                              - "{{ include_time == 'time_enabled' }}"
+                              - condition: time
+                                after: !input before_time
+                                before: !input after_time
+                          - condition: and
+                            conditions:
+                              - condition: template
+                                value_template: "{{ include_state_control == 'state_control_enabled' }}"
+                              - condition: template
+                                value_template: >-
+                                  {% set opposite = 'off' if state_control_activation_state == 'on' else 'on' %}
+                                  {{ is_state(state_control_entity, opposite) }}
                     sequence:
                       - alias: "Wait the number of minutes set in the by-pass time delay"
                         delay:
@@ -3360,13 +3476,14 @@ action:
                           entity_id: "{{ crossover_night_lights_light_on }}"
                         data: "{{ night_light_data }}"
           - choose:
-            - alias: "Sun, ambient & time above setting to turn off"
+            - alias: "Sun, ambient, time & state control above setting to turn off"
               conditions:
                 - condition: trigger
                   id:
                     - 't9'
                     - 't10'
                     - 't11'
+                    - 't18'
               sequence:
                 - choose:
                   - alias: "If transition is selected"
@@ -3585,7 +3702,7 @@ action:
             - alias: "Safe Guard when HA restarts"
               conditions:
                 - condition: trigger
-                  id: 't17'
+                  id: 't19'
               sequence:
                 - choose:
                   - alias: "Check all by-pass are off and check conditions if enabled"
@@ -4903,16 +5020,24 @@ action:
                             state: 'off'
                   - condition: or
                     conditions:
-                    - "{{ (include_sun == 'sun_enabled') and (state_attr('sun.sun','elevation') >= sun_elevation | float(90)) }}"
-                    - "{{ (include_ambient == 'ambient_enabled') and (ambient_light_options == 'ambient_light_option_disabled') and ((states(ambient_light_sensor) | int) > (ambient_light_value | int)) }}"
-                    - "{{ (include_ambient == 'ambient_enabled') and (ambient_light_options == 'ambient_light_option_enabled') and ((states(ambient_light_sensor) | int) > (ambient_light_value | int)) and (expand(light_switch.entity_id) | selectattr('state', '==', 'off') | list | count > 0) }}"
-                    - "{{ (include_ambient == 'ambient_enabled') and (ambient_light_options == 'ambient_light_option_enabled') and ((states(ambient_light_sensor) | int) > (ambient_light_value | int)) and (is_state(boolean_scenes_scripts, 'off')) }}"
-                    - condition: and
-                      conditions:
-                      - condition: time
-                        after: !input before_time
-                        before: !input after_time
-                      -  "{{ include_time == 'time_enabled' }}"
+                      - "{{ (include_sun == 'sun_enabled') and (state_attr('sun.sun','elevation') >= sun_elevation | float(90)) }}"
+                      - "{{ (include_ambient == 'ambient_enabled') and (ambient_light_options == 'ambient_light_option_disabled') and ((states(ambient_light_sensor) | int) > (ambient_light_value | int)) }}"
+                      - "{{ (include_ambient == 'ambient_enabled') and (ambient_light_options == 'ambient_light_option_enabled') and ((states(ambient_light_sensor) | int) > (ambient_light_value | int)) and (expand(light_switch.entity_id) | selectattr('state', '==', 'off') | list | count > 0) }}"
+                      - "{{ (include_ambient == 'ambient_enabled') and (ambient_light_options == 'ambient_light_option_enabled') and ((states(ambient_light_sensor) | int) > (ambient_light_value | int)) and (is_state(boolean_scenes_scripts, 'off')) }}"
+                      - condition: and
+                        conditions:
+                          - condition: time
+                            after: !input before_time
+                            before: !input after_time
+                          - "{{ include_time == 'time_enabled' }}"
+                      - condition: and
+                        conditions:
+                          - condition: template
+                            value_template: "{{ include_state_control == 'state_control_enabled' }}"
+                          - condition: template
+                            value_template: >-
+                              {% set opposite = 'off' if state_control_activation_state == 'on' else 'on' %}
+                              {{ is_state(state_control_entity, opposite) }}
                 sequence:
                   - alias: "Wait the number of minutes set in the by-pass time delay"
                     delay:
@@ -5236,13 +5361,14 @@ action:
                                 data:
                                   entity_id: !input dynamic_lighting_boolean
       - choose:
-        - alias: "Sun, ambient & time above setting to turn off"
+        - alias: "Sun, ambient, time & state control above setting to turn off"
           conditions:
             - condition: trigger
               id: 
                 - 't9'
                 - 't10'
                 - 't11'
+                - 't18'
           sequence:
             - choose:
               - alias: "If transition is selected"
@@ -5461,7 +5587,7 @@ action:
         - alias: "Safe Guard when HA restarts"
           conditions:
             - condition: trigger
-              id: 't17'
+              id: 't19'
           sequence:
             - choose:
               - alias: "Check all by-pass are off and check conditions if enabled"
