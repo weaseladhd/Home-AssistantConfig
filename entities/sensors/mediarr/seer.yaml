@@ -5,7 +5,7 @@ seer:
   api_key: MTc0MTY5MzcxOTU0NjNjMjNiNDZiLTc2MmYtNDdmNy1iNGRlLWRhMTNhNWM4ZGY5MQ==
   max_items: 10
   tmdb_api_key: "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1ZTgyNTBlNWJiMzk1NDkyZjAzOGYyNTgxNzI4NDM5OSIsIm5iZiI6MTI3ODU1NjI0My4wLCJzdWIiOiI0YzM1Mzg1MzdiOWFhMTdkYTgwMDAwM2MiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.9KJq3m1xC7B2psAdzvNv_2gYIAyBDk7AbolkR1QzeXA"
-  trending: true # Optional
-  discover: true  # Optional
-  popular_movies: true  # Optional
-  popular_tv: true # Optional
+  trending: true
+  discover: true
+  popular_movies: true
+  popular_tv: true
