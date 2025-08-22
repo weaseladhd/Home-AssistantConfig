@@ -274,8 +274,9 @@
     input:
       sensor: binary_sensor.uvc_g4_doorbell_motion
       camera: camera.uvc_g4_doorbell_high_resolution_channel
-      notify_device: 5e20a37ce4434aa9ca25d7462a060cca
+      notify_device: c18efe9321b90bada7b41f53a635f29a
       data_clickaction_url: /lovelace/alarm
+      notify: true
 - id: '1715957011734'
   alias: Update notifications HASS
   description: ''
@@ -286,10 +287,10 @@
       - update.home_assistant_core_update
       - update.home_assistant_operating_system_update
       - update.home_assistant_supervisor_update
-      mobile_app_device: 5e20a37ce4434aa9ca25d7462a060cca
+      mobile_app_device: c18efe9321b90bada7b41f53a635f29a
       send_to_ha: true
       run_config_check: true
-      mobile_app_device_2: 5e20a37ce4434aa9ca25d7462a060cca
+      mobile_app_device_2: 0a23cdeeb20bce7c14c0615f0e4abfb9
 - id: '1715957599027'
   alias: _Blueprints Update - Check
   description: ''
