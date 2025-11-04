@@ -4,15 +4,15 @@ blueprint:
   description: >
     # 📳 Appliance Notifications & Actions
     
-    **Version: 3.7**
+    **Version: 3.8**
 
 
     🤔 Watts your appliance up to, you're always in the know from start to finish! 🛎️🔌💸
-    
-    
+
+
     **If you like my blueprints, and would like to show your support or just say thank you?** [Click Here](https://www.paypal.com/donate/?hosted_button_id=WAZS3QSDTPGA8) 🙂
-    
-    
+
+
     <details>
     <summary><b>The Automation Process:</b> 👈</summary>
 
@@ -68,12 +68,12 @@ blueprint:
       - **Custom Conditions:**
           - Enter any custom conditions to further customize the automation process.
     </details>
-    
-    
+
+
     Need help? 
 
     - FAQ: [Click Here](https://community.home-assistant.io/t/650166/2)
-  
+
     - Community Support Including Updates: [Click Here](https://community.home-assistant.io/t/650166)
 
 
@@ -671,7 +671,7 @@ blueprint:
             Enter the status to display when the **Reminder Notification Entity**
             detects the appliance has been attended to (e.g., door opened, lid lifted, etc.).
 
-            
+
             This is the final “Ready” status of your appliance when you are using the **Reminder Notification Options**.
 
 
@@ -1589,6 +1589,7 @@ actions:
                   title: !input start_title
                   message: !input start_message
                   data: "{{ start_message_data }}"
+                continue_on_error: true
   - choose:
     - alias: "Perform the run status action"
       conditions:
@@ -1678,6 +1679,7 @@ actions:
                                   title: !input watchdog_title
                                   message: "{{watchdog_message}}"
                                   data: "{{ watchdog_message_data }}"
+                                continue_on_error: true
                   - choose:
                     - alias: "Perform the run status action"
                       conditions:
@@ -1920,6 +1922,7 @@ actions:
                           message: >
                             {{message}}
                           data: "{{ end_message_data }}"
+                        continue_on_error: true
                 - choose:
                     - alias: "Check if end reminder notification is enabled"
                       conditions:
@@ -1996,6 +1999,7 @@ actions:
                                         message: >
                                           {{reminder_message}}
                                         data: "{{ end_message_data }}"
+                                      continue_on_error: true
                               - choose:
                                 - alias: "Check reminder notification entity is OFF and max count is less before waiting"
                                   conditions:
@@ -2132,6 +2136,7 @@ actions:
                                           message: >
                                             {{attended_message}}
                                           data: "{{ end_message_data }}"
+                                        continue_on_error: true
                         - choose:
                             - alias: "Check if end reminder notification + clear is enabled"
                               conditions:
@@ -2147,3 +2152,4 @@ actions:
                                           message: clear_notification
                                           data:
                                             tag: !input end_notify_tag
+                                        continue_on_error: true

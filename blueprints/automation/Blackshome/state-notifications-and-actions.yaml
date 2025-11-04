@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 📍 State Notifications & Actions
 
-    **Version: 1.6**
+    **Version: 1.7**
 
 
     State Your Trigger: Turn State Changes Into Notifications and Actions! 🚀
@@ -209,6 +209,23 @@ blueprint:
           default: []
           selector:
             text:
+        start_notify_tag:
+          name: Notification Tag
+          description: >
+            Use a tag to keep your notifications organized.
+            When a new notification with the same tag is sent, it replaces the old one, so you won't get cluttered with multiple notifications for the same appliance.
+
+
+            You can use the same tag across start and end notifications to ensure only one active notification remains throughout the automation.
+
+
+            If this input is left blank, no tag will be applied and each notification will be treated as separate.
+
+
+            For best results, use short, unique tags for each automation - for example: `water-leak`, `garage-door`, `back-door-motion`, etc.
+          default: []
+          selector:
+            text:
         start_notify_interruption_level:
           name: Interruption Level - iOS Only
           description: >
@@ -256,6 +273,10 @@ blueprint:
             **Notification Channel** allow you to easily organize different notification settings,
             including notification sounds, vibrations, and other device-specific features.
             If you choose this option, please enter your desired channel name below.
+
+
+            **Icon** allows you to replace the default Home Assistant icon with one of your choice.
+            If selected, choose your preferred icon using the **Icon - Android Only** option below, and set the icon colour using **Icon Colour - Android Only**.
           default: []
           selector:
             select:
@@ -267,6 +288,8 @@ blueprint:
                   value: "sticky"
                 - label: Notification Channel
                   value: "channel"
+                - label: Icon
+                  value: "icon"
         start_notify_channel:
           name: Notification Channel - Android Only
           description: >
@@ -280,6 +303,22 @@ blueprint:
           default: []
           selector:
             text:
+        start_notify_icon:
+          name: Icon - Android Only
+          description: >
+            Select a custom icon to replace the default Home Assistant icon in the notification.
+            This setting applies only if the **Icon** option is selected in **Android Only Options** above.
+          default: "mdi:emoticon-happy-outline"
+          selector:
+            icon:
+        start_notify_icon_colour:
+          name: Icon Colour - Android Only
+          description: >
+            Choose a colour for your custom notification icon.
+            This setting applies only if the **Icon** option is selected in **Android Only Options** above.
+          default: [41, 121, 255]
+          selector:
+            color_rgb:
     start_action_settings:
       name: "Start Actions Buttons"
       icon: mdi:gesture-tap
@@ -627,6 +666,23 @@ blueprint:
           default: []
           selector:
             text:
+        end_notify_tag:
+          name: Notification Tag
+          description: >
+            Use a tag to keep your notifications organized.
+            When a new notification with the same tag is sent, it replaces the old one, so you won't get cluttered with multiple notifications for the same appliance.
+
+
+            You can use the same tag across start and end notifications to ensure only one active notification remains throughout the automation.
+
+
+            If this input is left blank, no tag will be applied and each notification will be treated as separate.
+
+
+            For best results, use short, unique tags for each automation - for example: `water-leak`, `garage-door`, `back-door-motion`, etc.
+          default: []
+          selector:
+            text:
         end_notify_interruption_level:
           name: Interruption Level - iOS Only
           description: >
@@ -674,6 +730,10 @@ blueprint:
             **Notification Channel** allow you to easily organize different notification settings,
             including notification sounds, vibrations, and other device-specific features.
             If you choose this option, please enter your desired channel name below.
+
+
+            **Icon** allows you to replace the default Home Assistant icon with one of your choice.
+            If selected, choose your preferred icon using the **Icon - Android Only** option below, and set the icon colour using **Icon Colour - Android Only**.
           default: []
           selector:
             select:
@@ -685,6 +745,8 @@ blueprint:
                   value: "sticky"
                 - label: Notification Channel
                   value: "channel"
+                - label: Icon
+                  value: "icon"
         end_notify_channel:
           name: Notification Channel - Android Only
           description: >
@@ -698,6 +760,22 @@ blueprint:
           default: []
           selector:
             text:
+        end_notify_icon:
+          name: Icon - Android Only
+          description: >
+            Select a custom icon to replace the default Home Assistant icon in the notification.
+            This setting applies only if the **Icon** option is selected in **Android Only Options** above.
+          default: "mdi:emoticon-happy-outline"
+          selector:
+            icon:
+        end_notify_icon_colour:
+          name: Icon Colour - Android Only
+          description: >
+            Choose a colour for your custom notification icon.
+            This setting applies only if the **Icon** option is selected in **Android Only Options** above.
+          default: [0, 200, 83]
+          selector:
+            color_rgb:
     end_action_settings:
       name: "End Actions Buttons"
       icon: mdi:gesture-double-tap
@@ -911,10 +989,13 @@ variables:
   start_notify_device: !input start_notify_device
   start_title: !input start_title
   start_message: !input start_message
+  start_notify_tag: !input start_notify_tag
   start_notify_interruption_level: !input start_notify_interruption_level
   start_notify_sound: !input start_notify_sound
   start_notify_data: !input start_notify_data
   start_notify_channel: !input start_notify_channel
+  start_notify_icon: !input start_notify_icon
+  start_notify_icon_colour: !input start_notify_icon_colour
   include_start_action_buttons: !input include_start_action_buttons
   start_action_button_1: !input start_action_button_1
   start_action_button_2: !input start_action_button_2
@@ -942,10 +1023,13 @@ variables:
   end_notify_device: !input end_notify_device
   end_title: !input end_title
   end_message: !input end_message
+  end_notify_tag: !input end_notify_tag
   end_notify_interruption_level: !input end_notify_interruption_level
   end_notify_sound: !input end_notify_sound
   end_notify_data: !input end_notify_data
   end_notify_channel: !input end_notify_channel
+  end_notify_icon: !input end_notify_icon
+  end_notify_icon_colour: !input end_notify_icon_colour
   include_end_action_buttons: !input include_end_action_buttons
   end_action_button_1: !input end_action_button_1
   end_action_button_2: !input end_action_button_2
@@ -1098,6 +1182,16 @@ action:
                     {% if 'sticky' in start_notify_data %}
                       {% set message.data = dict(message.data, **{ 'sticky': "true" }) %}
                     {% endif %}
+                    {% if 'icon' in start_notify_data %}
+                      {% set message.data = dict(message.data, **{ 'notification_icon': start_notify_icon }) %}
+                      {% if start_notify_icon_colour | length == 3 %}
+                        {% set icon_colour = '#%02x%02x%02x' | format(start_notify_icon_colour[0], start_notify_icon_colour[1], start_notify_icon_colour[2]) %}
+                        {% set message.data = dict(message.data, **{ 'color': icon_colour }) %}
+                      {% endif %}
+                    {% endif %}
+                    {% if start_notify_tag != [] %}
+                      {% set message.data = dict(message.data, **{ 'tag': start_notify_tag }) %}
+                    {% endif %}
                     {{ message.data }}
                   start_message_data_action_button: >-
                     {% set message = namespace(data={}) %}
@@ -1120,6 +1214,16 @@ action:
                     {% endif %}
                     {% if 'sticky' in start_notify_data %}
                       {% set message.data = dict(message.data, **{ 'sticky': "true" }) %}
+                    {% endif %}
+                    {% if 'icon' in start_notify_data %}
+                      {% set message.data = dict(message.data, **{ 'notification_icon': start_notify_icon }) %}
+                      {% if start_notify_icon_colour | length == 3 %}
+                        {% set icon_colour = '#%02x%02x%02x' | format(start_notify_icon_colour[0], start_notify_icon_colour[1], start_notify_icon_colour[2]) %}
+                        {% set message.data = dict(message.data, **{ 'color': icon_colour }) %}
+                      {% endif %}
+                    {% endif %}
+                    {% if start_notify_tag != [] %}
+                      {% set message.data = dict(message.data, **{ 'tag': start_notify_tag }) %}
                     {% endif %}
                     {% if 'enable_start_action_button_1' in include_start_action_buttons %}
                       {% set actions = actions + [{ 'action': action_button_1, 'title': start_action_button_1 }] %}
@@ -1344,6 +1448,16 @@ action:
                         {% if 'sticky' in end_notify_data %}
                           {% set message.data = dict(message.data, **{ 'sticky': "true" }) %}
                         {% endif %}
+                        {% if 'icon' in end_notify_data %}
+                          {% set message.data = dict(message.data, **{ 'notification_icon': end_notify_icon }) %}
+                          {% if end_notify_icon_colour | length == 3 %}
+                            {% set icon_colour = '#%02x%02x%02x' | format(end_notify_icon_colour[0], end_notify_icon_colour[1], end_notify_icon_colour[2]) %}
+                            {% set message.data = dict(message.data, **{ 'color': icon_colour }) %}
+                          {% endif %}
+                        {% endif %}
+                        {% if end_notify_tag != [] %}
+                          {% set message.data = dict(message.data, **{ 'tag': end_notify_tag }) %}
+                        {% endif %}
                         {{ message.data }}
                       end_message_data_action_button: >-
                         {% set message = namespace(data={}) %}
@@ -1366,6 +1480,16 @@ action:
                         {% endif %}
                         {% if 'sticky' in end_notify_data %}
                           {% set message.data = dict(message.data, **{ 'sticky': "true" }) %}
+                        {% endif %}
+                        {% if 'icon' in end_notify_data %}
+                          {% set message.data = dict(message.data, **{ 'notification_icon': end_notify_icon }) %}
+                          {% if end_notify_icon_colour | length == 3 %}
+                            {% set icon_colour = '#%02x%02x%02x' | format(end_notify_icon_colour[0], end_notify_icon_colour[1], end_notify_icon_colour[2]) %}
+                            {% set message.data = dict(message.data, **{ 'color': icon_colour }) %}
+                          {% endif %}
+                        {% endif %}
+                        {% if end_notify_tag != [] %}
+                          {% set message.data = dict(message.data, **{ 'tag': end_notify_tag }) %}
                         {% endif %}
                         {% if 'enable_end_action_button_1' in include_end_action_buttons %}
                           {% set actions = actions + [{ 'action': action_button_1, 'title': end_action_button_1 }] %}

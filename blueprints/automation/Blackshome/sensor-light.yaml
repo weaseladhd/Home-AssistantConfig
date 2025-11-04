@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 💡 Sensor Light
 
-    **Version: 8.3**
+    **Version: 8.4**
 
 
     Your lighting experience, your way - take control and customize it to perfection! 💡✨
@@ -1225,6 +1225,9 @@ blueprint:
             This feature activates a low-level light when no trigger is detected, creating a subtle ambient glow perfect for nighttime use.
             When a trigger, such as a motion sensor, is detected, the light gradually increases to the night light's brightness level, providing enhanced visibility and functionality without abrupt changes in lighting.
             You can also customize the light's colour temperature or RGB colour for added personalization.
+
+
+            **NOTE** - For Night Glow to work, Night Lights must be enabled and active.
           default: night_glow_disabled
           selector:
             select:
@@ -6134,13 +6137,19 @@ action:
                         until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
                         sequence:
                           - variables:
+                              dynamic_elevation_cutoff: >
+                                {% if is_state_attr('sun.sun', 'rising', true) %}
+                                  {{ dynamic_lighting_sun_elevation_start_rising }}
+                                {% else %}
+                                  {{ dynamic_lighting_sun_elevation_end_falling }}
+                                {% endif %}
                               dynamic_kelvin: >
                                 {% set elevation = state_attr('sun.sun', 'elevation') | float %}
                                 {% set start_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (dynamic_lighting_sun_elevation_start_rising - dynamic_lighting_sun_elevation_end_rising) %}
                                 {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_max_colour_temp %}
                                 {% set end_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                 {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_min_colour_temp %}
-                                {% if elevation >= -10 %}
+                                {% if elevation >= dynamic_elevation_cutoff %}
                                   {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                     {% set colour_temp_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                   {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -6271,13 +6280,19 @@ action:
                         until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
                         sequence:
                           - variables:
+                              dynamic_elevation_cutoff: >
+                                {% if is_state_attr('sun.sun', 'rising', true) %}
+                                  {{ dynamic_lighting_sun_elevation_start_rising }}
+                                {% else %}
+                                  {{ dynamic_lighting_sun_elevation_end_falling }}
+                                {% endif %}
                               dynamic_brightness_pct: >
                                 {% set elevation = state_attr('sun.sun', 'elevation') | float %}
                                 {% set start_slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_sun_elevation_start_rising - dynamic_lighting_sun_elevation_end_rising) %}
                                 {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_max_brightness %}
                                 {% set end_slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                 {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_min_brightness %}
-                                {% if elevation >= -10 %}
+                                {% if elevation >= dynamic_elevation_cutoff %}
                                   {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                     {% set brightness_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                   {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -6323,7 +6338,7 @@ action:
                                 {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_max_brightness %}
                                 {% set end_slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                 {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_min_brightness %}
-                                {% if elevation >= -10 %}
+                                {% if elevation >= dynamic_elevation_cutoff %}
                                   {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                     {% set brightness_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                   {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -6433,13 +6448,19 @@ action:
                         until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
                         sequence:
                           - variables:
+                              dynamic_elevation_cutoff: >
+                                {% if is_state_attr('sun.sun', 'rising', true) %}
+                                  {{ dynamic_lighting_sun_elevation_start_rising }}
+                                {% else %}
+                                  {{ dynamic_lighting_sun_elevation_end_falling }}
+                                {% endif %}
                               dynamic_brightness_pct: >
                                 {% set elevation = state_attr('sun.sun', 'elevation') | float %}
                                 {% set start_slope = (dynamic_lighting_max_brightness - dynamic_lighting_min_brightness) / (dynamic_lighting_sun_elevation_start_rising - dynamic_lighting_sun_elevation_end_rising) %}
                                 {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_min_brightness %}
                                 {% set end_slope = (dynamic_lighting_max_brightness - dynamic_lighting_min_brightness) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                 {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_max_brightness %}
-                                {% if elevation > -10 %}
+                                {% if elevation > dynamic_elevation_cutoff %}
                                   {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                     {% set brightness_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                   {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -6485,7 +6506,7 @@ action:
                                 {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_min_brightness %}
                                 {% set end_slope = (dynamic_lighting_max_brightness - dynamic_lighting_min_brightness) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                 {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_max_brightness %}
-                                {% if elevation > -10 %}
+                                {% if elevation > dynamic_elevation_cutoff %}
                                   {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                     {% set brightness_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                   {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -6595,13 +6616,19 @@ action:
                         until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
                         sequence:
                           - variables:
+                              dynamic_elevation_cutoff: >
+                                {% if is_state_attr('sun.sun', 'rising', true) %}
+                                  {{ dynamic_lighting_sun_elevation_start_rising }}
+                                {% else %}
+                                  {{ dynamic_lighting_sun_elevation_end_falling }}
+                                {% endif %}
                               dynamic_kelvin: >
                                 {% set elevation = state_attr('sun.sun', 'elevation') | float %}
                                 {% set start_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (dynamic_lighting_sun_elevation_start_rising - dynamic_lighting_sun_elevation_end_rising) %}
                                 {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_max_colour_temp %}
                                 {% set end_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                 {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_min_colour_temp %}
-                                {% if elevation >= -10 %}
+                                {% if elevation >= dynamic_elevation_cutoff %}
                                   {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                     {% set colour_temp_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                   {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -6625,7 +6652,7 @@ action:
                                 {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_max_brightness %}
                                 {% set end_slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                 {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_min_brightness %}
-                                {% if elevation >= -10 %}
+                                {% if elevation >= dynamic_elevation_cutoff %}
                                   {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                     {% set brightness_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                   {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -6660,7 +6687,7 @@ action:
                                 {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_max_brightness %}
                                 {% set end_slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                 {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_min_brightness %}
-                                {% if elevation >= -10 %}
+                                {% if elevation >= dynamic_elevation_cutoff %}
                                   {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                     {% set brightness_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                   {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -6770,13 +6797,19 @@ action:
                         until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
                         sequence:
                           - variables:
+                              dynamic_elevation_cutoff: >
+                                {% if is_state_attr('sun.sun', 'rising', true) %}
+                                  {{ dynamic_lighting_sun_elevation_start_rising }}
+                                {% else %}
+                                  {{ dynamic_lighting_sun_elevation_end_falling }}
+                                {% endif %}
                               dynamic_kelvin: >
                                 {% set elevation = state_attr('sun.sun', 'elevation') | float %}
                                 {% set start_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (dynamic_lighting_sun_elevation_start_rising - dynamic_lighting_sun_elevation_end_rising) %}
                                 {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_max_colour_temp %}
                                 {% set end_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                 {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_min_colour_temp %}
-                                {% if elevation >= -10 %}
+                                {% if elevation >= dynamic_elevation_cutoff %}
                                   {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                     {% set colour_temp_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                   {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -6800,7 +6833,7 @@ action:
                                 {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_min_brightness %}
                                 {% set end_slope = (dynamic_lighting_max_brightness - dynamic_lighting_min_brightness) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                 {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_max_brightness %}
-                                {% if elevation > -10 %}
+                                {% if elevation > dynamic_elevation_cutoff %}
                                   {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                     {% set brightness_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                   {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -6835,7 +6868,7 @@ action:
                                 {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_min_brightness %}
                                 {% set end_slope = (dynamic_lighting_max_brightness - dynamic_lighting_min_brightness) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                 {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_max_brightness %}
-                                {% if elevation > -10 %}
+                                {% if elevation > dynamic_elevation_cutoff %}
                                   {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                     {% set brightness_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                   {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -6948,6 +6981,12 @@ action:
                                 until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
                                 sequence:
                                   - variables:
+                                      dynamic_elevation_cutoff: >
+                                        {% if is_state_attr('sun.sun', 'rising', true) %}
+                                          {{ dynamic_lighting_sun_elevation_start_rising }}
+                                        {% else %}
+                                          {{ dynamic_lighting_sun_elevation_end_falling }}
+                                        {% endif %}
                                       dynamic_brightness_pct: >
                                         {% set lux = states(dynamic_lighting_lux_sensor) | float %}
                                         {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_max_lux - dynamic_lighting_min_lux) %}
@@ -6985,7 +7024,7 @@ action:
                                           {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_max_colour_temp %}
                                           {% set end_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                           {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_min_colour_temp %}
-                                          {% if elevation >= -10 %}
+                                          {% if elevation >= dynamic_elevation_cutoff %}
                                             {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                               {% set colour_temp_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                             {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -7149,13 +7188,19 @@ action:
                                 until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
                                 sequence:
                                   - variables:
+                                      dynamic_elevation_cutoff: >
+                                        {% if is_state_attr('sun.sun', 'rising', true) %}
+                                          {{ dynamic_lighting_sun_elevation_start_rising }}
+                                        {% else %}
+                                          {{ dynamic_lighting_sun_elevation_end_falling }}
+                                        {% endif %}
                                       dynamic_kelvin: >
                                         {% set elevation = state_attr('sun.sun', 'elevation') | float %}
                                         {% set start_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (dynamic_lighting_sun_elevation_start_rising - dynamic_lighting_sun_elevation_end_rising) %}
                                         {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_max_colour_temp %}
                                         {% set end_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                         {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_min_colour_temp %}
-                                        {% if elevation >= -10 %}
+                                        {% if elevation >= dynamic_elevation_cutoff %}
                                           {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                             {% set colour_temp_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                           {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -7294,6 +7339,12 @@ action:
                                 until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
                                 sequence:
                                   - variables:
+                                      dynamic_elevation_cutoff: >
+                                        {% if is_state_attr('sun.sun', 'rising', true) %}
+                                          {{ dynamic_lighting_sun_elevation_start_rising }}
+                                        {% else %}
+                                          {{ dynamic_lighting_sun_elevation_end_falling }}
+                                        {% endif %}
                                       dynamic_brightness_pct: >
                                         {% set lux = states(dynamic_lighting_lux_sensor) | float %}
                                         {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_min_lux - dynamic_lighting_max_lux) %}
@@ -7331,7 +7382,7 @@ action:
                                           {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_max_colour_temp %}
                                           {% set end_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                           {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_min_colour_temp %}
-                                          {% if elevation >= -10 %}
+                                          {% if elevation >= dynamic_elevation_cutoff %}
                                             {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                               {% set colour_temp_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                             {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
@@ -7495,13 +7546,19 @@ action:
                                 until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
                                 sequence:
                                   - variables:
+                                      dynamic_elevation_cutoff: >
+                                        {% if is_state_attr('sun.sun', 'rising', true) %}
+                                          {{ dynamic_lighting_sun_elevation_start_rising }}
+                                        {% else %}
+                                          {{ dynamic_lighting_sun_elevation_end_falling }}
+                                        {% endif %}
                                       dynamic_kelvin: >
                                         {% set elevation = state_attr('sun.sun', 'elevation') | float %}
                                         {% set start_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (dynamic_lighting_sun_elevation_start_rising - dynamic_lighting_sun_elevation_end_rising) %}
                                         {% set start_ak = (( start_slope * dynamic_lighting_sun_elevation_end_rising) * -1) + dynamic_lighting_max_colour_temp %}
                                         {% set end_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (dynamic_lighting_sun_elevation_end_falling - dynamic_lighting_sun_elevation_start_falling) %}
                                         {% set end_ak = (( end_slope * dynamic_lighting_sun_elevation_end_falling) * -1) + dynamic_lighting_min_colour_temp %}
-                                        {% if elevation >= -10 %}
+                                        {% if elevation >= dynamic_elevation_cutoff %}
                                           {% if elevation >= dynamic_lighting_sun_elevation_start_rising and elevation <= dynamic_lighting_sun_elevation_end_rising and is_state_attr('sun.sun', 'rising', true) %}
                                             {% set colour_temp_value = ((start_slope * elevation) + start_ak) | round(1) %}
                                           {% elif elevation <= dynamic_lighting_sun_elevation_start_falling and elevation >= dynamic_lighting_sun_elevation_end_falling and is_state_attr('sun.sun', 'rising', false) %}
