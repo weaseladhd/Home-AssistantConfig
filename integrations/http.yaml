@@ -6,6 +6,7 @@ http:
   use_x_forwarded_for: true
   trusted_proxies:
     - !secret trusted_proxy
+    - !secret trusted_proxy_1
     - 127.0.0.1
     - ::1
     # IPV4 Cloudflare
