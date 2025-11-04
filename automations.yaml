@@ -224,15 +224,15 @@
       - zone.work_fenne_nijmegen
       - zone.work_fenne_vught
       - zone.home
-      notify_device: 5e20a37ce4434aa9ca25d7462a060cca
+      notify_device: c18efe9321b90bada7b41f53a635f29a
       custom_action_arriving:
-      - service: notify.gotify
-        data:
+      - data:
           message: '{{ person }} enters {{ zone }}.'
+        action: notify.gotify
       custom_action_leaving:
-      - service: notify.gotify
-        data:
+      - data:
           message: '{{ person }} leaves {{ zone }}.'
+        action: notify.gotify
       title_leaving: '{{ person }} has left'
       message_leaving: '{{ person }} has left {{ zone }}.'
       title_arriving: '{{ person }} has arrived'
@@ -365,7 +365,7 @@
       include_button: disable_button_trigger
       include_easy_notify: enable_easy_notify
       notify_device:
-      - 5e20a37ce4434aa9ca25d7462a060cca
+      - c18efe9321b90bada7b41f53a635f29a
       include_persistent_notification: enable_persistent_notification
       time: '10:00:00'
       include_time: time_enabled
