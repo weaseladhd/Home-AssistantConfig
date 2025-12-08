@@ -1,6 +1,5 @@
 platform: mediarr
 plex:  # Optional
-  # url: https://plex.weaselweb.nl/
   url: http://10.20.30.182:32400
   token: ZaNXN1PqVCf4QkFxA7bU
   max_items: 10

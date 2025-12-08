@@ -1,6 +1,5 @@
 platform: mediarr
 seer:
-  # url: https://request.weaselweb.nl/
   url: http://10.20.30.182:5056
   api_key: MTc0MTY5MzcxOTU0NjNjMjNiNDZiLTc2MmYtNDdmNy1iNGRlLWRhMTNhNWM4ZGY5MQ==
   max_items: 10

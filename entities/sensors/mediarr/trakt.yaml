@@ -2,6 +2,6 @@ platform: mediarr
 trakt:  # Optional
   client_id: "79fe849a4f3a50b51a29ea06046e6f23f37eaa59695aeff92c15512a14128cdd"
   client_secret: "07dba221b8615ec7b4e2e2eef877ecfaa7abceb65c084d04b1080207241157e6"
-  tmdb_api_key: "5e8250e5bb395492f038f25817284399"  # Required for posters
+  tmdb_api_key: "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1ZTgyNTBlNWJiMzk1NDkyZjAzOGYyNTgxNzI4NDM5OSIsIm5iZiI6MTI3ODU1NjI0My4wLCJzdWIiOiI0YzM1Mzg1MzdiOWFhMTdkYTgwMDAwM2MiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.9KJq3m1xC7B2psAdzvNv_2gYIAyBDk7AbolkR1QzeXA"
   trending_type: both  # Options: movies, shows, both
   max_items: 10
