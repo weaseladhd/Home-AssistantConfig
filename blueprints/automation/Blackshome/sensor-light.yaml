@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 💡 Sensor Light
 
-    **Version: 8.4**
+    **Version: 8.5**
 
 
     Your lighting experience, your way - take control and customize it to perfection! 💡✨
@@ -28,6 +28,7 @@ blueprint:
 
       - **Light Control Options:**
           - Utilize "Light Control" to adjust brightness, colour temperature, colour, and transition times.
+          - Dim lights to a lower brightness percentage before turning OFF.
 
       - **Dynamic Lighting Options:**
         - Opt for 'Dynamic Lighting' to automatically adjust brightness based on lux values, and/or adjust brightness and colour temperature according to the sun's position or the time of day.
@@ -273,6 +274,61 @@ blueprint:
           default: [255, 255, 255, 255, 255]
           selector:
             object:
+        include_dim_before_off:
+          name: Use The Dim Before OFF Option (Optional)
+          description: >
+            This option dims the lights as a visual warning before they turn OFF.
+            It gives you time to trigger the motion sensor if you want the lights to stay ON.
+          default: dim_before_off_disabled
+          selector:
+            select:
+              options:
+                - label: Enable the Dim Before OFF option
+                  value: "dim_before_off_enabled"
+                - label: Disable the Dim Before OFF option
+                  value: "dim_before_off_disabled"
+        dim_before_off_pct:
+          name: Dim Before OFF - Percentage
+          description: >
+            Set how much to reduce the brightness of your lights during the warning dim.
+            For example, 50 means the brightness will be reduced by 50%.
+          default: 50
+          selector:
+            number:
+              min: 1
+              max: 100
+              mode: slider
+              step: 1
+              unit_of_measurement: '%'
+        dim_before_off_time_delay:
+          name: Dim Before OFF - Time Delay
+          description: >
+            Set how long to keep the lights at the dimmed brightness level before turning them OFF.
+          default: 30
+          selector:
+            number:
+              min: 0
+              max: 60
+              mode: slider
+              step: 1
+              unit_of_measurement: seconds
+        dim_before_off_boolean:
+          name: Dim Before OFF - Toggle Helper
+          description: >
+            This toggle helper tracks whether the lights have been dimmed.
+            Select a Toggle Helper to track the dimmed state of the lights.
+
+
+            When it is ON, the automation knows the lights are currently in their dimmed state and will restore their previous brightness if the automation is triggered again before the lights turn OFF.
+
+
+            This helper must be used exclusively by this automation input only and must not be used for the **Night Lights - Dim Before OFF toggle helper**.
+          default: []
+          selector:
+            entity:
+              filter:
+                domain:
+                  - input_boolean
     dynamic_lighting_settings:
       name: "Dynamic Lighting"
       icon: mdi:creation-outline
@@ -649,12 +705,12 @@ blueprint:
         bypass_time_delay:
           name: Bypass - Time Delay
           description: >
-            This is only used in two specific bypass scenarios when your lights are ON:
+            This is only used in two specific bypass scenarios when your lights are ON.
 
-              1. When you have selected option 2 above to "Enable the Bypass - Turn the Lights OFF" and you turn the bypass ON.
-              2. When the bypass is turned OFF, the trigger sensor is OFF, and your lights are still ON.
+              1. When option 2 above is selected to "Enable the Bypass - Turn the Lights OFF" and the bypass is turned ON.
+              2. When all bypasses are OFF, the trigger sensor is OFF, and the lights remain ON.
 
-            In both cases, the automation will turn your lights OFF after the set time delay.
+            In both cases, the automation will turn the lights OFF after the configured time delay.
           default: 0
           selector:
             number:
@@ -689,6 +745,7 @@ blueprint:
           description: >
             Set the bypass auto OFF time delay.
             The time delay starts from the last bypass that was turned ON.
+            If multiple bypasses are ON, turning one OFF while another remains ON will also reset the time delay.
           default: 60
           selector:
             number:
@@ -800,6 +857,18 @@ blueprint:
               max: 500
               step: 10
               unit_of_measurement: lux
+        ambient_light_low_value_delay:
+          name: Ambient Light - Low Lux Time Delay
+          description: >
+            Set how long the ambient light level must remain below the **Low Lux Value** before the condition is met.
+            This helps prevent the lights from turning ON due to brief dips in lux.
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 5
+              step: 0.25
+              unit_of_measurement: minutes
         ambient_light_high_value:
           name: Ambient Light - High Lux Value
           description: >
@@ -813,6 +882,18 @@ blueprint:
               max: 1000
               step: 10
               unit_of_measurement: lux
+        ambient_light_high_value_delay:
+          name: Ambient Light - High Lux Time Delay
+          description: >
+            Set how long the ambient light level must remain above the **High Lux Value** before the ambient condition is met.
+            This helps prevent the lights from turning OFF due to brief spikes in lux.
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 5
+              step: 0.25
+              unit_of_measurement: minutes
     time_settings:
       name: "Time"
       icon: mdi:clock-outline
@@ -1214,6 +1295,64 @@ blueprint:
           default: [255, 255, 255, 255, 255]
           selector:
             object:
+        night_light_include_dim_before_off:
+          name: Use The Dim Before OFF Option (Optional)
+          description: >
+            This option dims the night lights as a visual warning before they turn OFF.
+            It gives you time to trigger the motion sensor if you want the night lights to stay ON.
+
+
+            ***Note** - This option will not work when **Night Glow** is enabled, even if it is enabled here.*
+          default: dim_before_off_disabled
+          selector:
+            select:
+              options:
+                - label: Enable the Dim Before OFF option
+                  value: "dim_before_off_enabled"
+                - label: Disable the Dim Before OFF option
+                  value: "dim_before_off_disabled"
+        night_light_dim_before_off_pct:
+          name: Dim Before OFF - Percentage
+          description: >
+            Set how much to reduce the brightness of your night lights during the warning dim.
+            For example, 50 means the brightness will be reduced by 50%.
+          default: 50
+          selector:
+            number:
+              min: 1
+              max: 100
+              mode: slider
+              step: 1
+              unit_of_measurement: '%'
+        night_light_dim_before_off_time_delay:
+          name: Dim Before OFF - Time Delay
+          description: >
+            Set how long to keep the night lights at the dimmed brightness level before turning them OFF.
+          default: 30
+          selector:
+            number:
+              min: 0
+              max: 60
+              mode: slider
+              step: 1
+              unit_of_measurement: seconds
+        night_light_dim_before_off_boolean:
+          name: Dim Before OFF - Toggle Helper
+          description: >
+            This toggle helper tracks whether the night lights have been dimmed.
+            Select a Toggle Helper to track the dimmed state of the night lights.
+
+
+            When it is ON, the automation knows the night lights are currently in their dimmed state and will restore their previous brightness if the automation is triggered again before the night lights turn OFF.
+
+
+            This helper must be used exclusively by this automation input only and must not be used for the **Normal Lights Dim Before OFF - Toggle Helper**.
+          default: []
+          selector:
+            entity:
+              filter:
+                domain:
+                  - input_boolean
     night_lights_night_glow:
       name: "Night Glow"
       icon: mdi:candle
@@ -1382,6 +1521,11 @@ variables:
   light_rgb_colour: !input light_rgb_colour
   light_rgbw_colour: !input light_rgbw_colour
   light_rgbww_colour: !input light_rgbww_colour
+  include_dim_before_off: !input include_dim_before_off
+  dim_before_off_pct: !input dim_before_off_pct
+  dim_before_off_factor: "{{ 1 - (dim_before_off_pct | float / 100) }}"
+  dim_before_off_time_delay: !input dim_before_off_time_delay
+  dim_before_off_boolean: !input dim_before_off_boolean
   include_dynamic_lighting: !input include_dynamic_lighting
   dynamic_lighting_lux_sensor: !input dynamic_lighting_lux_sensor
   dynamic_lighting_max_lux: !input dynamic_lighting_max_lux
@@ -1419,7 +1563,9 @@ variables:
   ambient_light_sensor: !input ambient_light_sensor
   ambient_light_options: !input ambient_light_options
   ambient_light_value: !input ambient_light_value
+  ambient_light_low_value_delay: !input ambient_light_low_value_delay
   ambient_light_high_value: !input ambient_light_high_value
+  ambient_light_high_value_delay: !input ambient_light_high_value_delay
   include_time: !input include_time
   after_time: !input after_time
   before_time: !input before_time
@@ -1449,6 +1595,11 @@ variables:
   night_light_rgb_colour: !input night_light_rgb_colour
   night_light_rgbw_colour: !input night_light_rgbw_colour
   night_light_rgbww_colour: !input night_light_rgbww_colour
+  night_light_include_dim_before_off: !input night_light_include_dim_before_off
+  night_light_dim_before_off_pct: !input night_light_dim_before_off_pct
+  night_light_dim_before_off_factor: "{{ 1 - (night_light_dim_before_off_pct | float / 100) }}"
+  night_light_dim_before_off_time_delay: !input night_light_dim_before_off_time_delay
+  night_light_dim_before_off_boolean: !input night_light_dim_before_off_boolean
   include_night_glow: !input include_night_glow
   night_glow_lights: !input night_glow_lights
   include_night_glow_light_control: !input include_night_glow_light_control
@@ -1811,6 +1962,8 @@ triggers:
     id: "t2"
     entity_id: !input ambient_light_sensor
     below: !input ambient_light_value
+    for: 
+      minutes: !input ambient_light_low_value_delay
   - trigger: time
     id: "t3"
     at: !input after_time
@@ -1866,6 +2019,8 @@ triggers:
     id: "t10"
     entity_id: !input ambient_light_sensor
     above: !input ambient_light_high_value
+    for: 
+      minutes: !input ambient_light_high_value_delay
   - trigger: time
     id: "t11"
     at: !input before_time
@@ -2597,6 +2752,18 @@ action:
                   delay:
                     minutes: !input bypass_time_delay
                 - choose:
+                  - alias: "If dim before OFF is selected - Turn OFF helper if ON"
+                    conditions:
+                      - condition: template
+                        value_template: "{{ night_light_include_dim_before_off == 'dim_before_off_enabled' }}"
+                      - condition: state
+                        entity_id: !input night_light_dim_before_off_boolean
+                        state: 'on'
+                    sequence:
+                      - action: input_boolean.turn_off
+                        target:
+                          entity_id: !input night_light_dim_before_off_boolean
+                - choose:
                   - alias: "If transition is selected"
                     conditions:
                       - condition: template
@@ -2690,9 +2857,35 @@ action:
                     entity_id: !input night_boolean_scenes_scripts
                 - alias: "Check by-pass settings and preform the correct action"
                   if:
-                    - alias: "Check if the by-pass auto off is enabled"
-                      condition: template
-                      value_template: "{{ ('bypass_auto_off_enabled_on' in include_bypass_auto_off) or ('bypass_auto_off_enabled_off' in include_bypass_auto_off) or ('bypass_auto_off_enabled_stop' in include_bypass_auto_off) }}"
+                    - condition: or
+                      conditions:
+                        - condition: and
+                          conditions:
+                            - alias: "Check if the by-pass auto off is enabled"
+                              condition: template
+                              value_template: "{{ 'bypass_auto_off_enabled_on' in include_bypass_auto_off }}"
+                            - condition: state
+                              entity_id: !input motion_bypass_lights_on
+                              match: any
+                              state: 'on'
+                        - condition: and
+                          conditions:
+                            - alias: "Check if the by-pass auto off is enabled"
+                              condition: template
+                              value_template: "{{ 'bypass_auto_off_enabled_off' in include_bypass_auto_off }}"
+                            - condition: state
+                              entity_id: !input motion_bypass_lights_off
+                              match: any
+                              state: 'on'
+                        - condition: and
+                          conditions:
+                            - alias: "Check if the by-pass auto off is enabled"
+                              condition: template
+                              value_template: "{{ 'bypass_auto_off_enabled_stop' in include_bypass_auto_off }}"
+                            - condition: state
+                              entity_id: !input motion_bypass_lights_stop
+                              match: any
+                              state: 'on'
                   then:
                     - alias: "Wait the number of minutes set in the by-pass auto off time delay"
                       delay: 
@@ -2734,11 +2927,73 @@ action:
                 - condition: trigger
                   id: 't7_stop'
               sequence:
+                - choose:
+                  - alias: "If dim before OFF is selected - Restore Lights before pausing"
+                    conditions:
+                      - condition: template
+                        value_template: "{{ night_light_include_dim_before_off == 'dim_before_off_enabled' }}"
+                      - condition: state
+                        entity_id: !input night_light_dim_before_off_boolean
+                        state: 'on'
+                    sequence:
+                      - repeat:
+                          for_each: "{{ night_light_entities }}"
+                          sequence:
+                            - variables:
+                                restore_bri: >
+                                  {% set bri = state_attr(repeat.item, 'brightness') %}
+                                  {% if bri in [None, 0] %}
+                                    {{ 0 }}
+                                  {% else %}
+                                    {% set bri_pct = bri / 255 * 100 %}
+                                    {% set restored = (bri_pct / night_light_dim_before_off_factor) %}
+                                    {{ [restored | round(0), 100] | min }}
+                                  {% endif %}
+                                restore_light_data: >-
+                                  {% set light = namespace(data={}) %}
+                                  {% if 'use_transition' in include_night_light_control %}
+                                    {% set light.data = dict(light.data, **{ 'transition': night_light_transition_on }) %}
+                                  {% endif %}
+                                  {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                  {{ light.data }}
+                            - action: light.turn_on
+                              target:
+                                entity_id: "{{ repeat.item }}"
+                              data: "{{ restore_light_data }}"
+                      - action: input_boolean.turn_off
+                        target:
+                          entity_id: !input night_light_dim_before_off_boolean
                 - alias: "Check by-pass settings and preform the correct action"
                   if:
-                    - alias: "Check if the by-pass auto off is enabled"
-                      condition: template
-                      value_template: "{{ ('bypass_auto_off_enabled_on' in include_bypass_auto_off) or ('bypass_auto_off_enabled_off' in include_bypass_auto_off) or ('bypass_auto_off_enabled_stop' in include_bypass_auto_off) }}"
+                    - condition: or
+                      conditions:
+                        - condition: and
+                          conditions:
+                            - alias: "Check if the by-pass auto off is enabled"
+                              condition: template
+                              value_template: "{{ 'bypass_auto_off_enabled_on' in include_bypass_auto_off }}"
+                            - condition: state
+                              entity_id: !input motion_bypass_lights_on
+                              match: any
+                              state: 'on'
+                        - condition: and
+                          conditions:
+                            - alias: "Check if the by-pass auto off is enabled"
+                              condition: template
+                              value_template: "{{ 'bypass_auto_off_enabled_off' in include_bypass_auto_off }}"
+                            - condition: state
+                              entity_id: !input motion_bypass_lights_off
+                              match: any
+                              state: 'on'
+                        - condition: and
+                          conditions:
+                            - alias: "Check if the by-pass auto off is enabled"
+                              condition: template
+                              value_template: "{{ 'bypass_auto_off_enabled_stop' in include_bypass_auto_off }}"
+                            - condition: state
+                              entity_id: !input motion_bypass_lights_stop
+                              match: any
+                              state: 'on'
                   then:
                     - alias: "Wait the number of minutes set in the by-pass auto off time delay"
                       delay: 
@@ -2952,7 +3207,7 @@ action:
                               - alias: "If transition is not selected"
                                 conditions:
                                   - condition: template
-                                    value_template: "{{ 'use_transition' in include_night_light_control }}"
+                                    value_template: "{{ 'use_transition' not in include_night_light_control }}"
                                 sequence:
                                   - alias: "Turn OFF crossover night lights"
                                     action: light.turn_off
@@ -3104,9 +3359,35 @@ action:
                     sequence:
                       - alias: "Check by-pass settings and preform the correct action"
                         if:
-                          - alias: "Check if the by-pass auto off is enabled"
-                            condition: template
-                            value_template: "{{ ('bypass_auto_off_enabled_on' in include_bypass_auto_off) or ('bypass_auto_off_enabled_off' in include_bypass_auto_off) or ('bypass_auto_off_enabled_stop' in include_bypass_auto_off) }}"
+                          - condition: or
+                            conditions:
+                              - condition: and
+                                conditions:
+                                  - alias: "Check if the by-pass auto off is enabled"
+                                    condition: template
+                                    value_template: "{{ 'bypass_auto_off_enabled_on' in include_bypass_auto_off }}"
+                                  - condition: state
+                                    entity_id: !input motion_bypass_lights_on
+                                    match: any
+                                    state: 'on'
+                              - condition: and
+                                conditions:
+                                  - alias: "Check if the by-pass auto off is enabled"
+                                    condition: template
+                                    value_template: "{{ 'bypass_auto_off_enabled_off' in include_bypass_auto_off }}"
+                                  - condition: state
+                                    entity_id: !input motion_bypass_lights_off
+                                    match: any
+                                    state: 'on'
+                              - condition: and
+                                conditions:
+                                  - alias: "Check if the by-pass auto off is enabled"
+                                    condition: template
+                                    value_template: "{{ 'bypass_auto_off_enabled_stop' in include_bypass_auto_off }}"
+                                  - condition: state
+                                    entity_id: !input motion_bypass_lights_stop
+                                    match: any
+                                    state: 'on'
                         then:
                           - alias: "Wait the number of minutes set in the by-pass auto off time delay"
                             delay: 
@@ -3366,9 +3647,35 @@ action:
                     sequence:
                       - alias: "Check by-pass settings and preform the correct action"
                         if:
-                          - alias: "Check if the by-pass auto off is enabled"
-                            condition: template
-                            value_template: "{{ ('bypass_auto_off_enabled_on' in include_bypass_auto_off) or ('bypass_auto_off_enabled_off' in include_bypass_auto_off) or ('bypass_auto_off_enabled_stop' in include_bypass_auto_off) }}"
+                          - condition: or
+                            conditions:
+                              - condition: and
+                                conditions:
+                                  - alias: "Check if the by-pass auto off is enabled"
+                                    condition: template
+                                    value_template: "{{ 'bypass_auto_off_enabled_on' in include_bypass_auto_off }}"
+                                  - condition: state
+                                    entity_id: !input motion_bypass_lights_on
+                                    match: any
+                                    state: 'on'
+                              - condition: and
+                                conditions:
+                                  - alias: "Check if the by-pass auto off is enabled"
+                                    condition: template
+                                    value_template: "{{ 'bypass_auto_off_enabled_off' in include_bypass_auto_off }}"
+                                  - condition: state
+                                    entity_id: !input motion_bypass_lights_off
+                                    match: any
+                                    state: 'on'
+                              - condition: and
+                                conditions:
+                                  - alias: "Check if the by-pass auto off is enabled"
+                                    condition: template
+                                    value_template: "{{ 'bypass_auto_off_enabled_stop' in include_bypass_auto_off }}"
+                                  - condition: state
+                                    entity_id: !input motion_bypass_lights_stop
+                                    match: any
+                                    state: 'on'
                         then:
                           - alias: "Wait the number of minutes set in the by-pass auto off time delay"
                             delay: 
@@ -3489,6 +3796,18 @@ action:
                     - 't18'
               sequence:
                 - choose:
+                  - alias: "If dim before OFF is selected - Turn OFF helper if ON"
+                    conditions:
+                      - condition: template
+                        value_template: "{{ night_light_include_dim_before_off == 'dim_before_off_enabled' }}"
+                      - condition: state
+                        entity_id: !input night_light_dim_before_off_boolean
+                        state: 'on'
+                    sequence:
+                      - action: input_boolean.turn_off
+                        target:
+                          entity_id: !input night_light_dim_before_off_boolean
+                - choose:
                   - alias: "If transition is selected"
                     conditions:
                       - condition: template
@@ -3571,6 +3890,18 @@ action:
                     - 't5'
                     - 't6'
               sequence:
+                - choose:
+                  - alias: "If dim before OFF is selected - Turn OFF helper if ON"
+                    conditions:
+                      - condition: template
+                        value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                      - condition: state
+                        entity_id: !input dim_before_off_boolean
+                        state: 'on'
+                    sequence:
+                      - action: input_boolean.turn_off
+                        target:
+                          entity_id: !input dim_before_off_boolean
                 - choose:
                   - alias: "light - switch - scene - script is ON"
                     conditions:
@@ -3900,6 +4231,42 @@ action:
                 - condition: template
                   value_template: "{{ include_night_glow == 'night_glow_disabled' }}"
               sequence:
+                - choose:
+                  - alias: "If dim before OFF is selected - Restore Lights"
+                    conditions:
+                      - condition: template
+                        value_template: "{{ night_light_include_dim_before_off == 'dim_before_off_enabled' }}"
+                      - condition: state
+                        entity_id: !input night_light_dim_before_off_boolean
+                        state: "on"
+                    sequence:
+                      - repeat:
+                          for_each: "{{ night_light_entities }}"
+                          sequence:
+                            - variables:
+                                restore_bri: >
+                                  {% set bri = state_attr(repeat.item, 'brightness') %}
+                                  {% if bri in [None, 0] %}
+                                    {{ 0 }}
+                                  {% else %}
+                                    {% set bri_pct = bri / 255 * 100 %}
+                                    {% set restored = bri_pct / night_light_dim_before_off_factor %}
+                                    {{ [restored | round(0), 100] | min }}
+                                  {% endif %}
+                                restore_light_data: >-
+                                  {% set light = namespace(data={}) %}
+                                  {% if 'use_transition' in include_night_light_control %}
+                                    {% set light.data = dict(light.data, **{ 'transition': night_light_transition_on }) %}
+                                  {% endif %}
+                                  {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                  {{ light.data }}
+                            - action: light.turn_on
+                              target:
+                                entity_id: "{{ repeat.item }}"
+                              data: "{{ restore_light_data }}"
+                      - action: input_boolean.turn_off
+                        target:
+                          entity_id: !input night_light_dim_before_off_boolean
                 - alias: "Turn ON lights"
                   action: light.turn_on
                   target:
@@ -4078,9 +4445,35 @@ action:
               sequence:
                 - alias: "Check by-pass settings and preform the correct action"
                   if:
-                    - alias: "Check if the by-pass auto off is enabled"
-                      condition: template
-                      value_template: "{{ ('bypass_auto_off_enabled_on' in include_bypass_auto_off) or ('bypass_auto_off_enabled_off' in include_bypass_auto_off) or ('bypass_auto_off_enabled_stop' in include_bypass_auto_off) }}"
+                    - condition: or
+                      conditions:
+                        - condition: and
+                          conditions:
+                            - alias: "Check if the by-pass auto off is enabled"
+                              condition: template
+                              value_template: "{{ 'bypass_auto_off_enabled_on' in include_bypass_auto_off }}"
+                            - condition: state
+                              entity_id: !input motion_bypass_lights_on
+                              match: any
+                              state: 'on'
+                        - condition: and
+                          conditions:
+                            - alias: "Check if the by-pass auto off is enabled"
+                              condition: template
+                              value_template: "{{ 'bypass_auto_off_enabled_off' in include_bypass_auto_off }}"
+                            - condition: state
+                              entity_id: !input motion_bypass_lights_off
+                              match: any
+                              state: 'on'
+                        - condition: and
+                          conditions:
+                            - alias: "Check if the by-pass auto off is enabled"
+                              condition: template
+                              value_template: "{{ 'bypass_auto_off_enabled_stop' in include_bypass_auto_off }}"
+                            - condition: state
+                              entity_id: !input motion_bypass_lights_stop
+                              match: any
+                              state: 'on'
                   then:
                     - alias: "Wait the number of minutes set in the by-pass auto off time delay"
                       delay: 
@@ -4146,6 +4539,38 @@ action:
                       - condition: template
                         value_template: "{{ 'use_transition' in include_night_light_control }}"
                     sequence:
+                      - choose:
+                        - alias: "If dim before OFF is selected - Dim lights"
+                          conditions:
+                            - condition: template
+                              value_template: "{{ night_light_include_dim_before_off == 'dim_before_off_enabled' }}"
+                          sequence:
+                            - repeat:
+                                for_each: "{{ night_light_entities }}"
+                                sequence:
+                                  - action: light.turn_on
+                                    target:
+                                      entity_id: "{{ repeat.item }}"
+                                    data:
+                                      brightness_pct: >
+                                        {% set bri = state_attr(repeat.item, 'brightness') %}
+                                        {% if bri in [None, 0] %}
+                                          {{ 0 }}
+                                        {% else %}
+                                          {% set bri_pct = (bri / 255 * 100) %}
+                                          {% set dimmed = bri_pct * night_light_dim_before_off_factor %}
+                                          {{ [dimmed | round(0), 1] | max }}
+                                        {% endif %}
+                                      transition: "{{ night_light_transition_off }}"
+                            - action: input_boolean.turn_on
+                              target:
+                                entity_id: !input night_light_dim_before_off_boolean
+                            - alias: "Wait the number of minutes set in the dim before OFF time delay"
+                              delay:
+                                seconds: !input night_light_dim_before_off_time_delay
+                            - action: input_boolean.turn_off
+                              target:
+                                entity_id: !input night_light_dim_before_off_boolean
                       - alias: "Turn off the lights"
                         action: light.turn_off
                         target:
@@ -4162,6 +4587,37 @@ action:
                       - condition: template
                         value_template: "{{ 'use_transition' not in include_night_light_control }}"
                     sequence:
+                      - choose:
+                        - alias: "If dim before OFF is selected - Dim lights"
+                          conditions:
+                            - condition: template
+                              value_template: "{{ night_light_include_dim_before_off == 'dim_before_off_enabled' }}"
+                          sequence:
+                            - repeat:
+                                for_each: "{{ night_light_entities }}"
+                                sequence:
+                                  - action: light.turn_on
+                                    target:
+                                      entity_id: "{{ repeat.item }}"
+                                    data:
+                                      brightness_pct: >
+                                        {% set bri = state_attr(repeat.item, 'brightness') %}
+                                        {% if bri in [None, 0] %}
+                                          {{ 0 }}
+                                        {% else %}
+                                          {% set bri_pct = (bri / 255 * 100) %}
+                                          {% set dimmed = bri_pct * night_light_dim_before_off_factor %}
+                                          {{ [dimmed | round(0), 1] | max }}
+                                        {% endif %}
+                            - action: input_boolean.turn_on
+                              target:
+                                entity_id: !input night_light_dim_before_off_boolean
+                            - alias: "Wait the number of minutes set in the dim before OFF time delay"
+                              delay:
+                                seconds: !input night_light_dim_before_off_time_delay
+                            - action: input_boolean.turn_off
+                              target:
+                                entity_id: !input night_light_dim_before_off_boolean
                       - alias: "Turn off the lights"
                         action: light.turn_off
                         target:
@@ -4207,7 +4663,7 @@ action:
                   - alias: "If transition is not selected"
                     conditions:
                       - condition: template
-                        value_template: "{{ 'use_transition' in include_night_light_control }}"
+                        value_template: "{{ 'use_transition' not in include_night_light_control }}"
                     sequence:
                       - alias: "Turn OFF crossover night lights"
                         action: light.turn_off
@@ -4259,6 +4715,18 @@ action:
             - alias: "Wait the number of minutes set in the by-pass time delay"
               delay:
                 minutes: !input bypass_time_delay
+            - choose:
+              - alias: "If dim before OFF is selected - Turn OFF helper if ON"
+                conditions:
+                  - condition: template
+                    value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                  - condition: state
+                    entity_id: !input dim_before_off_boolean
+                    state: 'on'
+                sequence:
+                  - action: input_boolean.turn_off
+                    target:
+                      entity_id: !input dim_before_off_boolean
             - choose:
               - alias: "If night lights are disabled"
                 conditions:
@@ -4328,9 +4796,35 @@ action:
                             entity_id: !input dynamic_lighting_boolean
                   - alias: "Check by-pass settings and preform the correct action"
                     if:
-                      - alias: "Check if the by-pass auto off is enabled"
-                        condition: template
-                        value_template: "{{ ('bypass_auto_off_enabled_on' in include_bypass_auto_off) or ('bypass_auto_off_enabled_off' in include_bypass_auto_off) or ('bypass_auto_off_enabled_stop' in include_bypass_auto_off) }}"
+                      - condition: or
+                        conditions:
+                          - condition: and
+                            conditions:
+                              - alias: "Check if the by-pass auto off is enabled"
+                                condition: template
+                                value_template: "{{ 'bypass_auto_off_enabled_on' in include_bypass_auto_off }}"
+                              - condition: state
+                                entity_id: !input motion_bypass_lights_on
+                                match: any
+                                state: 'on'
+                          - condition: and
+                            conditions:
+                              - alias: "Check if the by-pass auto off is enabled"
+                                condition: template
+                                value_template: "{{ 'bypass_auto_off_enabled_off' in include_bypass_auto_off }}"
+                              - condition: state
+                                entity_id: !input motion_bypass_lights_off
+                                match: any
+                                state: 'on'
+                          - condition: and
+                            conditions:
+                              - alias: "Check if the by-pass auto off is enabled"
+                                condition: template
+                                value_template: "{{ 'bypass_auto_off_enabled_stop' in include_bypass_auto_off }}"
+                              - condition: state
+                                entity_id: !input motion_bypass_lights_stop
+                                match: any
+                                state: 'on'
                     then:
                       - alias: "Wait the number of minutes set in the by-pass auto off time delay"
                         delay: 
@@ -4481,9 +4975,35 @@ action:
                             entity_id: !input dynamic_lighting_boolean
                   - alias: "Check by-pass settings and preform the correct action"
                     if:
-                      - alias: "Check if the by-pass auto off is enabled"
-                        condition: template
-                        value_template: "{{ ('bypass_auto_off_enabled_on' in include_bypass_auto_off) or ('bypass_auto_off_enabled_off' in include_bypass_auto_off) or ('bypass_auto_off_enabled_stop' in include_bypass_auto_off) }}"
+                      - condition: or
+                        conditions:
+                          - condition: and
+                            conditions:
+                              - alias: "Check if the by-pass auto off is enabled"
+                                condition: template
+                                value_template: "{{ 'bypass_auto_off_enabled_on' in include_bypass_auto_off }}"
+                              - condition: state
+                                entity_id: !input motion_bypass_lights_on
+                                match: any
+                                state: 'on'
+                          - condition: and
+                            conditions:
+                              - alias: "Check if the by-pass auto off is enabled"
+                                condition: template
+                                value_template: "{{ 'bypass_auto_off_enabled_off' in include_bypass_auto_off }}"
+                              - condition: state
+                                entity_id: !input motion_bypass_lights_off
+                                match: any
+                                state: 'on'
+                          - condition: and
+                            conditions:
+                              - alias: "Check if the by-pass auto off is enabled"
+                                condition: template
+                                value_template: "{{ 'bypass_auto_off_enabled_stop' in include_bypass_auto_off }}"
+                              - condition: state
+                                entity_id: !input motion_bypass_lights_stop
+                                match: any
+                                state: 'on'
                     then:
                       - alias: "Wait the number of minutes set in the by-pass auto off time delay"
                         delay: 
@@ -4525,11 +5045,73 @@ action:
             - condition: trigger
               id: 't7_stop'
           sequence:
+            - choose:
+              - alias: "If dim before OFF is selected - Restore Lights before pausing"
+                conditions:
+                  - condition: template
+                    value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                  - condition: state
+                    entity_id: !input dim_before_off_boolean
+                    state: 'on'
+                sequence:
+                  - repeat:
+                      for_each: "{{ light_entities }}"
+                      sequence:
+                        - variables:
+                            restore_bri: >
+                              {% set bri = state_attr(repeat.item, 'brightness') %}
+                              {% if bri in [None, 0] %}
+                                {{ 0 }}
+                              {% else %}
+                                {% set bri_pct = bri / 255 * 100 %}
+                                {% set restored = (bri_pct / dim_before_off_factor) %}
+                                {{ [restored | round(0), 100] | min }}
+                              {% endif %}
+                            restore_light_data: >-
+                              {% set light = namespace(data={}) %}
+                              {% if 'use_transition' in include_light_control %}
+                                {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                              {% endif %}
+                              {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                              {{ light.data }}
+                        - action: light.turn_on
+                          target:
+                            entity_id: "{{ repeat.item }}"
+                          data: "{{ restore_light_data }}"
+                  - action: input_boolean.turn_off
+                    target:
+                      entity_id: !input dim_before_off_boolean
             - alias: "Check by-pass settings and preform the correct action"
               if:
-                - alias: "Check if the by-pass auto off is enabled"
-                  condition: template
-                  value_template: "{{ ('bypass_auto_off_enabled_on' in include_bypass_auto_off) or ('bypass_auto_off_enabled_off' in include_bypass_auto_off) or ('bypass_auto_off_enabled_stop' in include_bypass_auto_off) }}"
+                - condition: or
+                  conditions:
+                    - condition: and
+                      conditions:
+                        - alias: "Check if the by-pass auto off is enabled"
+                          condition: template
+                          value_template: "{{ 'bypass_auto_off_enabled_on' in include_bypass_auto_off }}"
+                        - condition: state
+                          entity_id: !input motion_bypass_lights_on
+                          match: any
+                          state: 'on'
+                    - condition: and
+                      conditions:
+                        - alias: "Check if the by-pass auto off is enabled"
+                          condition: template
+                          value_template: "{{ 'bypass_auto_off_enabled_off' in include_bypass_auto_off }}"
+                        - condition: state
+                          entity_id: !input motion_bypass_lights_off
+                          match: any
+                          state: 'on'
+                    - condition: and
+                      conditions:
+                        - alias: "Check if the by-pass auto off is enabled"
+                          condition: template
+                          value_template: "{{ 'bypass_auto_off_enabled_stop' in include_bypass_auto_off }}"
+                        - condition: state
+                          entity_id: !input motion_bypass_lights_stop
+                          match: any
+                          state: 'on'
               then:
                 - alias: "Wait the number of minutes set in the by-pass auto off time delay"
                   delay: 
@@ -4910,9 +5492,35 @@ action:
                 sequence:
                   - alias: "Check by-pass settings and preform the correct action"
                     if:
-                      - alias: "Check if the by-pass auto off is enabled"
-                        condition: template
-                        value_template: "{{ ('bypass_auto_off_enabled_on' in include_bypass_auto_off) or ('bypass_auto_off_enabled_off' in include_bypass_auto_off) or ('bypass_auto_off_enabled_stop' in include_bypass_auto_off) }}"
+                      - condition: or
+                        conditions:
+                          - condition: and
+                            conditions:
+                              - alias: "Check if the by-pass auto off is enabled"
+                                condition: template
+                                value_template: "{{ 'bypass_auto_off_enabled_on' in include_bypass_auto_off }}"
+                              - condition: state
+                                entity_id: !input motion_bypass_lights_on
+                                match: any
+                                state: 'on'
+                          - condition: and
+                            conditions:
+                              - alias: "Check if the by-pass auto off is enabled"
+                                condition: template
+                                value_template: "{{ 'bypass_auto_off_enabled_off' in include_bypass_auto_off }}"
+                              - condition: state
+                                entity_id: !input motion_bypass_lights_off
+                                match: any
+                                state: 'on'
+                          - condition: and
+                            conditions:
+                              - alias: "Check if the by-pass auto off is enabled"
+                                condition: template
+                                value_template: "{{ 'bypass_auto_off_enabled_stop' in include_bypass_auto_off }}"
+                              - condition: state
+                                entity_id: !input motion_bypass_lights_stop
+                                match: any
+                                state: 'on'
                     then:
                       - alias: "Wait the number of minutes set in the by-pass auto off time delay"
                         delay: 
@@ -5187,9 +5795,35 @@ action:
                 sequence:
                   - alias: "Check by-pass settings and preform the correct action"
                     if:
-                      - alias: "Check if the by-pass auto off is enabled"
-                        condition: template
-                        value_template: "{{ ('bypass_auto_off_enabled_on' in include_bypass_auto_off) or ('bypass_auto_off_enabled_off' in include_bypass_auto_off) or ('bypass_auto_off_enabled_stop' in include_bypass_auto_off) }}"
+                      - condition: or
+                        conditions:
+                          - condition: and
+                            conditions:
+                              - alias: "Check if the by-pass auto off is enabled"
+                                condition: template
+                                value_template: "{{ 'bypass_auto_off_enabled_on' in include_bypass_auto_off }}"
+                              - condition: state
+                                entity_id: !input motion_bypass_lights_on
+                                match: any
+                                state: 'on'
+                          - condition: and
+                            conditions:
+                              - alias: "Check if the by-pass auto off is enabled"
+                                condition: template
+                                value_template: "{{ 'bypass_auto_off_enabled_off' in include_bypass_auto_off }}"
+                              - condition: state
+                                entity_id: !input motion_bypass_lights_off
+                                match: any
+                                state: 'on'
+                          - condition: and
+                            conditions:
+                              - alias: "Check if the by-pass auto off is enabled"
+                                condition: template
+                                value_template: "{{ 'bypass_auto_off_enabled_stop' in include_bypass_auto_off }}"
+                              - condition: state
+                                entity_id: !input motion_bypass_lights_stop
+                                match: any
+                                state: 'on'
                     then:
                       - alias: "Wait the number of minutes set in the by-pass auto off time delay"
                         delay: 
@@ -5374,6 +6008,18 @@ action:
                 - 't18'
           sequence:
             - choose:
+              - alias: "If dim before OFF is selected - Turn OFF helper if ON"
+                conditions:
+                  - condition: template
+                    value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                  - condition: state
+                    entity_id: !input dim_before_off_boolean
+                    state: 'on'
+                sequence:
+                  - action: input_boolean.turn_off
+                    target:
+                      entity_id: !input dim_before_off_boolean
+            - choose:
               - alias: "If transition is selected"
                 conditions:
                   - condition: template
@@ -5439,6 +6085,18 @@ action:
                 - 't13'
                 - 't14'
           sequence:
+            - choose:
+              - alias: "If dim before OFF is selected - Turn OFF helper if ON"
+                conditions:
+                  - condition: template
+                    value_template: "{{ night_light_include_dim_before_off == 'dim_before_off_enabled' }}"
+                  - condition: state
+                    entity_id: !input night_light_dim_before_off_boolean
+                    state: 'on'
+                sequence:
+                  - action: input_boolean.turn_off
+                    target:
+                      entity_id: !input night_light_dim_before_off_boolean
             - choose:
               - alias: "If the night glow is enabled"
                 conditions:
@@ -5896,6 +6554,58 @@ action:
                                   false
                                 {% endif %}
                           - choose:
+                            - alias: "If dim before OFF is selected - Restore Lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                - condition: state
+                                  entity_id: !input dim_before_off_boolean
+                                  state: "on"
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - repeat:
+                                    for_each: "{{ light_entities }}"
+                                    sequence:
+                                      - variables:
+                                          restore_bri: >
+                                            {% set bri = state_attr(repeat.item, 'brightness') %}
+                                            {% if bri in [None, 0] %}
+                                              {{ 0 }}
+                                            {% else %}
+                                              {% set bri_pct = bri / 255 * 100 %}
+                                              {% set restored = bri_pct / dim_before_off_factor %}
+                                              {{ [restored | round(0), 100] | min }}
+                                            {% endif %}
+                                          restore_light_data: >-
+                                            {% set light = namespace(data={}) %}
+                                            {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                            {% if 'use_transition' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_colour_temperature' %}
+                                              {% set light.data = dict(light.data, **{ 'color_temp_kelvin': light_colour_temperature }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgb_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgb_color': light_rgb_colour }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgbw_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgbw_color': light_rgbw_colour }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgbww_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgbww_color': light_rgbww_colour }) %}
+                                            {% endif %}
+                                            {{ light.data }}
+                                      - action: light.turn_on
+                                        target:
+                                          entity_id: "{{ repeat.item }}"
+                                        data: "{{ restore_light_data }}"
+                                - action: input_boolean.turn_off
+                                  target:
+                                    entity_id: !input dim_before_off_boolean
+                                - alias: "Dynamic lighting heartbeat"
+                                  delay:
+                                    minutes: !input dynamic_lighting_heartbeat
                             - alias: "Stop when crossing over"
                               conditions:
                                 - condition: template
@@ -6054,6 +6764,58 @@ action:
                                   false
                                 {% endif %}
                           - choose:
+                            - alias: "If dim before OFF is selected - Restore Lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                - condition: state
+                                  entity_id: !input dim_before_off_boolean
+                                  state: "on"
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - repeat:
+                                    for_each: "{{ light_entities }}"
+                                    sequence:
+                                      - variables:
+                                          restore_bri: >
+                                            {% set bri = state_attr(repeat.item, 'brightness') %}
+                                            {% if bri in [None, 0] %}
+                                              {{ 0 }}
+                                            {% else %}
+                                              {% set bri_pct = bri / 255 * 100 %}
+                                              {% set restored = bri_pct / dim_before_off_factor %}
+                                              {{ [restored | round(0), 100] | min }}
+                                            {% endif %}
+                                          restore_light_data: >-
+                                            {% set light = namespace(data={}) %}
+                                            {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                            {% if 'use_transition' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_colour_temperature' %}
+                                              {% set light.data = dict(light.data, **{ 'color_temp_kelvin': light_colour_temperature }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgb_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgb_color': light_rgb_colour }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgbw_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgbw_color': light_rgbw_colour }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgbww_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgbww_color': light_rgbww_colour }) %}
+                                            {% endif %}
+                                            {{ light.data }}
+                                      - action: light.turn_on
+                                        target:
+                                          entity_id: "{{ repeat.item }}"
+                                        data: "{{ restore_light_data }}"
+                                - action: input_boolean.turn_off
+                                  target:
+                                    entity_id: !input dim_before_off_boolean
+                                - alias: "Dynamic lighting heartbeat"
+                                  delay:
+                                    minutes: !input dynamic_lighting_heartbeat
                             - alias: "Stop when crossing over"
                               conditions:
                                 - condition: template
@@ -6197,6 +6959,51 @@ action:
                                   false
                                 {% endif %}
                           - choose:
+                            - alias: "If dim before OFF is selected - Restore Lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                - condition: state
+                                  entity_id: !input dim_before_off_boolean
+                                  state: "on"
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - repeat:
+                                    for_each: "{{ light_entities }}"
+                                    sequence:
+                                      - variables:
+                                          restore_bri: >
+                                            {% set bri = state_attr(repeat.item, 'brightness') %}
+                                            {% if bri in [None, 0] %}
+                                              {{ 0 }}
+                                            {% else %}
+                                              {% set bri_pct = bri / 255 * 100 %}
+                                              {% set restored = bri_pct / dim_before_off_factor %}
+                                              {{ [restored | round(0), 100] | min }}
+                                            {% endif %}
+                                          restore_light_data: >-
+                                            {% set light = namespace(data={}) %}
+                                            {% set light.data = dict(light.data, **{ 'color_temp_kelvin': dynamic_kelvin }) %}
+                                            {% if 'use_transition' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                            {% endif %}
+                                            {% if 'use_brightness' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                            {% endif %}
+                                            {{ light.data }}
+                                      - action: light.turn_on
+                                        target:
+                                          entity_id: "{{ repeat.item }}"
+                                        data: "{{ restore_light_data }}"
+                                - action: input_boolean.turn_off
+                                  target:
+                                    entity_id: !input dim_before_off_boolean
+                                - alias: "Wait for sun elevation to change"
+                                  wait_for_trigger:
+                                    - trigger: state
+                                      entity_id: sun.sun
+                                      attribute: elevation
                             - alias: "Stop when crossing over"
                               conditions:
                                 - condition: template
@@ -6365,6 +7172,60 @@ action:
                                   false
                                 {% endif %}
                           - choose:
+                            - alias: "If dim before OFF is selected - Restore Lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                - condition: state
+                                  entity_id: !input dim_before_off_boolean
+                                  state: "on"
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - repeat:
+                                    for_each: "{{ light_entities }}"
+                                    sequence:
+                                      - variables:
+                                          restore_bri: >
+                                            {% set bri = state_attr(repeat.item, 'brightness') %}
+                                            {% if bri in [None, 0] %}
+                                              {{ 0 }}
+                                            {% else %}
+                                              {% set bri_pct = bri / 255 * 100 %}
+                                              {% set restored = bri_pct / dim_before_off_factor %}
+                                              {{ [restored | round(0), 100] | min }}
+                                            {% endif %}
+                                          restore_light_data: >-
+                                            {% set light = namespace(data={}) %}
+                                            {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                            {% if 'use_transition' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_colour_temperature' %}
+                                              {% set light.data = dict(light.data, **{ 'color_temp_kelvin': light_colour_temperature }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgb_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgb_color': light_rgb_colour }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgbw_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgbw_color': light_rgbw_colour }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgbww_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgbww_color': light_rgbww_colour }) %}
+                                            {% endif %}
+                                            {{ light.data }}
+                                      - action: light.turn_on
+                                        target:
+                                          entity_id: "{{ repeat.item }}"
+                                        data: "{{ restore_light_data }}"
+                                - action: input_boolean.turn_off
+                                  target:
+                                    entity_id: !input dim_before_off_boolean
+                                - alias: "Wait for sun elevation to change"
+                                  wait_for_trigger:
+                                    - trigger: state
+                                      entity_id: sun.sun
+                                      attribute: elevation
                             - alias: "Stop when crossing over"
                               conditions:
                                 - condition: template
@@ -6533,6 +7394,60 @@ action:
                                   false
                                 {% endif %}
                           - choose:
+                            - alias: "If dim before OFF is selected - Restore Lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                - condition: state
+                                  entity_id: !input dim_before_off_boolean
+                                  state: "on"
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - repeat:
+                                    for_each: "{{ light_entities }}"
+                                    sequence:
+                                      - variables:
+                                          restore_bri: >
+                                            {% set bri = state_attr(repeat.item, 'brightness') %}
+                                            {% if bri in [None, 0] %}
+                                              {{ 0 }}
+                                            {% else %}
+                                              {% set bri_pct = bri / 255 * 100 %}
+                                              {% set restored = bri_pct / dim_before_off_factor %}
+                                              {{ [restored | round(0), 100] | min }}
+                                            {% endif %}
+                                          restore_light_data: >-
+                                            {% set light = namespace(data={}) %}
+                                            {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                            {% if 'use_transition' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_colour_temperature' %}
+                                              {% set light.data = dict(light.data, **{ 'color_temp_kelvin': light_colour_temperature }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgb_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgb_color': light_rgb_colour }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgbw_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgbw_color': light_rgbw_colour }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgbww_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgbww_color': light_rgbww_colour }) %}
+                                            {% endif %}
+                                            {{ light.data }}
+                                      - action: light.turn_on
+                                        target:
+                                          entity_id: "{{ repeat.item }}"
+                                        data: "{{ restore_light_data }}"
+                                - action: input_boolean.turn_off
+                                  target:
+                                    entity_id: !input dim_before_off_boolean
+                                - alias: "Wait for sun elevation to change"
+                                  wait_for_trigger:
+                                    - trigger: state
+                                      entity_id: sun.sun
+                                      attribute: elevation
                             - alias: "Stop when crossing over"
                               conditions:
                                 - condition: template
@@ -6714,6 +7629,49 @@ action:
                                   false
                                 {% endif %}
                           - choose:
+                            - alias: "If dim before OFF is selected - Restore Lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                - condition: state
+                                  entity_id: !input dim_before_off_boolean
+                                  state: "on"
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - repeat:
+                                    for_each: "{{ light_entities }}"
+                                    sequence:
+                                      - variables:
+                                          restore_bri: >
+                                            {% set bri = state_attr(repeat.item, 'brightness') %}
+                                            {% if bri in [None, 0] %}
+                                              {{ 0 }}
+                                            {% else %}
+                                              {% set bri_pct = bri / 255 * 100 %}
+                                              {% set restored = bri_pct / dim_before_off_factor %}
+                                              {{ [restored | round(0), 100] | min }}
+                                            {% endif %}
+                                          restore_light_data: >-
+                                            {% set light = namespace(data={}) %}
+                                            {% set light.data = dict(light.data, **{ 'color_temp_kelvin': dynamic_kelvin }) %}
+                                            {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                            {% if 'use_transition' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                            {% endif %}
+                                            {{ light.data }}
+                                      - action: light.turn_on
+                                        target:
+                                          entity_id: "{{ repeat.item }}"
+                                        data: "{{ restore_light_data }}"
+                                - action: input_boolean.turn_off
+                                  target:
+                                    entity_id: !input dim_before_off_boolean
+                                - alias: "Wait for sun elevation to change"
+                                  wait_for_trigger:
+                                    - trigger: state
+                                      entity_id: sun.sun
+                                      attribute: elevation
                             - alias: "Stop when crossing over"
                               conditions:
                                 - condition: template
@@ -6895,6 +7853,49 @@ action:
                                   false
                                 {% endif %}
                           - choose:
+                            - alias: "If dim before OFF is selected - Restore Lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                - condition: state
+                                  entity_id: !input dim_before_off_boolean
+                                  state: "on"
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - repeat:
+                                    for_each: "{{ light_entities }}"
+                                    sequence:
+                                      - variables:
+                                          restore_bri: >
+                                            {% set bri = state_attr(repeat.item, 'brightness') %}
+                                            {% if bri in [None, 0] %}
+                                              {{ 0 }}
+                                            {% else %}
+                                              {% set bri_pct = bri / 255 * 100 %}
+                                              {% set restored = bri_pct / dim_before_off_factor %}
+                                              {{ [restored | round(0), 100] | min }}
+                                            {% endif %}
+                                          restore_light_data: >-
+                                            {% set light = namespace(data={}) %}
+                                            {% set light.data = dict(light.data, **{ 'color_temp_kelvin': dynamic_kelvin }) %}
+                                            {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                            {% if 'use_transition' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                            {% endif %}
+                                            {{ light.data }}
+                                      - action: light.turn_on
+                                        target:
+                                          entity_id: "{{ repeat.item }}"
+                                        data: "{{ restore_light_data }}"
+                                - action: input_boolean.turn_off
+                                  target:
+                                    entity_id: !input dim_before_off_boolean
+                                - alias: "Wait for sun elevation to change"
+                                  wait_for_trigger:
+                                    - trigger: state
+                                      entity_id: sun.sun
+                                      attribute: elevation
                             - alias: "Stop when crossing over"
                               conditions:
                                 - condition: template
@@ -7084,6 +8085,49 @@ action:
                                           false
                                         {% endif %}
                                   - choose:
+                                    - alias: "If dim before OFF is selected - Restore Lights"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                        - condition: state
+                                          entity_id: !input dim_before_off_boolean
+                                          state: "on"
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - alias: "Delay for parallel actions needed for when the light is on"
+                                          delay:
+                                            milliseconds: 100
+                                        - repeat:
+                                            for_each: "{{ light_entities }}"
+                                            sequence:
+                                              - variables:
+                                                  restore_bri: >
+                                                    {% set bri = state_attr(repeat.item, 'brightness') %}
+                                                    {% if bri in [None, 0] %}
+                                                      {{ 0 }}
+                                                    {% else %}
+                                                      {% set bri_pct = bri / 255 * 100 %}
+                                                      {% set restored = bri_pct / dim_before_off_factor %}
+                                                      {{ [restored | round(0), 100] | min }}
+                                                    {% endif %}
+                                                  restore_light_data: >-
+                                                    {% set light = namespace(data={}) %}
+                                                    {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                                    {% if 'use_transition' in include_light_control %}
+                                                      {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                                    {% endif %}
+                                                    {{ light.data }}
+                                              - action: light.turn_on
+                                                target:
+                                                  entity_id: "{{ repeat.item }}"
+                                                data: "{{ restore_light_data }}"
+                                        - action: input_boolean.turn_off
+                                          target:
+                                            entity_id: !input dim_before_off_boolean
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
                                     - alias: "Check if the light is off"
                                       conditions: "{{ expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0 }}"
                                       sequence:
@@ -7442,6 +8486,49 @@ action:
                                           false
                                         {% endif %}
                                   - choose:
+                                    - alias: "If dim before OFF is selected - Restore Lights"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                        - condition: state
+                                          entity_id: !input dim_before_off_boolean
+                                          state: "on"
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - alias: "Delay for parallel actions needed for when the light is on"
+                                          delay:
+                                            milliseconds: 100
+                                        - repeat:
+                                            for_each: "{{ light_entities }}"
+                                            sequence:
+                                              - variables:
+                                                  restore_bri: >
+                                                    {% set bri = state_attr(repeat.item, 'brightness') %}
+                                                    {% if bri in [None, 0] %}
+                                                      {{ 0 }}
+                                                    {% else %}
+                                                      {% set bri_pct = bri / 255 * 100 %}
+                                                      {% set restored = bri_pct / dim_before_off_factor %}
+                                                      {{ [restored | round(0), 100] | min }}
+                                                    {% endif %}
+                                                  restore_light_data: >-
+                                                    {% set light = namespace(data={}) %}
+                                                    {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                                    {% if 'use_transition' in include_light_control %}
+                                                      {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                                    {% endif %}
+                                                    {{ light.data }}
+                                              - action: light.turn_on
+                                                target:
+                                                  entity_id: "{{ repeat.item }}"
+                                                data: "{{ restore_light_data }}"
+                                        - action: input_boolean.turn_off
+                                          target:
+                                            entity_id: !input dim_before_off_boolean
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
                                     - alias: "Check if the light is off"
                                       conditions: "{{ expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0 }}"
                                       sequence:
@@ -7767,6 +8854,49 @@ action:
                                 {% set in_evening = start_time_evening <= current_time <= end_time_evening %}
                                 {{ lights_on and not (in_morning or in_evening) }}
                           - choose:
+                            - alias: "If dim before OFF is selected - Restore Lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                - condition: state
+                                  entity_id: !input dim_before_off_boolean
+                                  state: "on"
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - repeat:
+                                    for_each: "{{ light_entities }}"
+                                    sequence:
+                                      - variables:
+                                          restore_bri: >
+                                            {% set bri = state_attr(repeat.item, 'brightness') %}
+                                            {% if bri in [None, 0] %}
+                                              {{ 0 }}
+                                            {% else %}
+                                              {% set bri_pct = bri / 255 * 100 %}
+                                              {% set restored = bri_pct / dim_before_off_factor %}
+                                              {{ [restored | round(0), 100] | min }}
+                                            {% endif %}
+                                          restore_light_data: >-
+                                            {% set light = namespace(data={}) %}
+                                            {% set light.data = dict(light.data, **{ 'color_temp_kelvin': dynamic_kelvin }) %}
+                                            {% if 'use_transition' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                            {% endif %}
+                                            {% if 'use_brightness' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                            {% endif %}
+                                            {{ light.data }}
+                                      - action: light.turn_on
+                                        target:
+                                          entity_id: "{{ repeat.item }}"
+                                        data: "{{ restore_light_data }}"
+                                - action: input_boolean.turn_off
+                                  target:
+                                    entity_id: !input dim_before_off_boolean
+                                - alias: "Dynamic lighting heartbeat"
+                                  delay:
+                                    minutes: !input dynamic_lighting_heartbeat
                             - alias: "Stop when crossing over"
                               conditions:
                                 - condition: template
@@ -7942,6 +9072,58 @@ action:
                                 {% set in_evening = start_time_evening <= current_time <= end_time_evening %}
                                 {{ lights_on and not (in_morning or in_evening) }}
                           - choose:
+                            - alias: "If dim before OFF is selected - Restore Lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                - condition: state
+                                  entity_id: !input dim_before_off_boolean
+                                  state: "on"
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - repeat:
+                                    for_each: "{{ light_entities }}"
+                                    sequence:
+                                      - variables:
+                                          restore_bri: >
+                                            {% set bri = state_attr(repeat.item, 'brightness') %}
+                                            {% if bri in [None, 0] %}
+                                              {{ 0 }}
+                                            {% else %}
+                                              {% set bri_pct = bri / 255 * 100 %}
+                                              {% set restored = bri_pct / dim_before_off_factor %}
+                                              {{ [restored | round(0), 100] | min }}
+                                            {% endif %}
+                                          restore_light_data: >-
+                                            {% set light = namespace(data={}) %}
+                                            {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                            {% if 'use_transition' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_colour_temperature' %}
+                                              {% set light.data = dict(light.data, **{ 'color_temp_kelvin': light_colour_temperature }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgb_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgb_color': light_rgb_colour }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgbw_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgbw_color': light_rgbw_colour }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgbww_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgbww_color': light_rgbww_colour }) %}
+                                            {% endif %}
+                                            {{ light.data }}
+                                      - action: light.turn_on
+                                        target:
+                                          entity_id: "{{ repeat.item }}"
+                                        data: "{{ restore_light_data }}"
+                                - action: input_boolean.turn_off
+                                  target:
+                                    entity_id: !input dim_before_off_boolean
+                                - alias: "Dynamic lighting heartbeat"
+                                  delay:
+                                    minutes: !input dynamic_lighting_heartbeat
                             - alias: "Stop when crossing over"
                               conditions:
                                 - condition: template
@@ -8117,6 +9299,58 @@ action:
                                 {% set in_evening = start_time_evening <= current_time <= end_time_evening %}
                                 {{ lights_on and not (in_morning or in_evening) }}
                           - choose:
+                            - alias: "If dim before OFF is selected - Restore Lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                - condition: state
+                                  entity_id: !input dim_before_off_boolean
+                                  state: "on"
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - repeat:
+                                    for_each: "{{ light_entities }}"
+                                    sequence:
+                                      - variables:
+                                          restore_bri: >
+                                            {% set bri = state_attr(repeat.item, 'brightness') %}
+                                            {% if bri in [None, 0] %}
+                                              {{ 0 }}
+                                            {% else %}
+                                              {% set bri_pct = bri / 255 * 100 %}
+                                              {% set restored = bri_pct / dim_before_off_factor %}
+                                              {{ [restored | round(0), 100] | min }}
+                                            {% endif %}
+                                          restore_light_data: >-
+                                            {% set light = namespace(data={}) %}
+                                            {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                            {% if 'use_transition' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_colour_temperature' %}
+                                              {% set light.data = dict(light.data, **{ 'color_temp_kelvin': light_colour_temperature }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgb_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgb_color': light_rgb_colour }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgbw_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgbw_color': light_rgbw_colour }) %}
+                                            {% endif %}
+                                            {% if include_light_colour_control == 'use_rgbww_colour' %}
+                                              {% set light.data = dict(light.data, **{ 'rgbww_color': light_rgbww_colour }) %}
+                                            {% endif %}
+                                            {{ light.data }}
+                                      - action: light.turn_on
+                                        target:
+                                          entity_id: "{{ repeat.item }}"
+                                        data: "{{ restore_light_data }}"
+                                - action: input_boolean.turn_off
+                                  target:
+                                    entity_id: !input dim_before_off_boolean
+                                - alias: "Dynamic lighting heartbeat"
+                                  delay:
+                                    minutes: !input dynamic_lighting_heartbeat
                             - alias: "Stop when crossing over"
                               conditions:
                                 - condition: template
@@ -8319,6 +9553,47 @@ action:
                                 {% set in_evening = start_time_evening <= current_time <= end_time_evening %}
                                 {{ lights_on and not (in_morning or in_evening) }}
                           - choose:
+                            - alias: "If dim before OFF is selected - Restore Lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                - condition: state
+                                  entity_id: !input dim_before_off_boolean
+                                  state: "on"
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - repeat:
+                                    for_each: "{{ light_entities }}"
+                                    sequence:
+                                      - variables:
+                                          restore_bri: >
+                                            {% set bri = state_attr(repeat.item, 'brightness') %}
+                                            {% if bri in [None, 0] %}
+                                              {{ 0 }}
+                                            {% else %}
+                                              {% set bri_pct = bri / 255 * 100 %}
+                                              {% set restored = bri_pct / dim_before_off_factor %}
+                                              {{ [restored | round(0), 100] | min }}
+                                            {% endif %}
+                                          restore_light_data: >-
+                                            {% set light = namespace(data={}) %}
+                                            {% set light.data = dict(light.data, **{ 'color_temp_kelvin': dynamic_kelvin }) %}
+                                            {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                            {% if 'use_transition' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                            {% endif %}
+                                            {{ light.data }}
+                                      - action: light.turn_on
+                                        target:
+                                          entity_id: "{{ repeat.item }}"
+                                        data: "{{ restore_light_data }}"
+                                - action: input_boolean.turn_off
+                                  target:
+                                    entity_id: !input dim_before_off_boolean
+                                - alias: "Dynamic lighting heartbeat"
+                                  delay:
+                                    minutes: !input dynamic_lighting_heartbeat
                             - alias: "Stop when crossing over"
                               conditions:
                                 - condition: template
@@ -8421,6 +9696,42 @@ action:
                             - condition: template
                               value_template: "{{ states(dynamic_lighting_state_control_entity) == dynamic_lighting_state_control_activation_state_inv }}"
                   sequence:
+                    - choose:
+                      - alias: "If dim before OFF is selected - Restore Lights"
+                        conditions:
+                          - condition: template
+                            value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                          - condition: state
+                            entity_id: !input dim_before_off_boolean
+                            state: "on"
+                        sequence:
+                          - repeat:
+                              for_each: "{{ light_entities }}"
+                              sequence:
+                                - variables:
+                                    restore_bri: >
+                                      {% set bri = state_attr(repeat.item, 'brightness') %}
+                                      {% if bri in [None, 0] %}
+                                        {{ 0 }}
+                                      {% else %}
+                                        {% set bri_pct = bri / 255 * 100 %}
+                                        {% set restored = bri_pct / dim_before_off_factor %}
+                                        {{ [restored | round(0), 100] | min }}
+                                      {% endif %}
+                                    restore_light_data: >-
+                                      {% set light = namespace(data={}) %}
+                                      {% if 'use_transition' in include_light_control %}
+                                        {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                      {% endif %}
+                                      {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                      {{ light.data }}
+                                - action: light.turn_on
+                                  target:
+                                    entity_id: "{{ repeat.item }}"
+                                  data: "{{ restore_light_data }}"
+                          - action: input_boolean.turn_off
+                            target:
+                              entity_id: !input dim_before_off_boolean
                     - action: light.turn_on
                       target:
                         entity_id: "{{ light_entities_off }}"
@@ -8520,9 +9831,35 @@ action:
                   sequence:
                     - alias: "Check by-pass settings and preform the correct action"
                       if:
-                        - alias: "Check if the by-pass auto off is enabled"
-                          condition: template
-                          value_template: "{{ ('bypass_auto_off_enabled_on' in include_bypass_auto_off) or ('bypass_auto_off_enabled_off' in include_bypass_auto_off) or ('bypass_auto_off_enabled_stop' in include_bypass_auto_off) }}"
+                        - condition: or
+                          conditions:
+                            - condition: and
+                              conditions:
+                                - alias: "Check if the by-pass auto off is enabled"
+                                  condition: template
+                                  value_template: "{{ 'bypass_auto_off_enabled_on' in include_bypass_auto_off }}"
+                                - condition: state
+                                  entity_id: !input motion_bypass_lights_on
+                                  match: any
+                                  state: 'on'
+                            - condition: and
+                              conditions:
+                                - alias: "Check if the by-pass auto off is enabled"
+                                  condition: template
+                                  value_template: "{{ 'bypass_auto_off_enabled_off' in include_bypass_auto_off }}"
+                                - condition: state
+                                  entity_id: !input motion_bypass_lights_off
+                                  match: any
+                                  state: 'on'
+                            - condition: and
+                              conditions:
+                                - alias: "Check if the by-pass auto off is enabled"
+                                  condition: template
+                                  value_template: "{{ 'bypass_auto_off_enabled_stop' in include_bypass_auto_off }}"
+                                - condition: state
+                                  entity_id: !input motion_bypass_lights_stop
+                                  match: any
+                                  state: 'on'
                       then:
                         - alias: "Wait the number of minutes set in the by-pass auto off time delay"
                           delay: 
@@ -8597,6 +9934,38 @@ action:
                     - condition: template
                       value_template: "{{ 'use_transition' in include_light_control }}"
                   sequence:
+                    - choose:
+                      - alias: "If dim before OFF is selected - Dim lights"
+                        conditions:
+                          - condition: template
+                            value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                        sequence:
+                          - repeat:
+                              for_each: "{{ light_entities }}"
+                              sequence:
+                                - action: light.turn_on
+                                  target:
+                                    entity_id: "{{ repeat.item }}"
+                                  data:
+                                    brightness_pct: >
+                                      {% set bri = state_attr(repeat.item, 'brightness') %}
+                                      {% if bri in [None, 0] %}
+                                        {{ 0 }}
+                                      {% else %}
+                                        {% set bri_pct = (bri / 255 * 100) %}
+                                        {% set dimmed = bri_pct * dim_before_off_factor %}
+                                        {{ [dimmed | round(0), 1] | max }}
+                                      {% endif %}
+                                    transition: "{{ light_transition_off }}"
+                          - action: input_boolean.turn_on
+                            target:
+                              entity_id: !input dim_before_off_boolean
+                          - alias: "Wait the number of minutes set in the dim before OFF time delay"
+                            delay:
+                              seconds: !input dim_before_off_time_delay
+                          - action: input_boolean.turn_off
+                            target:
+                              entity_id: !input dim_before_off_boolean
                     - alias: "Turn off the lights"
                       action: light.turn_off
                       target:
@@ -8613,6 +9982,37 @@ action:
                     - condition: template
                       value_template: "{{ 'use_transition' not in include_light_control }}"
                   sequence:
+                    - choose:
+                      - alias: "If dim before OFF is selected - Dim lights"
+                        conditions:
+                          - condition: template
+                            value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                        sequence:
+                          - repeat:
+                              for_each: "{{ light_entities }}"
+                              sequence:
+                                - action: light.turn_on
+                                  target:
+                                    entity_id: "{{ repeat.item }}"
+                                  data:
+                                    brightness_pct: >
+                                      {% set bri = state_attr(repeat.item, 'brightness') %}
+                                      {% if bri in [None, 0] %}
+                                        {{ 0 }}
+                                      {% else %}
+                                        {% set bri_pct = (bri / 255 * 100) %}
+                                        {% set dimmed = bri_pct * dim_before_off_factor %}
+                                        {{ [dimmed | round(0), 1] | max }}
+                                      {% endif %}
+                          - action: input_boolean.turn_on
+                            target:
+                              entity_id: !input dim_before_off_boolean
+                          - alias: "Wait the number of minutes set in the dim before OFF time delay"
+                            delay:
+                              seconds: !input dim_before_off_time_delay
+                          - action: input_boolean.turn_off
+                            target:
+                              entity_id: !input dim_before_off_boolean
                     - alias: "Turn off the lights"
                       action: light.turn_off
                       target:

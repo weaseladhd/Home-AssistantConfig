@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 🪫 Low Battery Notifications & Actions
 
-    **Version: 3.2**
+    **Version: 3.3**
     
     
     🚀 Stay Charged, Stay Smart! Let's automate and take charge of your battery maintenance!🔋⚡
@@ -22,6 +22,7 @@ blueprint:
 
       - **Battery Sensors:**
         - Automatically detects all battery sensors used in Home Assistant.
+        - Choose one or more battery sensor fields to include in notifications — e.g., Friendly Name, Floor, Area, Device, or Entity ID.
         - Set a battery low warning percentage to identify all batteries below this level.
         - Detects Low, unavailable & unknown batteries.
         - Excludes specific battery sensors from notifications.
@@ -147,6 +148,40 @@ blueprint:
       icon: mdi:battery-alert-variant-outline
       collapsed: true
       input:
+        battery_sensor_report_fields:
+          name: Battery Sensors - Report Fields
+          description: >
+            Select which fields to include when reporting your battery sensors.
+            You can choose multiple options, but you must select at least one.
+            It's recommended to select the **Friendly Name** option for clear identification.
+            If not, select **Entity ID**, as **Floors**, **Areas**, or **Devices** alone may not be assigned to every battery sensor.
+
+
+            **The fields will be reported in this format**
+
+
+            `Friendly Name {Floor} (Area) [Device] - Entity ID`
+
+
+            ***Note** - If many sensors are low, selecting all fields may make your notifications very long.
+            Some notifications may be cut off and not show the full low battery report.
+            It's recommended to select only the fields you need.*
+          default:
+            - friendly_name
+          selector:
+            select:
+              options:
+                - label: Friendly Name
+                  value: "friendly_name"
+                - label: Floor
+                  value: "floor"
+                - label: Area
+                  value: "area"
+                - label: Device
+                  value: "device"
+                - label: Entity ID
+                  value: "entity_id"
+              multiple: true
         battery_level:
           name: Battery Low Warning Level
           description: >
@@ -166,7 +201,7 @@ blueprint:
 
             The automation will attempt to detect all battery sensors in Home Assistant, including those of your phones, tablets, smartwatches, and more.
             However, it may not always be necessary or desirable to monitor all of these batteries.
-            Selecting sensors here will exclude them from your notifications.
+            Selecting those battery sensors here will exclude them from your notifications.
           default: { entity_id: [] }
           selector:
             target:
@@ -175,8 +210,8 @@ blueprint:
         exclude_hidden_entities:
           name: Exclude Hidden Battery Sensors (Optional)
           description: >
-            Select enable if you would like to exclude all hidden battery sensors.
-            This is useful if you hidden your battery sensors for devices like phones, tablets, smartwatches, etc.
+            Enable this option to exclude all hidden battery sensors.
+            This is useful if you've hidden sensors from phones, tablets, smartwatches, or other devices you don't want included in the low battery report.
           default: hidden_disabled
           selector:
             select:
@@ -189,14 +224,14 @@ blueprint:
           name: Battery Sensors - Custom Group (Optional)
           description: >
             You can select a custom group of battery sensors to be include in your notifications, with its own independent `Battery Low Warning Level` setting below.
-            This allows you to either set a different warning level for devices that require more power (for example, roller blinds) or monitor only your custom group of batteries.
+            This allows you to either set a different warning level for devices that require more power (for example, roller blinds) or monitor your own custom group of batteries.
 
 
             When using any **Easy Notify** option and selecting **Use All Battery Sensors Minus Excluded Battery Sensors + Custom Group**, it is recommended to exclude your custom group of batteries above in the `Excluded Battery Sensors` input.
             This prevents any chance of receiving the same entity multiple times in your notifications.
 
 
-            **NOTE** - All excluded battery sensors are not linked to this custom group.
+            ***Note** - All excluded battery sensors are not linked to this custom group.*
           default: { entity_id: [] }
           selector:
             target:
@@ -442,7 +477,7 @@ blueprint:
             Choose the To-Do list where you'd like to add your task.
 
 
-            **Note** - The default Shopping List is not compatible because it doesn't support task descriptions.
+            ***Note** - The default Shopping List is not compatible because it doesn't support task descriptions.*
             All other To-Do lists are fully supported.
           default: []
           selector:
@@ -703,9 +738,9 @@ blueprint:
 
             3 - Use "{{unavailable_sensors}}" for - Unavailable or Unknown Sensors.
 
-            4 - Use "{{sensors_names}}" for - Battery Low % Level & Low Battery Level - Sensor name only.
+            4 - Use "{{sensors_names}}" for - Battery Low % Level & Low Battery Level - Sensor friendly name only.
             
-            5 - Use "{{unavailable_sensors_names}}" for - Unavailable or Unknown Sensors - Sensor name only.
+            5 - Use "{{unavailable_sensors_names}}" for - Unavailable or Unknown Sensors - Sensor friendly name only.
 
 
             **Battery Sensors - Custom Group**
@@ -716,9 +751,9 @@ blueprint:
 
             3 - Use "{{unavailable_sensors_custom_group}}" for - Unavailable or Unknown Sensors.
 
-            4 - Use "{{sensors_names_custom_group}}" for - Battery Low % Level & Low Battery Level - Sensor name only.
+            4 - Use "{{sensors_names_custom_group}}" for - Battery Low % Level & Low Battery Level - Sensor friendly name only.
             
-            5 - Use "{{unavailable_sensors_names_custom_group}}" for - Unavailable or Unknown Sensors - Sensor name only.
+            5 - Use "{{unavailable_sensors_names_custom_group}}" for - Unavailable or Unknown Sensors - Sensor friendly name only.
 
 
             For more information on how to use these sensors in your actions [Click Here](https://community.home-assistant.io/t/653754/21)
@@ -747,6 +782,7 @@ variables:
   include_time: !input include_time
   time: !input time
   weekday_options: !input weekday_options
+  battery_sensor_report_fields: !input battery_sensor_report_fields
   battery_level: !input battery_level
   exclude_sensors: !input exclude_sensors
   exclude_hidden_entities: !input exclude_hidden_entities
@@ -961,7 +997,44 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery') %}
       {% if 0 <= state.state | int(-1) <= battery_level | int and state.entity_id not in all_exclude_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' @ ' ~ state.state ~ '%'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' @ ' ~ state.state ~ '%'] %}
       {% endif %}
     {% endfor %}
     {% for state in states.binary_sensor
@@ -969,7 +1042,44 @@ variables:
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['on', 'low']) %}
       {% if state.entity_id not in all_exclude_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is low!'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' is low!'] %}
       {% endif %}
     {% endfor %}
     {% for state in states.sensor
@@ -977,7 +1087,44 @@ variables:
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
       {% if state.entity_id not in all_exclude_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
     {% for state in states.binary_sensor
@@ -985,7 +1132,44 @@ variables:
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
       {% if state.entity_id not in all_exclude_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
     {{ low_battery.sensors | join(', ') }}
@@ -996,7 +1180,44 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery') %}
       {% if 0 <= state.state | int(-1) <= battery_level | int and state.entity_id not in all_exclude_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' @ ' ~ state.state ~ '%'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' @ ' ~ state.state ~ '%'] %}
       {% endif %}
     {% endfor %}
     {% for state in states.binary_sensor
@@ -1004,7 +1225,44 @@ variables:
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['on', 'low']) %}
       {% if state.entity_id not in all_exclude_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is low!'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' is low!'] %}
       {% endif %}
     {% endfor %}
     {{ low_battery.sensors | join(', ') }}
@@ -1016,7 +1274,44 @@ variables:
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
       {% if state.entity_id not in all_exclude_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
     {% for state in states.binary_sensor
@@ -1024,7 +1319,44 @@ variables:
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
       {% if state.entity_id not in all_exclude_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
     {{ low_battery.sensors | join(', ') }}
@@ -1078,7 +1410,44 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery') %}
       {% if 0 <= state.state | int(-1) <= custom_group_battery_level | int and state.entity_id in custom_group_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' @ ' ~ state.state ~ '%'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' @ ' ~ state.state ~ '%'] %}
       {% endif %}
     {% endfor %}
     {% for state in states.binary_sensor
@@ -1086,7 +1455,44 @@ variables:
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['on', 'low']) %}
       {% if state.entity_id in custom_group_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is low!'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' is low!'] %}
       {% endif %}
     {% endfor %}
     {% for state in states.sensor
@@ -1094,7 +1500,44 @@ variables:
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
       {% if state.entity_id in custom_group_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
     {% for state in states.binary_sensor
@@ -1102,7 +1545,44 @@ variables:
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
       {% if state.entity_id in custom_group_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
     {{ low_battery.sensors | join(', ') }}
@@ -1113,7 +1593,44 @@ variables:
       | rejectattr('attributes.device_class', 'undefined')
       | selectattr('attributes.device_class', '==', 'battery') %}
       {% if 0 <= state.state | int(-1) <= custom_group_battery_level | int and state.entity_id in custom_group_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' @ ' ~ state.state ~ '%'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' @ ' ~ state.state ~ '%'] %}
       {% endif %}
     {% endfor %}
     {% for state in states.binary_sensor
@@ -1121,7 +1638,44 @@ variables:
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['on', 'low']) %}
       {% if state.entity_id in custom_group_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is low!'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' is low!'] %}
       {% endif %}
     {% endfor %}
     {{ low_battery.sensors | join(', ') }}
@@ -1133,7 +1687,44 @@ variables:
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
       {% if state.entity_id in custom_group_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
     {% for state in states.binary_sensor
@@ -1141,7 +1732,44 @@ variables:
       | selectattr('attributes.device_class', '==', 'battery')
       | selectattr('state', 'in', ['unavailable', 'unknown']) %}
       {% if state.entity_id in custom_group_sensors %}
-        {% set low_battery.sensors = low_battery.sensors + [state.name ~ ' is ' ~ state.state ~ '!'] %}
+        {% if 'friendly_name' in battery_sensor_report_fields %}
+          {% set friendly_name_text = state.name %}
+        {% else %}
+          {% set friendly_name_text = '' %}
+        {% endif %}
+        {% if 'floor' in battery_sensor_report_fields %}
+          {% set floor = floor_name(state.entity_id) %}
+          {% set floor_text = ' {' ~ floor ~ '}' if floor is not none else '' %}
+        {% else %}
+          {% set floor_text = '' %}
+        {% endif %}
+        {% if 'area' in battery_sensor_report_fields %}
+          {% set area = area_name(state.entity_id) %}
+          {% set area_text = ' (' ~ area ~ ')' if area is not none else '' %}
+        {% else %}
+          {% set area_text = '' %}
+        {% endif %}
+        {% if 'device' in battery_sensor_report_fields %}
+          {% set dev_id = device_id(state.entity_id) %}
+          {% if dev_id is not none %}
+            {% set dev_name = device_attr(dev_id, 'name_by_user') or device_attr(dev_id, 'name') %}
+            {% set device_text = ' [' ~ dev_name ~ ']' if dev_name %}
+          {% else %}
+            {% set device_text = '' %}
+          {% endif %}
+        {% else %}
+          {% set device_text = '' %}
+        {% endif %}
+        {% if 'entity_id' in battery_sensor_report_fields %}
+          {% set entity_id_text = state.entity_id %}
+        {% else %}
+          {% set entity_id_text = '' %}
+        {% endif %}
+        {% set report_fields = [
+          friendly_name_text ~ floor_text ~ area_text ~ device_text,
+          entity_id_text
+        ] | reject('equalto', '') | join(' - ') %}
+        {% set low_battery.sensors = low_battery.sensors + [report_fields ~ ' is ' ~ state.state ~ '!'] %}
       {% endif %}
     {% endfor %}
     {{ low_battery.sensors | join(', ') }}
