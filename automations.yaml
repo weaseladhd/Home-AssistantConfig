@@ -11,14 +11,13 @@
 - id: '1649250131376'
   alias: System shutdown notification
   description: ''
-  trigger:
-  - platform: homeassistant
-    event: shutdown
-  condition: []
-  action:
-  - service: notify.gotify
-    data:
-      message: Home Assistant is shutting down.
+  triggers:
+  - event: shutdown
+    trigger: homeassistant
+  conditions: []
+  actions:
+  - action: notify.gotify
+    data: {}
   mode: single
 - id: '1649250204764'
   alias: System start notification
