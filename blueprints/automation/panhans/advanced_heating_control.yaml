@@ -43,8 +43,12 @@ blueprint:
     🤫 calm & 💪 reliable
 
 
+    **Ensure that you have installed the uptime integration:**
 
-    **Version**: 5.3.4
+    [![Open your Home Assistant instance and show an integration.](https://my.home-assistant.io/badges/integration.svg)](https://my.home-assistant.io/redirect/integration/?domain=uptime)
+
+
+    **Version**: 5.4.3
 
     **Help & FAQ**: [Advanced Heating Control](https://community.home-assistant.io/t/advanced-heating-control/469873)
 
@@ -101,7 +105,7 @@ blueprint:
 
             Temperature calibration for your [thermostats](https://www.home-assistant.io/integrations/climate/). The following is supported:
 
-              * Tado, Aqara, Popp, Danfoss, Hive, Tuya
+              * Tado, Aqara, Popp, Danfoss, Hive, Bosch, SONOFF, Tuya
               * generic calibration
 
             Note: This is an additional sensor inside your room usually next to your favourite spot. [Thermostats](https://www.home-assistant.io/integrations/climate/) or its integration (e.g. Z2M or ZHA) except Tado should provide a seperate calibration entity.
@@ -850,6 +854,8 @@ blueprint:
 
             If the difference between the [thermostat](https://www.home-assistant.io/integrations/climate/) temperature and the external sensor temperature is greater or less than the calibration delta the [thermostat](https://www.home-assistant.io/integrations/climate/) calibration will be triggered.<br/>
             The lower the delta the often calibration gets triggered.
+
+            **HINT:** If your thermostat supports external temperature sensor values it is recommended to set this to a lower value like 0 - 0.2.
           default: 0.5
           selector:
             number:
@@ -1923,8 +1929,9 @@ trigger:
       {% set has_valves_danfoss = input_trvs | select('is_device_attr', 'manufacturer', 'Danfoss') | list  %}
       {% set has_valves_popp = input_trvs | select('is_device_attr', 'manufacturer', 'Popp') | list %}
       {% set valves_hive = input_trvs | select('is_device_attr', 'manufacturer', 'Hive') | list %}
+      {% set valves_bosch = input_trvs | select('is_device_attr', 'manufacturer', 'Bosch') | list %}
 
-      {% set has_valves = (has_valves_danfoss + has_valves_popp + valves_hive) | count > 0 %}
+      {% set has_valves = (has_valves_danfoss + has_valves_popp + valves_hive + valves_bosch) | count > 0 %}
 
       {{ has_valves and is_temperature_sensor_defined and now().strftime('%M') | int % 10 == 0 }}
 
@@ -2521,18 +2528,29 @@ variables:
   # tado
   valves_tado: "{{ valves | select('is_device_attr', 'manufacturer', 'Tado') | list }}"
 
-  # xiaomi / aqara
-  valves_xiaomi_xiaomi: "{{ valves | select('is_device_attr', 'manufacturer', 'Xiaomi') | list }}"
-  valves_xiaomi_aqara: "{{ valves | select('is_device_attr', 'manufacturer', 'Aqara') | list }}"
-  valves_xiaomi: "{{ valves_xiaomi_xiaomi + valves_xiaomi_aqara }}"
+  # valves external thermometer support
+  valves_external: >
+    {% set result = namespace(r=[]) %} 
+    {% for valve in valves %} 
+      {% set select = device_entities(device_id(valve)) 
+                        | expand 
+                        | selectattr('domain','in','select') 
+                        | selectattr('attributes.options', 'contains', 'external') 
+                        | map(attribute='entity_id') | list | first | default(none) %} 
+      {% if select != none %} 
+        {% set result.r = result.r + [valve] %} 
+      {% endif %} 
+    {% endfor %} 
+    {{ result.r }}
 
-  # danfoss / popp / hive
+  # danfoss / popp / hive / Bosch
   valves_danfoss: "{{ valves | select('is_device_attr', 'manufacturer', 'Danfoss') | list }}"
   valves_popp: "{{ valves | select('is_device_attr', 'manufacturer', 'Popp') | list }}"
   valves_hive: "{{ valves | select('is_device_attr', 'manufacturer', 'Hive') | list }}"
-  valves_dph: "{{ valves_danfoss + valves_popp + valves_hive }}"
+  valves_bosch: "{{ valves | select('is_device_attr', 'manufacturer', 'Bosch') | list }}"
+  valves_dph: "{{ valves_danfoss + valves_popp + valves_hive + valves_bosch }}"
 
-  valves_calibration_common: "{{ valves | reject('in', valves_tado + valves_dph + valves_xiaomi) | list }}"
+  valves_calibration_common: "{{ valves | reject('in', valves_tado + valves_dph + valves_external) | list }}"
 
   # global
   last_comfort_entity_change: "{{ [input_temperature_comfort_entity] | expand | map(attribute='last_changed') | list | first | default(none) }}"
@@ -3087,12 +3105,12 @@ variables:
 
     {{ dict.from_keys(n.dict) }}
 
-  # XIAOMI / AQARA
-  calibration_xiaomi: >
+  # XIAOMI / AQARA / SONOFF
+  calibration_external: >
     {% set n = namespace(dict=[]) %}
 
     {% if is_native_calibration_trigger %}
-      {% for valve in valves_xiaomi %}
+      {% for valve in valves_external %}
 
         {% set calibration_entities = device_entities(device_id(valve)) |
                                     expand | selectattr('domain','in','number') |
@@ -3139,7 +3157,7 @@ variables:
 
     {{ dict.from_keys(n.dict) }}
 
-  # DANFOSS, POPP, HIVE
+  # DANFOSS, POPP, HIVE, BOSCH
   calibration_dph: >
     {% set n = namespace(dict=[]) %}
     {% if is_native_calibration_trigger %}
@@ -3151,7 +3169,7 @@ variables:
                                     selectattr('entity_id', 'search', input_calibration_key_word) |
                                     map(attribute='entity_id') | list %}
 
-        {% if calibration_entity != calibration_entities | count > 0 %}
+        {% if calibration_entities | count > 0 %}
 
           {% set calibration_entity = calibration_entities | first %}
 
@@ -3178,7 +3196,7 @@ variables:
             {% endif %}
           {% endif %}
 
-          {% if step <= 1 and max_val | string | count < 4 %}
+          {% if step <= 1 and max_val | float < 1000 %}
             {% set round_size = iif('.' in (step | string), (step | string).split('.')[1] | length, 0) %}
             {% set new_state = ((new_state | float(0) / step) | round(0) * step) | round(round_size) | float %}
           {% else %}
@@ -3261,7 +3279,7 @@ variables:
 
     {{ dict.from_keys(n.dict) }}
 
-  calibration_value_set: "{{ dict(dict(calibration_xiaomi, **calibration_dph),**calibration_common) }}"
+  calibration_value_set: "{{ dict(dict(calibration_external, **calibration_dph),**calibration_common) }}"
 
   ##############################################################################################
   ################################## CONDITIONS / BLOCKER ######################################
@@ -3424,6 +3442,7 @@ actions:
                       expand | selectattr('domain','in','select') |
                       selectattr('attributes.options', 'contains', 'external') |
                       map(attribute='entity_id') | list | first | default(none) }}"
+                    is_external: "{{ select_entity != none and not is_state(select_entity, 'external') }}"
 
                 - action: system_log.write
                   data:
@@ -3436,9 +3455,7 @@ actions:
 
                 - if:
                     - condition: template
-                      value_template: "{{ thermostat in valves_xiaomi }}"
-                    - condition: template
-                      value_template: "{{ select_entity != none and not is_state(select_entity, 'external') }}"
+                      value_template: "{{ is_external }}"
                   then:
                     - action: select.select_option
                       target:
