@@ -1,7 +1,0 @@
-platform: mediarr
-plex:  # Optional
-  url: http://10.20.30.182:32400
-  token: ZaNXN1PqVCf4QkFxA7bU
-  max_items: 10
-  tmdb_api_key: "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1ZTgyNTBlNWJiMzk1NDkyZjAzOGYyNTgxNzI4NDM5OSIsIm5iZiI6MTI3ODU1NjI0My4wLCJzdWIiOiI0YzM1Mzg1MzdiOWFhMTdkYTgwMDAwM2MiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.9KJq3m1xC7B2psAdzvNv_2gYIAyBDk7AbolkR1QzeXA"
-  language: en

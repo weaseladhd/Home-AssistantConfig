@@ -1,7 +1,0 @@
-platform: mediarr
-sonarr:  # Optional
-  # url: https://sonarr.weaselweb.nl/
-  url: http://10.20.30.182:8989
-  api_key: ddeb314701874685a13158abfdc300c9
-  max_items: 10
-  days_to_check: 60
