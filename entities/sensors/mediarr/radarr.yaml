@@ -1,6 +1,0 @@
-platform: mediarr
-radarr:  # Optional
-  # url: https://radarr.weaselweb.nl
-  url: http://10.20.30.182:7878
-  api_key: 1123d79ffed84c418c21f664f6faea83
-  max_items: 10
