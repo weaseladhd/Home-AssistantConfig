@@ -1,0 +1,70 @@
+---
+# Energy
+
+title: Energy
+icon: mdi:flash
+path: Energy
+
+type: 'custom:grid-layout'
+layout: !include snippets/layout-page-margin.yaml
+
+cards:
+  - type: 'custom:layout-card'
+    layout_type: 'custom:grid-layout'
+    layout: !include snippets/layout-page-columns.yaml
+    view_layout:
+      grid-area: cc
+    cards:
+
+      # [Header] Summary
+
+      - type: 'custom:layout-card'
+        layout_type: 'custom:grid-layout'
+        layout: !include snippets/layout-page-title.yaml
+        view_layout:
+          grid-column: 1/-1
+        cards:
+
+          - type: markdown
+            style: !include snippets/style-markdown-page-title.yaml
+            card_mod:
+              style: |
+                ha-card {background: none;}
+            content: >
+              # Energy
+
+              The amount of carbon you generated this month will require about
+              {{ (states('sensor.solaredge_energy_this_month') | float / 1000 * 0.223232 * 10) | int / 10 }}
+              trees to sequester for a year.
+
+          - type: 'custom:layout-card'
+            layout_type: 'custom:horizontal-layout'
+            view_layout:
+            place-self: center
+            layout:
+              width: 220
+            cards:
+
+              - type: horizontal-stack
+                cards:
+
+                  - type: 'custom:mushroom-entity-card'
+                    entity: sensor.total_switches
+                    name: All Switches ↗
+                    icon_color: pink
+                    card_mod:
+                      style: |
+                        ha-card {background: none;}
+                    tap_action:
+                      action: more-info
+
+      # [Column] Energy
+
+      - type: 'custom:layout-card'
+        layout_type: 'custom:grid-layout'
+        layout:
+          margin: -1
+        cards:
+
+          - type: 'vertical-stack'
+            cards:

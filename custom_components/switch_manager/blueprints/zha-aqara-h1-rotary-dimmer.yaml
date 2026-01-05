@@ -1,0 +1,22 @@
+name: Aqara H1 Rotary Dimmer
+service: ZHA
+event_type: zha_event
+identifier_key: device_id
+buttons:
+  - actions:
+      - title: press
+        conditions:
+          - key: command
+            value: 1_single
+      - title: press 2x
+        conditions:
+          - key: command
+            value: 1_double
+      - title: hold
+        conditions:
+          - key: command
+            value: 1_hold
+      - title: rotate left
+        conditions: "{{ data.command == 'stop_rotation' and data.args.rotation_direction == -1 }}"
+      - title: rotate right
+        conditions: "{{ data.command == 'stop_rotation' and data.args.rotation_direction == 1 }}"

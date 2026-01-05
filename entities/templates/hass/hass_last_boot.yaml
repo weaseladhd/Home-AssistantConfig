@@ -1,0 +1,77 @@
+##############################################
+#          HASS LAST BOOT & UPTIME           #
+#    Human Boot Time + Uptime Information    #
+##############################################
+
+sensor:
+  # Human-friendly last boot time (with day suffix)
+  - name: "Hass Last Boot"
+    unique_id: sensor.hass_last_boot
+    state: >
+      {% set raw = states("sensor.last_boot") %}
+      {% set day = as_timestamp(raw) | timestamp_custom("%d") | int %}
+      {% set suffix =
+        'st' if day in (1, 21, 31) else
+        'nd' if day in (2, 22) else
+        'rd' if day in (3, 23) else
+        'th'
+      %}
+      {% set day_formatted = day ~ suffix %}
+
+      {{ as_timestamp(raw) | timestamp_custom('%H:%M on %a') }}
+      {{ day_formatted }}
+      {{ as_timestamp(raw) | timestamp_custom('%b %Y') }}
+
+    attributes:
+      raw: >
+        {{ states("sensor.last_boot") }}
+      date: >
+        {{ as_timestamp(states("sensor.last_boot")) | timestamp_custom("%Y-%m-%d") }}
+      time: >
+        {{ as_timestamp(states("sensor.last_boot")) | timestamp_custom("%H:%M:%S") }}
+      weekday: >
+        {{ as_timestamp(states("sensor.last_boot")) | timestamp_custom("%A") }}
+
+  # Uptime in days, with human-readable breakdown
+  - name: "Hass Uptime"
+    unique_id: sensor.hass_uptime
+    unit_of_measurement: "days"
+    state: >
+      {% set boot = as_timestamp(states("sensor.last_boot")) %}
+      {% set diff = now().timestamp() - boot %}
+      {% set days = (diff // 86400) | int %}
+      {{ days }}
+
+    attributes:
+      days: >
+        {% set boot = as_timestamp(states("sensor.last_boot")) %}
+        {% set diff = now().timestamp() - boot %}
+        {{ (diff // 86400) | int }}
+
+      hours: >
+        {% set boot = as_timestamp(states("sensor.last_boot")) %}
+        {% set diff = now().timestamp() - boot %}
+        {{ ((diff % 86400) // 3600) | int }}
+
+      minutes: >
+        {% set boot = as_timestamp(states("sensor.last_boot")) %}
+        {% set diff = now().timestamp() - boot %}
+        {{ ((diff % 3600) // 60) | int }}
+
+      human_readable: >
+        {% set boot = as_timestamp(states("sensor.last_boot")) %}
+        {% set diff = now().timestamp() - boot %}
+        {% set days = (diff // 86400) | int %}
+        {% set hours = ((diff % 86400) // 3600) | int %}
+        {% set minutes = ((diff % 3600) // 60) | int %}
+
+        {% if days > 0 %}
+          {{ days }} day{{ 's' if days != 1 else '' }},
+          {{ hours }} hour{{ 's' if hours != 1 else '' }},
+          {{ minutes }} minute{{ 's' if minutes != 1 else '' }}
+        {% elif hours > 0 %}
+          {{ hours }} hour{{ 's' if hours != 1 else '' }},
+          {{ minutes }} minute{{ 's' if minutes != 1 else '' }}
+        {% else %}
+          {{ minutes }} minute{{ 's' if minutes != 1 else '' }}
+        {% endif %}

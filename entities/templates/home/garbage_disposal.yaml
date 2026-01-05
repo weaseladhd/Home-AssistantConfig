@@ -1,0 +1,29 @@
+##############################################
+#              GARBAGE DISPOSAL              #
+#            Afvalwijzer Integration         #
+##############################################
+
+sensor:
+  - name: "Garbage Disposal"
+    unique_id: sensor.garbage_disposal
+    icon: "mdi:trash-can-outline"
+    state: >
+      {% set days = states("sensor.afvalwijzer_next_in_days") | int(0) %}
+      {% set item = states("sensor.afvalwijzer_next_item") %}
+      {% set date = states("sensor.afvalwijzer_next_date") %}
+
+      {% if days == 0 %}
+        <ha-icon icon="mdi:trash-can-outline"></ha-icon>
+        {{ item }} will be picked up today
+
+      {% elif days == 1 %}
+        <ha-icon icon="mdi:trash-can-outline"></ha-icon>
+        {{ item }} will be picked up tomorrow
+
+      {% elif days > 1 %}
+        <ha-icon icon="mdi:trash-can-outline"></ha-icon>
+        {{ item }} will be picked up in {{ days }} days on {{ date }}
+
+      {% else %}
+        No garbage disposal data known...
+      {% endif %}

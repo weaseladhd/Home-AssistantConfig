@@ -1,0 +1,78 @@
+# - type: markdown
+#   content: >
+#     {{ states.light|selectattr('state','equalto','on')|list|length }} lights are on.
+
+- type: entities
+  entities:
+    - entity: sensor.living_room_motion_sensor_illuminance_lux
+      name: Downstairs illuminance
+  footer:
+    type: graph
+    entity: sensor.living_room_motion_sensor_illuminance_lux
+    detail: 2
+    hours_to_show: 48
+  header:
+    type: buttons
+    entities:
+      - entity: switch.adaptive_lighting_downstairs
+        name: adaptive
+      - entity: switch.adaptive_lighting_adapt_brightness_downstairs
+        name: brightness
+        icon: mdi:brightness-auto
+      - entity: switch.adaptive_lighting_adapt_color_downstairs
+        name: color
+        icon: mdi:select-color
+      - entity: switch.adaptive_lighting_sleep_mode_downstairs
+        name: sleep mode
+        icon: mdi:sleep
+
+- type: entities
+  state_color: true
+  entities:
+    - type: custom:fold-entity-row
+      open: true
+      head:
+        entity: light.downstairs
+        type: custom:slider-entity-row
+      entities:
+        - type: custom:fold-entity-row
+          head:
+            entity: light.living_room
+            type: custom:slider-entity-row
+          entities:
+            - entity: light.living_room_light_1
+              type: custom:slider-entity-row
+            - entity: light.living_room_light_2
+              type: custom:slider-entity-row
+        - type: custom:fold-entity-row
+          head:
+            entity: light.middle_room
+            type: custom:slider-entity-row
+          entities:
+            - entity: light.middle_room_spot_1
+              type: custom:slider-entity-row
+            - entity: light.middle_room_spot_2
+              type: custom:slider-entity-row
+        - type: custom:fold-entity-row
+          head:
+            entity: light.kitchen
+            type: custom:slider-entity-row
+          entities:
+            - entity: light.kitchen_spot_1
+              type: custom:slider-entity-row
+            - entity: light.kitchen_spot_2
+              type: custom:slider-entity-row
+            - entity: light.kitchen_spot_3
+              type: custom:slider-entity-row
+            - entity: light.kitchen_spot_4
+              type: custom:slider-entity-row
+            - entity: light.kitchen_spot_5
+              type: custom:slider-entity-row
+            - entity: light.kitchen_spot_6
+              type: custom:slider-entity-row
+            - entity: light.kitchen_spot_7
+              type: custom:slider-entity-row
+            - entity: light.kitchen_spot_8
+              type: custom:slider-entity-row
+        - type: custom:slider-entity-row
+          entity: light.dining_room

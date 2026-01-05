@@ -1,0 +1,213 @@
+- type: horizontal-stack
+  cards:
+
+    - type: entity
+      entity: sensor.avg_temp_downstairs
+      name: Indoor Average
+      icon: none
+      card_mod:
+        style: |
+          ha-card {background: none;}
+
+    - type: entity
+      entity: >-
+        sensor.irosma27_temperature
+      name: Outdoor
+      icon: none
+      card_mod:
+        style: |
+          ha-card {background: none;}
+
+    - type: 'custom:card-templater'
+      card:
+        type: entity
+        entity: sensor.temperature_indoor_outdoor_difference
+        name_template: >
+          Difference
+#         {{ state_attr('sensor.irosma27_temperature', 'description') | capitalize }} by
+        card_mod:
+          style: |
+            ha-card {background: none;}
+      entities:
+        - sensor.temperature_indoor_outdoor_difference
+
+- type: custom:apexcharts-card
+  config_templates:
+    - environment_chart
+    - sun_elevation
+  apex_config:
+    dataLabels:
+      formatter: |
+        EVAL:function(value, { seriesIndex, dataPointIndex, w }) {
+          if (dataPointIndex == w.config.series[seriesIndex].data.length - 2) {
+            return Math.round( value * 10 ) / 10 + "°C - " + w.config.series[seriesIndex].name  // + " " + dataPointIndex + " " + w.config.series[seriesIndex].data.length
+          } else { return '' }
+        }
+  series:
+
+    - entity: sensor.sun_elevation
+      color: var(--primary-text-color)
+      opacity: .2
+      stroke_width: .5
+      yaxis_id: sun
+      unit: °
+      show:
+        legend_value: false
+
+    - entity: sensor.sun_elevation
+      color: var(--primary-text-color)
+      opacity: .2
+      stroke_width: .5
+      yaxis_id: sun
+      unit: °
+      data_generator: |
+        const now = new Date();
+        const data = [[now.getTime() - 172800000, 0], [now.getTime(), 0], [now.getTime() + 86400000, 0]];
+        return data;
+
+    - entity: sensor.irosma27_temperature
+      type: area
+      name: Outside
+      yaxis_id: main
+      stroke_width: .5
+      color: gray
+      opacity: .1
+      show:
+        datalabels: true
+        extremas: true
+
+    - entity: sensor.bedroom_fan_temperature
+      name: Bedroom Fan
+      stroke_width: 1
+      yaxis_id: main
+      color: hotpink
+      show:
+        datalabels: true
+      group_by:
+        func: avg
+        duration: 30min
+
+    - entity: sensor.study_fan_temperature
+      name: Study
+      stroke_width: 1
+      yaxis_id: main
+      color: orange
+      show:
+        datalabels: true
+      group_by:
+        func: avg
+        duration: 30min
+
+    - entity: sensor.server_room_sensor_temperature
+      name: Server Room
+      stroke_width: 1
+      yaxis_id: main
+      color: red
+      show:
+        datalabels: true
+      group_by:
+        func: avg
+        duration: 30min
+
+    - entity: sensor.bathroom_sensor_temperature
+      name: Bathroom
+      stroke_width: 1
+      color: turquoise
+      yaxis_id: main
+      show:
+        datalabels: true
+      group_by:
+        func: avg
+        duration: 30min
+
+    - entity: sensor.avg_temp_downstairs
+      name: Living Room
+      stroke_width: 1
+      color: green
+      yaxis_id: main
+      show:
+        datalabels: true
+      group_by:
+        func: avg
+        duration: 30min
+
+    # - entity: sensor.temp_motion_sensor_temperature
+    #   name: Baby Room
+    #   stroke_width: 1
+    #   color: blue
+    #   yaxis_id: main
+    #   show:
+    #     datalabels: true
+    #   group_by:
+    #     func: avg
+    #     duration: 30min
+
+    - entity: sensor.avg_temp_indoor
+      name: Indoor Avg
+      yaxis_id: main
+      color: 'var(--primary-color)'
+      show:
+        datalabels: true
+        extremas: true
+
+# - type: custom:apexcharts-card
+#   config_templates: environment_chart
+#   series:
+#     - entity: sensor.irosma27_cloud
+#       name: Cloud cover
+#       yaxis_id: main
+#       color: 'var(--primary-color)'
+#       show:
+#         datalabels: true
+#   yaxis:
+#     - id: main
+#       min: 0
+#       max: 100
+#   apex_config:
+#     chart:
+#       height: 180px
+
+- type: custom:apexcharts-card
+  config_templates: environment_chart
+  update_interval: 15m
+  series:
+
+    - entity: fan.bedroom_fan
+      name: Bedroom A/C
+      yaxis_id: main
+      color: 'var(--primary-color)'
+      show:
+        datalabels: true
+
+    - entity: fan.living_room_fan
+      name: Living Room A/C
+      yaxis_id: main
+      color: green
+      show:
+        datalabels: true
+
+  yaxis:
+    - id: main
+      show: false
+
+  apex_config:
+    chart:
+      height: 80px
+
+- type: history-graph
+  entities:
+    - entity: fan.bedroom_fan
+      name: Bedroom
+    - entity: fan.living_room_fan
+      name: Living room
+  hours_to_show: 36
+  title: Fan
+  card_mod:
+    style: >
+      .card-header {
+        padding: 16px !important;
+        margin: 0 !important;
+        font-size: var(--body-font-size);
+        font-weight: var(--body-font-weight);
+        line-height: var(--body-line-height);
+      }

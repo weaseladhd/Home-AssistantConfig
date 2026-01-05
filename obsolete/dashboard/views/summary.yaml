@@ -1,0 +1,113 @@
+---
+# WeaselWeb HA
+# Summary View
+# Made by WeaselADHD 2022
+
+title: Summary
+icon: mdi:home-circle-outline
+path: summary
+
+type: 'custom:grid-layout'
+layout: !include snippets/layout-page-margin.yaml
+
+cards:
+  - type: 'custom:layout-card'
+    layout_type: 'custom:grid-layout'
+    layout: !include snippets/layout-page-columns.yaml
+    view_layout:
+      grid-area: cc
+    cards:
+
+      # [Header] Greetings
+
+      - type: 'custom:layout-card'
+        layout_type: 'custom:grid-layout'
+        layout: !include snippets/layout-page-title.yaml
+        view_layout:
+          grid-column: 1/-1
+        cards:
+
+          - type: markdown
+            style: !include snippets/style-markdown-page-title.yaml
+            card_mod:
+              style: |
+                ha-card {background: none;}
+            content: >
+              # {% if now() > today_at('18:00') %}Good evening{% elif
+              now() > today_at('12:00') %}Good afternoon{% elif now() >
+              today_at('5:00') %}Good morning{% else %}Good night{%
+              endif %}, {{ user }}.
+
+          - type: custom:layout-card
+            layout_type: custom:horizontal-layout
+            # view_layout:
+            place-self: center
+            layout:
+              width: 220
+            cards:
+
+              - type: horizontal-stack
+                cards:
+
+                  - type: 'custom:mushroom-person-card'
+                    entity: person.wesley
+                    use_entity_picture: true
+                    card_mod:
+                      style: |
+                        ha-card {background: none;}
+
+                  - type: 'custom:mushroom-person-card'
+                    entity: person.fenne
+                    use_entity_picture: true
+                    card_mod:
+                      style: |
+                        ha-card {background: none;}
+
+      # Summary
+      # [Column] Left
+
+      - type: vertical-stack
+        cards:
+
+          - type: vertical-stack
+            in_card: true
+            cards:
+
+              - type: vertical-stack
+                cards: !include columns/summary/summary_left.yaml
+
+      # [Column] Midleft
+
+      - type: vertical-stack
+        cards:
+
+          - type: vertical-stack
+            in_card: true
+            cards:
+
+              - type: vertical-stack
+                cards: !include columns/summary/summary_midleft.yaml
+
+      # [Column] Midright
+
+      - type: vertical-stack
+        cards:
+
+          - type: vertical-stack
+            in_card: true
+            cards:
+
+              - type: vertical-stack
+                cards: !include columns/summary/summary_midright.yaml
+
+      # [Column] Right
+
+      - type: vertical-stack
+        cards:
+
+          - type: vertical-stack
+            in_card: true
+            cards:
+
+              - type: vertical-stack
+                cards: !include columns/summary/summary_right.yaml

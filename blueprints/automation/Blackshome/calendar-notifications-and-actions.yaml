@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 📅 Calendar Notifications & Actions
 
-    **Version: 2.0**
+    **Version: 2.2**
 
 
     Transform Your Calendar: Turn Events Into Notifications and Actions! 📅🔔⚙️
@@ -63,30 +63,46 @@ blueprint:
               filter:
                 domain: calendar
         include_calendar_trigger:
-          name: Use The Calendar Trigger - Key Word (Optional)
+          name: Calendar Trigger - Keyword(s) for Calendar Events
           description: >
-            Choose whether to use a **Keyword** to trigger the automation.
+            Control how calendar events trigger this automation using an optional **Keyword**.
 
 
-            **Note** - If you choose not to use a **Keyword**, all calendar events will trigger the automation.
+            - **Include Keyword** - Only calendar events containing the keyword(s) in the summary or description will trigger the automation.
+
+
+            - **Exclude Keyword** - All calendar events will trigger **except** those that contain the keyword(s).
+
+
+            - **No Keyword Filtering** - All calendar events will trigger the automation.
+
+
+            The keyword is checked in both the calendar **event summary** and **event description**.
           default: enable_key_word
           selector:
             select:
               options:
-                - label: Don't use "Key Word" in calendar
-                  value: "disable_key_word"
-                - label: Use "Key Word" in calendar
+                - label: Include keyword
                   value: "enable_key_word"
+                - label: Exclude keyword
+                  value: "exclude_key_word"
+                - label: No keyword filtering (all events trigger)
+                  value: "disable_key_word"
         calendar_trigger:
-          name: Calendar Trigger - Key Word In Calendar Summary & / or Description
+          name: Calendar Trigger - Keyword(s)
           description: >
-            Input a single keyword or, for multiple keywords, use a comma-separated list.
-            Enter these keywords into the calendar event summary or description to trigger this automation.
+            If you selected **Include Keyword** or **Exclude Keyword** above then enter a single keyword, or a comma-separated list of keywords, to trigger this automation.
+
+
+            Use these keywords in the calendar event summary or event description so the automation can detect them.
+
+
             Keywords can include letters, numbers, and symbols.
-            Be mindful of your choices, as any event containing these keywords will trigger the automation.
+            Be mindful of your choices, as any event containing these keywords (depending on your include/exclude selection above) may trigger the automation.
 
 
-            To prevent false triggers, it's recommended to use **@** or **#** followed by the keyword in the calendar event (e.g., **@bins** or **#bins**) or for multiple keywords (e.g., **@bins, @rubbish**).
+            To avoid false triggers, it's recommended to use @ or # before your keyword (for example, @bins or #bins).
+            For multiple keywords, separate them with commas (e.g., @bins, @rubbish).
 
 
             For more information on how to use Trigger Keywords, [Click Here](https://community.home-assistant.io/t/612326/4)
@@ -889,25 +905,36 @@ condition:
           - condition: template
             value_template: "{{ ('enable_end_notify_options' in include_end_notify) or ('enable_end_action_1' in include_end_auto_actions) or ('enable_end_action_2' in include_end_auto_actions) or ('enable_end_action_3' in include_end_auto_actions) }}"
 
-# Event keyword in calendar summary, description or disabled
+# Calendar event keyword handling (include / exclude / disabled)
   - condition: or
     conditions:
-      - condition: or
+      - alias: "Keyword filtering disabled, always allow"
+        condition: template
+        value_template: "{{ include_calendar_trigger == 'disable_key_word' }}"
+      - alias: "Include keyword, keyword must be in summary OR description"
+        condition: and
         conditions:
           - condition: template
-            value_template: >
-              {% set keywords = (calendar_trigger or '') | string %}
-              {% set keyword_list = keywords.split(',') | map('trim') | list %}
-              {% set summary = trigger.calendar_event.summary or '' %}
-              {{ keyword_list | select('in', summary) | list | count > 0 }}
+            value_template: "{{ include_calendar_trigger == 'enable_key_word' }}"
           - condition: template
             value_template: >
               {% set keywords = (calendar_trigger or '') | string %}
               {% set keyword_list = keywords.split(',') | map('trim') | list %}
-              {% set description = trigger.calendar_event.description or '' %}
-              {{ keyword_list | select('in', description) | list | count > 0 }}
-      - condition: template
-        value_template: "{{ include_calendar_trigger == 'disable_key_word' }}"
+              {% set summary = trigger.calendar_event.get('summary', '') %}
+              {% set description = trigger.calendar_event.get('description', '') %}
+              {{ keyword_list | select('in', summary ~ description) | list | count > 0 }}
+      - alias: "Exclude keyword, keyword must NOT be in summary AND NOT in description"
+        condition: and
+        conditions:
+          - condition: template
+            value_template: "{{ include_calendar_trigger == 'exclude_key_word' }}"
+          - condition: template
+            value_template: >
+              {% set keywords = (calendar_trigger or '') | string %}
+              {% set keyword_list = keywords.split(',') | map('trim') | list %}
+              {% set summary = trigger.calendar_event.get('summary', '') %}
+              {% set description = trigger.calendar_event.get('description', '') %}
+              {{ keyword_list | select('in', summary ~ description) | list | count == 0 }}
 
 # Global Conditions
   - condition: and

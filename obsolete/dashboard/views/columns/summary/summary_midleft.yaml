@@ -1,0 +1,79 @@
+- type: horizontal-stack
+  cards:
+    - hours_to_show: 24
+      graph: line
+      detail: 2
+      name: Living room
+      type: sensor
+      entity: sensor.living_room_fan_temperature
+    - hours_to_show: 24
+      graph: line
+      entity: sensor.study_fan_temperature
+      name: Study
+      type: sensor
+      detail: 1
+    - hours_to_show: 24
+      graph: line
+      entity: sensor.server_room_sensor_temperature
+      name: Server room
+      type: sensor
+      detail: 1
+
+- type: custom:simple-thermostat
+  entity: climate.living_room
+  layout:
+    step: row
+  header: true
+  control: false
+  unit: c
+  step_size: '0.5'
+  style: |
+    ha-card {
+      --st-font-size-xl: 40px;
+    }
+
+- type: custom:simple-thermostat
+  entity: climate.study
+  layout:
+    step: row
+  header: true
+  control: false
+  unit: c
+  step_size: '0.5'
+  style: |
+    ha-card {
+      --st-font-size-xl: 40px;
+    }
+
+- type: entities
+  state_color: true
+  entities:
+    - entity: sensor.aq_maliskamp_p1
+      name: Air Quality Maliskamp
+    - entity: fan.living_room_fan
+      secondary_info: last-changed
+    - entity: humidifier.living_room_fan
+    - entity: fan.bedroom_fan
+      secondary_info: last-changed
+    - entity: humidifier.bedroom_fan
+
+- type: custom:apexcharts-card
+  header:
+    show: false
+  series:
+    - entity: sensor.study_fan_humidity
+    - entity: sensor.bedroom_fan_humidity
+    - entity: sensor.bathroom_sensor_humidity
+    - entity: sensor.living_room_fan_humidity
+    - entity: sensor.baby_room_sensor_humidity
+  cache: true
+  apex_config:
+    stroke:
+      show: true
+      width: 3
+      curve: smooth
+    legend:
+      show: true
+      position: top
+    chart:
+      height: 300px

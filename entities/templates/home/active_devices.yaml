@@ -1,0 +1,83 @@
+##############################################
+#               ACTIVE DEVICES               #
+#       Lights & Switches Combined Status    #
+##############################################
+
+sensor:
+  - name: "Active Devices"
+    unique_id: sensor.active_devices
+    state: >
+      {% set lights = [
+        states.light.kitchen,
+        states.light.living_room,
+        states.light.middle_room,
+        states.light.dining_room,
+        states.light.study_light,
+        states.light.bedroom_light,
+        states.light.landing_light,
+        states.light.attic_light
+      ] %}
+
+      {% set lights_on = lights | selectattr('state', 'eq', 'on') | list %}
+      {% set lights_count = lights_on | length %}
+      {% set lights_name = lights_on | map(attribute='name') | join(', ') %}
+
+      {% set switches = [
+        states.fan.bedroom_fan,
+        states.fan.study_fan,
+        states.fan.living_room_fan,
+        states.media_player.zeppelin_living_room,
+        states.media_player.downstairs
+      ] %}
+
+      {% set switches_on = switches | selectattr('state', 'eq', 'on') | list %}
+      {% set switches_count = switches_on | length %}
+      {% set switches_name_raw = switches_on | map(attribute='name') | join(', ') %}
+
+      {# Add "and" before the last item for multiple switches #}
+      {% if switches_count > 1 %}
+        {% set switches_name = switches_name_raw | regex_replace(',([^,]*)$', ' and\\1') %}
+      {% else %}
+        {% set switches_name = switches_name_raw %}
+      {% endif %}
+
+      {% set total_on = lights_count + switches_count %}
+
+      {% if total_on == 0 %}
+        <font color="#6a7377">Everything is off</font>
+
+      {% else %}
+
+        {# Lights part #}
+        {% set lights_part %}
+          {% if lights_count == 1 %}
+            {{ lights_name }}
+          {% elif lights_count > 1 %}
+            {{ lights_count }} lights
+          {% endif %}
+        {% endset %}
+
+        {# Switches part #}
+        {% set switches_part %}
+          {% if switches_count >= 1 %}
+            {{ switches_name }}
+          {% endif %}
+        {% endset %}
+
+        {# Build subject #}
+        {% if lights_part.strip() and switches_part.strip() %}
+          {% if (lights_count > 1 and switches_count == 1) or (lights_count == 1 and switches_count == 1) %}
+            {% set subject = lights_part.strip() ~ ' and ' ~ switches_part.strip() %}
+          {% else %}
+            {% set subject = lights_part.strip() ~ ', ' ~ switches_part.strip() %}
+          {% endif %}
+        {% elif lights_part.strip() %}
+          {% set subject = lights_part.strip() %}
+        {% elif switches_part.strip() %}
+          {% set subject = switches_part.strip() %}
+        {% endif %}
+
+        {% set verb = 'is' if total_on == 1 else 'are' %}
+        {{ subject }} {{ verb }} on
+
+      {% endif %}
