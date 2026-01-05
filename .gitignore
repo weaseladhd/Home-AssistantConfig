@@ -1,56 +1,20 @@
-# .gitignore file for your config dir.
-# An * ensures that everything will be ignored.
+# Only track specific file types
+# Ignore everything by default
 *
 
-# Whitelist Files
 !*.yaml
+!**/.??*.yaml
 !*.yml
-!.gitignore
-!*.md
-!.yamllint
+!**/.??*.yml
 
-# Whitelist Folders
-!themes
-!integrations
-!entities
-!entities/*
-!entities/sensors/*
-!customizations
-!customizations/*
-!automations
-!automations/*
-!.github
-!.github/*
-!.stubs
-!blueprints
-!blueprints/*
-!blueprints/automation/*
-!views
-!views/*
-!views/columns/*
-!views/snippets/*
+# Track lovelace dashboard configuration files
+!.storage/lovelace
+!.storage/lovelace_dashboards
+!.storage/lovelace_resources
+!.storage/lovelace.*
 
-# Ensure these YAML files are ignored, otherwise your secret data/credentials will leak.
-secrets.yaml
-google_calendars.yaml
-home-assistant_v2.db
-home-assistant.log
-ip_bans.yaml
-known_devices.yaml
+# Allow directory traversal
+!*/
 
-# sane defaults
-*.pid
-*.xml
-*.conf
-*.csr
-*.crt
-*.key
-*.log
-
-# database files
-*.db
-*.db-shm
-*.db-wal
-*.db-journal
-*.sqlite
-*.sqlite-journal
+# Re-ignore macOS metadata files (even if they match allowed extensions)
+._*

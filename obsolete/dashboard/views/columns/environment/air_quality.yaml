@@ -1,0 +1,122 @@
+- type: vertical-stack
+  in_card: true
+  cards:
+    - type: horizontal-stack
+      cards:
+        - type: entity
+          entity: sensor.aq_maliskamp_p1
+          icon: none
+          name: PM10
+          card_mod:
+            style: |
+              ha-card {background: none;}
+        - type: entity
+          entity: sensor.aq_maliskamp_p2
+          name: PM2.5
+          card_mod:
+            style: |
+              ha-card {background: none;}
+        - type: entity
+          entity: sensor.current_ozone_level
+          name: Ozone (O₃)
+          card_mod:
+            style: |
+              ha-card {background: none;}
+
+    - type: custom:apexcharts-card
+      config_templates: environment_chart
+      series:
+        - entity: air_quality.maliskamp
+          name: AQI
+          yaxis_id: second
+          show:
+            datalabels: true
+        - entity: sensor.living_room_fan_pm_10
+          name: Particulate Matter (PM10)
+          yaxis_id: main
+          show:
+            datalabels: true
+        - entity: sensor.living_room_fan_pm_2_5
+          name: Particulate Matter (PM2.5)
+          yaxis_id: main
+          show:
+            datalabels: true
+      yaxis:
+        - id: main
+        - id: second
+      apex_config:
+        chart:
+          height: 240px
+
+- type: vertical-stack
+  in_card: true
+  cards:
+
+    - type: sensor
+      name: Wind Speed
+      entity: sensor.irosma27_wind_speed
+
+    - type: custom:apexcharts-card
+      config_templates: environment_chart
+      series:
+        - entity: sensor.irosma27_wind_speed
+          name: km/h
+          yaxis_id: main
+          color: 'var(--primary-color)'
+          show:
+            datalabels: true
+          group_by:
+            func: avg
+            duration: 30min
+      yaxis:
+        - id: main
+          min: 0
+          max: ~5
+      apex_config:
+        chart:
+          height: 160px
+
+- type: vertical-stack
+  in_card: true
+  cards:
+
+    - type: horizontal-stack
+      cards:
+        - type: sensor
+          entity: sensor.co2_intensity
+          name: CO₂ Intensity
+        - type: sensor
+          entity: sensor.living_room_nitrogen_dioxide_index
+          name: Nitrogen Dioxide (NO₂)
+        - type: sensor
+          entity: sensor.living_room_volatile_organic_compounds_index
+          name: Volatile Organic Compounds (VOCs)
+
+    - type: custom:apexcharts-card
+      config_templates: environment_chart
+      series:
+        - entity: sensor.living_room_nitrogen_dioxide_index
+          name: NO₂
+          yaxis_id: second
+          show:
+            datalabels: true
+        - entity: sensor.living_room_volatile_organic_compounds_index
+          name: VOCs
+          yaxis_id: second
+          show:
+            datalabels: true
+        - entity: sensor.co2_intensity
+          name: CO₂
+          yaxis_id: main
+          show:
+            datalabels: true
+      yaxis:
+        - id: main
+        - id: second
+          min: 0
+          max: ~5
+          opposite: true
+          show: false
+      apex_config:
+        chart:
+          height: 240px

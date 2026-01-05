@@ -1,0 +1,120 @@
+##############################################
+#               ENTITY COUNTERS              #
+#        System-wide Category Statistics     #
+##############################################
+
+sensor:
+  - name: "Entities"
+    unique_id: sensor.total_entities
+    icon: mdi:code-tags
+    state: '{{ states | count }}'
+
+  - name: "Automations"
+    unique_id: sensor.total_automations
+    icon: mdi:robot
+    state: '{{ states.automation | list | length }}'
+
+  - name: "Binary Sensors"
+    unique_id: sensor.total_binary_sensors
+    icon: mdi:checkbox-multiple-marked-circle
+    state: '{{ states.binary_sensor | list | length }}'
+
+  - name: "Cameras"
+    unique_id: sensor.total_cameras
+    icon: mdi:cctv
+    state: '{{ states.camera | list | length }}'
+
+  - name: "Counters"
+    unique_id: sensor.total_counters
+    icon: mdi:counter
+    state: '{{ states.counter | list | length }}'
+
+  - name: "Devices"
+    unique_id: sensor.total_devicetrackers
+    icon: mdi:cellphone-link
+    state: '{{ states.device_tracker | list | length }}'
+
+  - name: "Groups"
+    unique_id: sensor.total_groups
+    icon: mdi:group
+    state: '{{ states.group | list | length }}'
+
+  - name: "Input Booleans"
+    unique_id: sensor.total_input_booleans
+    icon: mdi:toggle-switch
+    state: '{{ states.input_boolean | list | length }}'
+
+  - name: "Input Datetimes"
+    unique_id: sensor.total_input_datetimes
+    icon: mdi:calendar-clock
+    state: '{{ states.input_datetime | list | length }}'
+
+  - name: "Input Numbers"
+    unique_id: sensor.total_input_numbers
+    icon: mdi:numeric
+    state: '{{ states.input_number | list | length }}'
+
+  - name: "Input Selects"
+    unique_id: sensor.total_input_selects
+    icon: mdi:format-align-justify
+    state: '{{ states.input_select | list | length }}'
+
+  - name: "Input Texts"
+    unique_id: sensor.total_input_texts
+    icon: mdi:alphabetical
+    state: '{{ states.input_text | list | length }}'
+
+  - name: "Lights"
+    unique_id: sensor.total_lights
+    icon: mdi:lightbulb-on
+    state: '{{ states.light | list | length }}'
+
+  - name: "Media Players"
+    unique_id: sensor.total_media_players
+    icon: mdi:cast-connected
+    state: '{{ states.media_player | list | length }}'
+
+  - name: "Persons"
+    unique_id: sensor.total_persons
+    icon: mdi:account-multiple
+    state: '{{ states.person | list | length }}'
+
+  - name: "Remotes"
+    unique_id: sensor.total_remotes
+    icon: mdi:remote
+    state: '{{ states.remote | list | length }}'
+
+  - name: "Scenes"
+    unique_id: sensor.total_scenes
+    icon: mdi:palette
+    state: '{{ states.scene | list | length }}'
+
+  - name: "Scripts"
+    unique_id: sensor.total_scripts
+    icon: mdi:script-text-outline
+    state: '{{ states.script | list | length }}'
+
+  - name: "Sensors"
+    unique_id: sensor.total_sensors
+    icon: mdi:pulse
+    state: '{{ states.sensor | list | length }}'
+
+  - name: "Switches"
+    unique_id: sensor.total_switches
+    icon: mdi:power-socket-us
+    state: '{{ states.switch | list | length }}'
+
+  - name: "Timers"
+    unique_id: sensor.total_timers
+    icon: mdi:timer-outline
+    state: '{{ states.timer | list | length }}'
+
+  - name: "Zones"
+    unique_id: sensor.total_zones
+    icon: mdi:map-marker-radius
+    state: '{{ states.zone | list | length }}'
+
+  - name: "ZWave"
+    unique_id: sensor.total_zwave_devices
+    icon: mdi:z-wave
+    state: '{{ states.zwave | list | length }}'

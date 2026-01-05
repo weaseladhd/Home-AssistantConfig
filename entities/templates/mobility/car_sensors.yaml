@@ -1,0 +1,97 @@
+##############################################
+#                 CAR METRICS                #
+#        Days, KM Allowance & Cost Stats     #
+##############################################
+
+sensor:
+  # Days since contract start
+  - name: "Car possession in days"
+    unique_id: sensor.car_days
+    unit_of_measurement: "Days"
+    state: >
+      {% set start = state_attr('input_datetime.car_start_date', 'timestamp') %}
+      {% if start is number %}
+        {{ ((now().timestamp() - start) / 86400) | int | round(0) }}
+      {% else %}
+        0
+      {% endif %}
+
+  # Allowed km up to today (based on car_days and monthly km setting)
+  - name: "Car km allowed to date"
+    unique_id: sensor.car_km_allowed
+    unit_of_measurement: "km"
+    state: >
+      {{ (
+          (states("input_number.car_monthly_km") | float(0) / 365)
+          * (states("sensor.car_days") | float(0))
+        ) | round(0) }}
+
+  # Delta between allowed km and current km (can be negative if over limit)
+  - name: "Car km excess"
+    unique_id: sensor.car_km_excess
+    unit_of_measurement: "km"
+    state: >
+      {% set allowed = states("sensor.car_km_allowed") | float(0) %}
+      {% set current = states("input_number.car_kilometer_counter") | float(0) %}
+      {{ (allowed - current) | round(0) }}
+
+  # Percentage of allowed km already used
+  - name: "Car km percentage"
+    unique_id: sensor.car_km_percentage
+    unit_of_measurement: "%"
+    state: >
+      {% set allowed = states("sensor.car_km_allowed") | float(0) %}
+      {% set current = states("input_number.car_kilometer_counter") | float(0) %}
+      {% if allowed > 0 %}
+        {{ ((current / allowed) * 100) | round(1) }}
+      {% else %}
+        0
+      {% endif %}
+
+  # Estimated extra cost based on km_excess and price per km
+  - name: "Car additional cost"
+    unique_id: sensor.car_additional_cost
+    unit_of_measurement: "€"
+    state: >
+      {% set excess = states("sensor.car_km_excess") | float(0) %}
+      {% set price  = states("input_number.car_additional_km_price") | float(0) %}
+      {{ ((excess * price) / 100) | round(2) | abs }}
+
+  # KM remaining before you hit the allowed limit (never negative)
+  - name: "Car km remaining"
+    unique_id: sensor.car_km_remaining
+    unit_of_measurement: "km"
+    state: >
+      {% set allowed = states("sensor.car_km_allowed") | float(0) %}
+      {% set current = states("input_number.car_kilometer_counter") | float(0) %}
+      {% set remaining = (allowed - current) | round(0) %}
+      {{ [remaining, 0] | max }}
+
+  # Projected monthly km based on current average per day × 30
+  - name: "Car km projected month"
+    unique_id: sensor.car_km_projected_month
+    unit_of_measurement: "km"
+    state: >
+      {% set days = states("sensor.car_days") | float(1) %}
+      {% set current = states("input_number.car_kilometer_counter") | float(0) %}
+      {% if days <= 0 %}
+        0
+      {% else %}
+        {{ (current / days * 30) | round(0) }}
+      {% endif %}
+
+  # Traffic-light style indicator based on km percentage
+  # green  = <= 90%
+  # yellow = > 90% and <= 100%
+  # red    = > 100%
+  - name: "Car km status"
+    unique_id: sensor.car_km_status
+    state: >
+      {% set pct = states("sensor.car_km_percentage") | float(0) %}
+      {% if pct <= 90 %}
+        green
+      {% elif pct <= 100 %}
+        yellow
+      {% else %}
+        red
+      {% endif %}

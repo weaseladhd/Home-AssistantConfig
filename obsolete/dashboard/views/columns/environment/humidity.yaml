@@ -1,0 +1,167 @@
+- type: horizontal-stack
+  cards:
+
+    - type: entity
+      entity: sensor.avg_humidity_indoor
+      name: Indoor Average
+      icon: none
+      card_mod:
+        style: |
+          ha-card {background: none;}
+
+    - type: entity
+      entity: sensor.irosma27_relative_humidity
+      name: Outdoor
+      icon: none
+      card_mod:
+        style: |
+          ha-card {background: none;}
+
+    - type: 'custom:card-templater'
+      card:
+        type: entity
+        entity: sensor.humidity_indoor_outdoor_difference
+        name_template: >
+          Difference
+#         {{ state_attr('sensor.humidity_indoor_outdoor_difference', 'description') | capitalize }} by
+        card_mod:
+          style: |
+            ha-card {background: none;}
+      entities:
+        - sensor.humidity_indoor_outdoor_difference
+
+- type: custom:apexcharts-card
+  config_templates: environment_chart
+  yaxis:
+    - id: main
+      min: 0
+      max: 100
+      apex_config:
+        tickAmount: 9
+  apex_config:
+    dataLabels:
+      formatter: |
+        EVAL:function(value, { seriesIndex, dataPointIndex, w }) {
+          if (dataPointIndex == w.config.series[seriesIndex].data.length - 2) {
+            return Math.round( value * 10 ) / 10 + "% - " + w.config.series[seriesIndex].name  // + " " + dataPointIndex + " " + w.config.series[seriesIndex].data.length
+          } else { return '' }
+        }
+  series:
+
+    - entity: sensor.sun_elevation
+      color: var(--primary-text-color)
+      opacity: .2
+      stroke_width: .5
+      yaxis_id: sun
+      show:
+        legend_value: false
+
+    - entity: sensor.sun_elevation
+      color: var(--primary-text-color)
+      opacity: .2
+      stroke_width: .5
+      yaxis_id: sun
+      data_generator: |
+        const now = new Date();
+        const data = [[now.getTime() - 172800000, 0], [now.getTime(), 0], [now.getTime() + 86400000, 0]];
+        return data;
+
+    - entity: sensor.irosma27_relative_humidity
+      type: area
+      name: Outside
+      yaxis_id: main
+      stroke_width: .5
+      color: gray
+      opacity: .1
+      show:
+        datalabels: true
+        extremas: true
+
+    - entity: sensor.bedroom_fan_humidity
+      name: Bedroom
+      stroke_width: 1
+      yaxis_id: main
+      color: hotpink
+      show:
+        datalabels: true
+      group_by:
+        func: avg
+        duration: 30min
+
+    - entity: sensor.bathroom_sensor_humidity
+      name: Bathroom
+      stroke_width: 1
+      color: turquoise
+      yaxis_id: main
+      show:
+        datalabels: true
+      group_by:
+        func: avg
+        duration: 30min
+
+    - entity: sensor.living_room_fan_humidity
+      name: Living Room
+      stroke_width: 1
+      color: green
+      yaxis_id: main
+      show:
+        datalabels: true
+      group_by:
+        func: avg
+        duration: 30min
+
+    - entity: sensor.avg_humidity_indoor
+      name: Indoor Avg
+      color: 'var(--primary-color)'
+      yaxis_id: main
+      show:
+        datalabels: true
+        extremas: true
+
+  card_mod:
+    style:
+      .: |
+        #graph {margin-left: -34px; margin-top: -16px;}
+        .apexcharts-yaxis-label { font-family: var(--font-stack) !important;
+          font-size: var(--h6-font-size) !important;
+          opacity: 0.15;}
+        .apexcharts-yaxis-label:nth-child(5n+1) { opacity: .5;}
+        .apexcharts-xaxis-label { opacity: .5; transform: translate(0, -2px); }
+        .apexcharts-xaxis-annotation-label { font-family: var(--font-stack) !important;
+          font-size: var(--h6-font-size) !important; font-weight: 500 !important;}
+        .apexcharts-point-annotation-label { font-family: var(--font-stack) !important;
+          font-size: var(--h6-font-size) !important; font-weight: normal !important;}
+
+- type: custom:apexcharts-card
+  config_templates: environment_chart
+  series:
+
+    - entity: sensor.br_rain_last_hour
+      name: mm
+      yaxis_id: main
+      color: 'var(--primary-color)'
+      show:
+        datalabels: true
+
+    - entity: sensor.br_precipitation
+      name: Buienradar Precipation
+      attribute: precipitation
+      yaxis_id: main
+      curve: straight
+      color: 'var(--primary-color)'
+      opacity: .5
+      data_generator: |
+        const now = new Date();
+        const data = [];
+        for(let i = 0; i <= 12; i++) {
+          data.push([new Date(entity.attributes.forecast[i].datetime).getTime() + i * 1000 * 60 * 60, entity.attributes.forecast[i].precipitation] );
+        }
+        return data.reverse();
+
+  yaxis:
+    - id: main
+      min: 0
+      max: ~5
+  apex_config:
+    chart:
+      height: 180px

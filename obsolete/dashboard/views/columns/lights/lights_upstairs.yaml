@@ -1,0 +1,39 @@
+- type: entities
+  entities:
+    - entity: sensor.study_motion_sensor_illuminance_lux
+      name: Study illuminance
+  footer:
+    type: graph
+    entity: sensor.study_motion_sensor_illuminance_lux
+    detail: 2
+    hours_to_show: 48
+  header:
+    type: buttons
+    entities:
+      - entity: switch.adaptive_lighting_study
+        name: adaptive
+      - entity: switch.adaptive_lighting_adapt_brightness_study
+        name: brightness
+        icon: mdi:brightness-auto
+      - entity: switch.adaptive_lighting_adapt_color_study
+        name: color
+        icon: mdi:select-color
+      - entity: switch.adaptive_lighting_sleep_mode_study
+        name: sleep mode
+        icon: mdi:sleep
+- type: entities
+  state_color: true
+  entities:
+    - type: custom:fold-entity-row
+      state_color: true
+      open: true
+      head:
+        entity: light.upstairs
+        type: custom:slider-entity-row
+      entities:
+        - entity: light.study_light
+          type: custom:slider-entity-row
+        - entity: light.bedroom_light
+          type: custom:slider-entity-row
+        - entity: light.landing_light
+          type: custom:slider-entity-row

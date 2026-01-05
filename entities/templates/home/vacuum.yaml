@@ -1,0 +1,111 @@
+##############################################
+#                ROBOROCK S6                 #
+#        Status, Sensors & Maintenance       #
+##############################################
+
+sensor:
+
+  # Battery %
+  - name: "Roborock Battery"
+    unique_id: sensor.roborock_battery
+    icon: >
+      {{ state_attr("vacuum.roborock_s6", "battery_icon") }}
+    unit_of_measurement: "%"
+    state: >
+      {{ state_attr("vacuum.roborock_s6", "battery_level") }}
+
+
+  # Clean state (docked / paused / cleaning / returning)
+  - name: "Roborock State"
+    unique_id: sensor.roborock_state
+    icon: "custom:roborock-vacuum"
+    state: >
+      {% set entity = "vacuum.roborock_s6" %}
+      {% if is_state(entity, "docked") %}
+        Docked
+      {% elif is_state(entity, "paused") %}
+        Paused
+      {% elif is_state(entity, "cleaning") %}
+        Cleaning
+      {% elif is_state(entity, "returning") %}
+        Returning
+      {% else %}
+        {{ states(entity) }}
+      {% endif %}
+
+
+  # Fan speed
+  - name: "Roborock Speed"
+    unique_id: sensor.roborock_speed
+    state: >
+      {{ state_attr("vacuum.roborock_s6", "fan_speed") }}
+
+
+  # Filter (% remaining)
+  - name: "Roborock Filter"
+    unique_id: sensor.roborock_filter
+    icon: "custom:roborock-filter"
+    unit_of_measurement: "%"
+    state: >
+      {{ (states("sensor.roborock_s6_filter_left") | float / 1.5) | round | default(0) }}
+
+
+  # Main brush (% remaining)
+  - name: "Roborock Main Brush"
+    unique_id: sensor.roborock_mainbrush
+    icon: "custom:roborock-mainbrush"
+    unit_of_measurement: "%"
+    state: >
+      {{ (states("sensor.roborock_s6_main_brush_left") | float / 3) | round | default(0) }}
+
+
+  # Sensors (% remaining)
+  - name: "Roborock Sensors"
+    unique_id: sensor.roborock_sensors
+    icon: "custom:roborock-sensor"
+    unit_of_measurement: "%"
+    state: >
+      {{ (states("sensor.roborock_s6_sensor_dirty_left") | float / 0.3) | round | default(0) }}
+
+
+  # Side brush (% remaining)
+  - name: "Roborock Side Brush"
+    unique_id: sensor.roborock_sidebrush
+    icon: "custom:roborock-sidebrush"
+    unit_of_measurement: "%"
+    state: >
+      {{ (states("sensor.roborock_s6_side_brush_left") | float / 2) | round | default(0) }}
+
+
+  # Time since last cleaning (“X days ago”, “Y hours ago”, etc.)
+  - name: "Roborock Last Cleaned"
+    unique_id: sensor.roborock_last_clean
+    icon: "mdi:calendar-clock"
+    state: >
+      {% set diff = (as_timestamp(now()) - as_timestamp(states("sensor.roborock_s6_last_clean_end"))) | int(0) %}
+      {% set minutes = diff // 60 %}
+      {% set hours = diff // 3600 %}
+      {% set days = diff // 86400 %}
+
+      {% if days == 1 %}
+        {{ days }} day ago
+      {% elif days > 1 %}
+        {{ days }} days ago
+      {% elif hours == 1 %}
+        {{ hours }} hour ago
+      {% elif hours > 1 %}
+        {{ hours }} hours ago
+      {% elif minutes == 1 %}
+        {{ minutes }} minute ago
+      {% elif minutes > 1 %}
+        {{ minutes }} minutes ago
+      {% else %}
+        Less than 1 minute ago
+      {% endif %}
+
+
+  # Whether tomorrow is a vacuum day (Mon / Fri)
+  - name: "Vacuum day tomorrow"
+    unique_id: sensor.vacuum_day_tomorrow
+    state: >
+      {{ as_timestamp(now()) | timestamp_custom("%a") in ("Mon", "Fri") }}

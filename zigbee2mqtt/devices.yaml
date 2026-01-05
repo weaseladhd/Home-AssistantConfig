@@ -1,0 +1,159 @@
+'0x001788010855ba20':
+  friendly_name: Landing light
+  state_action: true
+  color_sync: true
+  transition: 1
+'0x0017880102243d3e':
+  friendly_name: Bedroom light
+  state_action: true
+  transition: 1
+'0x001788010256160f':
+  friendly_name: Study light
+  state_action: true
+  transition: 1
+'0x00158d000477377b':
+  friendly_name: Study window sensor
+'0x00158d0004522550':
+  friendly_name: Study motion sensor
+'0x00158d00047d1602':
+  friendly_name: Bedroom window sensor
+'0x00178801085917d5':
+  friendly_name: Hallway light
+  transition: 1
+  color_sync: true
+  state_action: true
+'0x001788010845a652':
+  friendly_name: Hallway spot
+  transition: 1
+  state_action: true
+  color_sync: true
+'0x00158d00047d0f71':
+  friendly_name: Bedroom 2 window sensor
+'0x00178801081fc54e':
+  friendly_name: Outside front light
+  transition: 1
+  state_action: true
+'0x001788010633457d':
+  friendly_name: Middle room spot 1
+  transition: 1
+  color_sync: true
+'0x001788010237055a':
+  friendly_name: Baby room light
+'0x0017880106bc0925':
+  friendly_name: Middle room spot 2
+  state_action: true
+  color_sync: true
+  transition: 1
+'0x0017880108165b95':
+  friendly_name: Dining light
+  state_action: false
+  transition: 1
+'0x00178801081fc83d':
+  friendly_name: Outside back light
+  state_action: true
+  transition: 1
+'0x0017880108456f08':
+  friendly_name: Kitchen spot 1
+  state_action: true
+  color_sync: true
+  transition: 1
+'0x00178801084579c2':
+  friendly_name: Kitchen spot 2
+  transition: 1
+  state_action: true
+  color_sync: true
+'0x00178801083ecff9':
+  friendly_name: Kitchen spot 3
+  color_sync: true
+  state_action: true
+  transition: 1
+'0x00178801083f118b':
+  friendly_name: Kitchen spot 4
+  transition: 1
+  color_sync: true
+  state_action: true
+'0x00178801083f0c59':
+  friendly_name: Kitchen spot 5
+  state_action: true
+  color_sync: true
+  transition: 1
+'0x001788010845883d':
+  friendly_name: Kitchen spot 6
+  transition: 1
+  state_action: true
+  color_sync: true
+'0x00178801083ed8da':
+  friendly_name: Kitchen spot 7
+  state_action: true
+  color_sync: true
+  transition: 1
+'0x00158d00047c579b':
+  friendly_name: Landing motion sensor
+'0x00158d00048889f7':
+  friendly_name: Bathroom sensor
+'0x00158d00030b78d4':
+  friendly_name: Server room sensor
+'0x00158d00046601f5':
+  friendly_name: Kitchen motion sensor
+'0x00158d00047b3048':
+  friendly_name: Attic motion sensor
+'0x000d6f00178944b5':
+  friendly_name: Attic smoke sensor
+'0x000d6f00169813c7':
+  friendly_name: Landing smoke sensor
+'0x000d6f0017898ebf':
+  friendly_name: Hallway smoke sensor
+'0x000d6f00164a18cf':
+  friendly_name: Kitchen smoke sensor
+'0x9035eafffe6d1525':
+  friendly_name: Aquacell bypass
+  state_action: true
+'0x001788010bce726e':
+  friendly_name: Living room motion sensor
+'0x0000000001762dfe':
+  friendly_name: Smart switch study
+'0x0000000001762de9':
+  friendly_name: Smart switch bedroom
+'0x0000000001762dea':
+  friendly_name: Smart switch dining room
+'0x001788010c9d2543':
+  friendly_name: Attic light
+  color_sync: true
+  state_action: true
+  transition: 1
+'0x00178801020300f9':
+  friendly_name: Temporary motion sensor
+'0x0000000001762df7':
+  friendly_name: Smart switch living room
+'0x001788010be4cbe0':
+  friendly_name: Living room gradient floor lamp 2
+  state_action: true
+  color_sync: true
+  transition: 1
+'0x00178801094a290c':
+  friendly_name: Outside back motion sensor
+'0x001788010b097735':
+  friendly_name: Baby room motion sensor
+'0x0000000001762dde':
+  friendly_name: Smart switch baby room
+'0x54ef44100077fb16':
+  friendly_name: Study roller shade
+  invert_cover: false
+'0x00158d00057b3f9a':
+  friendly_name: Garage door sensor
+'0x001788010dfed3cf':
+  friendly_name: Living room gradient floor lamp 1
+'0x001788010e4935c6':
+  friendly_name: Bathroom spot 1
+'0x001788010e4931cf':
+  friendly_name: Bathroom spot 2
+'0x001788010e5e8592':
+  friendly_name: Bathroom spot 3
+'0x0000000001762df2':
+  friendly_name: Smart switch bathroom
+'0x001788010ee27706':
+  friendly_name: Kitchen spot 8
+'0x001788010ee9bdea':
+  friendly_name: Toilet spot
+'0x001788010b09615b':
+  friendly_name: Hallway motion sensor

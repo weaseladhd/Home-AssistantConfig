@@ -1,0 +1,69 @@
+##############################################
+#         HOME ASSISTANT DEV RELEASE         #
+#     Countdown, Exact Date & Progress Bar   #
+##############################################
+
+sensor:
+  - name: "Upcoming release"
+    unique_id: sensor.hass_dev_release
+    icon: "mdi:dev-to"
+    state: >
+      {% set start = state_attr("calendar.home_assistant_devs", "start_time") %}
+      {% set diff = (as_timestamp(start) - as_timestamp(now())) / 86400 %}
+
+      {% if diff < -1 %}
+        Released
+      {% elif diff < 0 %}
+        Today
+      {% elif diff < 1 %}
+        Tomorrow
+      {% elif diff > 35 %}
+        No
+      {% else %}
+        {{ diff | int + 1 }} Days
+      {% endif %}
+
+    attributes:
+      # Exact release datetime
+      release_at: >
+        {{ state_attr("calendar.home_assistant_devs", "start_time") }}
+
+      # Human-friendly countdown
+      human_friendly: >
+        {% set start = state_attr("calendar.home_assistant_devs", "start_time") %}
+        {% set diff = as_timestamp(start) - as_timestamp(now()) %}
+
+        {% if diff <= 0 %}
+          Released
+        {% else %}
+          {% set days = (diff // 86400) | int %}
+          {% set hours = ((diff % 86400) // 3600) | int %}
+          {% if days > 0 %}
+            In {{ days }} day{{ 's' if days > 1 else '' }}{{ ' and ' ~ hours ~ 'h' if hours > 0 else '' }}
+          {% elif hours > 0 %}
+            In {{ hours }} hour{{ 's' if hours > 1 else '' }}
+          {% else %}
+            Less than 1 hour
+          {% endif %}
+        {% endif %}
+
+      # Progress bar (0–100%) since last release → next release
+      progress: >
+        {% set next = as_timestamp(state_attr("calendar.home_assistant_devs", "start_time")) %}
+        {% set prev = as_timestamp(state_attr("calendar.home_assistant_devs", "end_time")) %}
+        {% set now = as_timestamp(now()) %}
+
+        {# safeguard if calendar missing fields #}
+        {% if not next or not prev %}
+          unknown
+        {% else %}
+          {% set total = next - prev %}
+          {% set passed = now - prev %}
+          {% if passed < 0 %}
+            0
+          {% elif passed > total %}
+            100
+          {% else %}
+            {{ ((passed / total) * 100) | round(1) }}
+          {% endif %}
+        {% endif %}

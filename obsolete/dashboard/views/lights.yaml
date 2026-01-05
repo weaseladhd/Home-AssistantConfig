@@ -1,0 +1,124 @@
+---
+# Lights View
+
+title: Lights
+icon: mdi:lightbulb-group
+path: lights
+
+type: 'custom:grid-layout'
+layout: !include snippets/layout-page-margin.yaml
+
+cards:
+  - type: 'custom:layout-card'
+    layout_type: 'custom:grid-layout'
+    layout: !include snippets/layout-page-columns.yaml
+    view_layout:
+      grid-area: cc
+    cards:
+
+      # [Header] Summary
+
+      - type: 'custom:layout-card'
+        layout_type: 'custom:grid-layout'
+        layout: !include snippets/layout-page-title.yaml
+        view_layout:
+          grid-column: 1/-1
+        cards:
+
+          - type: markdown
+            style: !include snippets/style-markdown-page-title.yaml
+            card_mod:
+              style: |
+                ha-card {background: none;}
+            content: >
+              # Light
+
+              {% set daylight = ( state_attr('sun.sun', 'next_rising') | as_timestamp(0) - state_attr('sun.sun', 'next_setting') | as_timestamp(0) ) | abs / 60 / 60 %}
+              You have {{ states.light|length }} lights and {{ states.light|selectattr('state','equalto','on')|list|length }}
+              of them {{ iif(
+              (states.light|selectattr('state','equalto','on')|list|length
+              == 1), 'is', 'are') }}  turned on. There is {{ daylight | round(1) }} hours of daylight and {{ 24 - daylight | round(1) }} hours of nighttime today.
+
+          - type: 'custom:layout-card'
+            layout_type: 'custom:horizontal-layout'
+            view_layout:
+            place-self: center
+            layout:
+              width: 220
+            cards:
+
+              - type: horizontal-stack
+                cards:
+
+                  - type: 'custom:mushroom-person-card'
+                    entity: person.wesley
+                    use_entity_picture: true
+                    card_mod:
+                      style: |
+                        ha-card {background: none;}
+
+                  - type: 'custom:mushroom-person-card'
+                    entity: person.fenne
+                    use_entity_picture: true
+                    card_mod:
+                      style: |
+                        ha-card {background: none;}
+
+      # [Column] Downstairs
+
+      - type: 'custom:layout-card'
+        layout_type: 'custom:grid-layout'
+        layout:
+          margin: -1
+        cards:
+
+          - type: 'custom:button-card'
+            template: header_card
+            variables:
+              name: Downstairs
+              label: Scenes
+              action: more-info
+              link: popup.downstairs_scenes
+
+          - type: 'vertical-stack'
+            cards: !include columns/lights/lights_downstairs.yaml
+
+      # [Column] Upstairs
+
+      - type: 'custom:layout-card'
+        layout_type: 'custom:grid-layout'
+        layout:
+          margin: -1
+        cards:
+
+          - type: 'custom:button-card'
+            template: header_card_no_link
+            variables:
+              name: Upstairs
+              label: Scenes
+              action: more-info
+              link: popup.upstairs_scenes
+
+          - type: 'vertical-stack'
+            cards: !include columns/lights/lights_upstairs.yaml
+
+      # [Column] Others
+
+      - type: 'custom:layout-card'
+        layout_type: 'custom:grid-layout'
+        layout:
+          margin: -1
+        cards:
+
+          - type: 'custom:button-card'
+            template: header_card
+            variables:
+              name: Others
+              label: Scenes
+              action: more-info
+              link: popup.others_scenes
+            view_layout:
+              grid-column: 1/-1
+
+          - type: 'vertical-stack'
+            cards: !include columns/lights/lights_others.yaml

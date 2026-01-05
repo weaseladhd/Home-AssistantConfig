@@ -1,0 +1,58 @@
+devices:
+  - devices.yaml
+groups:
+  - groups.yaml
+homeassistant:
+  enabled: true
+mqtt:
+  base_topic: zigbee2mqtt
+  user: mqtt_user
+  password: G2XWjvC#N&2Wa6
+  server: mqtt://a0d7b954-emqx:1883
+  keepalive: 60
+  reject_unauthorized: true
+  version: 4
+serial:
+  port: /dev/ttyUSB0
+advanced:
+  log_level: info
+  pan_id: 6754
+  channel: 11
+  network_key:
+    - 1
+    - 3
+    - 5
+    - 7
+    - 9
+    - 11
+    - 13
+    - 15
+    - 0
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    - 12
+    - 13
+  log_syslog:
+    app_name: Zigbee2MQTT
+    eol: /n
+    host: localhost
+    localhost: localhost
+    path: /dev/log
+    pid: process.pid
+    port: 123
+    protocol: tcp4
+    type: '5424'
+  elapsed: true
+device_options: {}
+blocklist: []
+passlist: []
+queue: {}
+frontend:
+  enabled: true
+  port: 8099
+availability:
+  enabled: true
+version: 4

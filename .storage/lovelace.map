@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.map",
+  "data": {
+    "config": {
+      "title": "Map",
+      "views": [
+        {
+          "type": "panel",
+          "title": "Map",
+          "icon": "mdi:map",
+          "cards": [
+            {
+              "type": "map",
+              "auto_fit": true,
+              "entities": [
+                "zone.work_wesley",
+                "zone.work_fenne_vught",
+                "zone.work_fenne_nijmegen",
+                "zone.ouders_fenne_vught",
+                "zone.ouders_wesley_vlierden",
+                "zone.home"
+              ]
+            }
+          ],
+          "visible": [
+            {
+              "user": "4cb40e2c59664ef5a71be4a12e64243e"
+            },
+            {
+              "user": "60b110e21f95417fa1b8234fd5f7830e"
+            }
+          ],
+          "badges": [
+            {
+              "entity": "person.wesley"
+            },
+            {
+              "entity": "person.fenne"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

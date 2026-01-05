@@ -1,0 +1,161 @@
+---
+# Environment
+
+title: Environment
+icon: mdi:weather-hazy
+path: environment
+
+type: 'custom:grid-layout'
+layout: !include snippets/layout-page-margin.yaml
+
+cards:
+  - type: 'custom:layout-card'
+    layout_type: 'custom:grid-layout'
+    view_layout:
+      grid-area: cc
+    layout:
+      grid-column-gap: 32px
+      grid-template-columns: 'repeat(auto-fit, [col-start] minmax(500px, 1fr) [col-end])'
+      grid-template-rows: auto
+      margin: -1px
+    mediaquery:
+      '(max-width: 580px)':
+        grid-template-columns: 1fr
+    cards:
+
+      # [Header] Summary
+
+      - type: 'custom:layout-card'
+        layout_type: 'custom:grid-layout'
+        layout: !include snippets/layout-page-title.yaml
+        view_layout:
+          grid-column: 1/-1
+        cards:
+
+          - type: markdown
+            style: !include snippets/style-markdown-page-title.yaml
+            card_mod:
+              style: |
+                ha-card {background: none;}
+            content: >
+              # Environment
+
+              Inside it is {{ states('sensor.thermal_comfort_living_room_simmerzone') | regex_replace(find='_', replace=' ') | lower }}
+              at {{states('sensor.avg_temp_downstairs')}}°C and it is {{ states('sensor.thermal_comfort_living_room_perception') | regex_replace(find='_', replace=' ') | lower }} at
+              {{states('sensor.avg_humidity_indoor')}}%.
+              Outside it is {{ states('sensor.thermal_comfort_outside_simmerzone') | regex_replace(find='_', replace=' ') | lower }}
+              at {{states('sensor.br_temperature') }}°C and it is {{ states('sensor.thermal_comfort_outside_perception') | regex_replace(find='_', replace=' ') | lower }} at
+              {{states('sensor.br_humidity') }}%.
+              {%- set is_window_open =
+              is_state('binary_sensor.bedroom_window_sensor_contact',
+              'on') or
+              is_state('binary_sensor.study_window_sensor_contact',
+              'on') or
+              is_state('binary_sensor.bedroom_2_window_sensor_contact',
+              'on') -%} {{ iif( is_window_open and states('sensor.temperature_indoor_outdoor_difference')|int > 0,' You should close your windows.', '') }}
+              {%- set is_window_closed =
+              is_state('binary_sensor.bedroom_window_sensor_contact',
+              'off') and
+              is_state('binary_sensor.study_window_sensor_contact',
+              'off') and
+              is_state('binary_sensor.bedroom_2_window_sensor_contact',
+              'off') -%} {{ iif( is_window_closed and states('sensor.temperature_indoor_outdoor_difference')|int < 0,' You should open your windows.', '') }}
+#              It is getting {{ iif
+#              (states('sensor.valhalla_hourly_forecast_temperature_rising')
+#              == 'Falling', 'colder', 'warmer') }} and {{ iif
+#              (states('sensor.valhalla_hourly_forecast_wind_speed_increasing')
+#              == 'Increasing', 'more windy', 'less windy') }}.
+
+          - type: 'custom:layout-card'
+            layout_type: 'custom:horizontal-layout'
+            view_layout:
+            place-self: center
+            layout:
+              width: 330
+            cards:
+
+              - type: horizontal-stack
+                cards:
+
+                  - type: 'custom:mushroom-fan-card'
+                    entity: fan.living_room_fan
+                    icon_animation: true
+                    name: Living Room Fan
+                    hold_action:
+                      action: more-info
+
+                  - type: 'custom:mushroom-entity-card'
+                    entity: humidifier.living_room_fan
+                    icon_animation: true
+                    name: Living Room Humidifier
+                    hold_action:
+                      action: more-info
+
+      # [Column] Comfort
+
+      - type: vertical-stack
+        cards:
+
+          - type: 'custom:button-card'
+            template: header_card_no_link
+            variables:
+              name: Comfort
+            view_layout:
+              grid-column-start: 1
+              grid-column-end: -1
+
+          - type: vertical-stack
+            in_card: true
+            cards: !include columns/environment/comfort.yaml
+
+      # [Column] Temperature
+
+      - type: 'custom:layout-card'
+        layout_type: 'custom:grid-layout'
+        layout:
+          margin: -1
+        cards:
+
+          - type: 'custom:button-card'
+            template: header_card_no_link
+            variables:
+              name: Temperature
+
+          - type: 'vertical-stack'
+            cards: !include columns/environment/temperature.yaml
+
+      # [Column] Humidity
+
+      - type: 'custom:layout-card'
+        layout_type: 'custom:grid-layout'
+        layout:
+          margin: -1
+        cards:
+
+          - type: 'custom:button-card'
+            template: header_card_no_link
+            variables:
+              name: Humidity
+            view_layout:
+              grid-column: 1/-1
+
+          - type: 'vertical-stack'
+            cards: !include columns/environment/humidity.yaml
+
+      # [Column] Air Quality
+
+      - type: 'custom:layout-card'
+        layout_type: 'custom:grid-layout'
+        layout:
+          margin: -1
+        cards:
+
+          - type: 'custom:button-card'
+            template: header_card_no_link
+            variables:
+              name: Air Quality
+            view_layout:
+              grid-column: 1/-1
+
+          - type: 'vertical-stack'
+            cards: !include columns/environment/air_quality.yaml

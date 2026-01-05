@@ -1,0 +1,169 @@
+- type: vertical-stack
+  cards:
+
+    - type: horizontal-stack
+      cards:
+        - type: entity
+          entity: sensor.irosma27_dewpoint
+          name: Dew Point
+          icon: none
+          card_mod:
+            style: |
+              ha-card {background: none;}
+        - type: entity
+          entity: sensor.thermal_comfort_outside_absolutehumidity
+          name: Absolute Humidity
+          icon: none
+          card_mod:
+            style: |
+              ha-card {background: none;}
+#        - type: entity
+#          entity: sensor.irosma27_dry_bulb
+#          name: Dry Bulb
+#          icon: none
+#          card_mod:
+#            style: |
+#              ha-card {background: none;}
+#        - type: entity
+#          entity: sensor.irosma27_wet_bulb
+#          name: Wet Bulb
+#          icon: none
+#          card_mod:
+#            style: |
+#              ha-card {background: none;}
+        - type: custom:gap-card
+
+    - type: 'custom:floorplan-card'
+      config:
+        image:
+          location: /local/psychrometry-chart.svg
+          cache: false
+        stylesheet: /local/psychrometry-chart.css
+        defaults:
+          hover_action: hover-info
+          tap_action: more-info
+        rules:
+          - entity: sensor.bedroom_fan_temperature
+            state_action:
+              action: call-service
+              service: floorplan.style_set
+              service_data:
+                element: indicator-bedroom
+                style: |
+                  >
+                  var x = (parseFloat(entity.state) + 20) / 65 * 1007 - 11;
+                  var y = 665 - (parseFloat(states['sensor.thermal_comfort_bedroom_absolutehumidity'].state) / 35 * 665) - 155;
+                  return `transform: translate(${x}px, ${y}px);`;
+
+          - entity: sensor.bathroom_sensor_temperature
+            state_action:
+              action: call-service
+              service: floorplan.style_set
+              service_data:
+                element: indicator-bathroom
+                style: |
+                  >
+                  var x = (parseFloat(entity.state) + 20) / 65 * 1007 - 244;
+                  var y = 665 - (parseFloat(states['sensor.thermal_comfort_bathroom_absolutehumidity'].state) / 35 * 665) - 155;
+                  return `transform: translate(${x}px, ${y}px);`;
+
+          - entity: sensor.irosma27_temperature
+            state_action:
+              action: call-service
+              service: floorplan.style_set
+              service_data:
+                element: indicator-outdoor
+                style: |
+                  >
+                  var x = (parseFloat(entity.state) + 20) / 65 * 1007 - 229;
+                  var y = 665 - (parseFloat(states['sensor.thermal_comfort_outside_absolutehumidity'].state) / 35 * 665) - 155;
+                  return `transform: translate(${x}px, ${y}px);`;
+
+          - entity: sensor.avg_temp_downstairs
+            state_action:
+              action: call-service
+              service: floorplan.style_set
+              service_data:
+                element: indicator-indoor
+                style: |
+                  >
+                  var x = (parseFloat(entity.state) + 20) / 65 * 1007 - 343;
+                  var y = 665 - (parseFloat(states['sensor.thermal_comfort_living_room_absolutehumidity'].state) / 35 * 665) - 241;
+                  return `transform: translate(${x}px, ${y}px);`;
+
+          - entity: sensor.study_fan_temperature
+            state_action:
+              action: call-service
+              service: floorplan.style_set
+              service_data:
+                element: indicator-study
+                style: |
+                  >
+                  var x = (parseFloat(entity.state) + 20) / 65 * 1007 - 383;
+                  var y = 665 - (parseFloat(states['sensor.thermal_comfort_study_absolutehumidity'].state) / 35 * 665) - 241;
+                  return `transform: translate(${x}px, ${y}px);`;
+
+      card_mod:
+        style: |
+          ha-card {margin-top: -100px; background: none;}
+
+    - type: markdown
+      content: |-
+        <table width="100%">
+          <tr>
+            <th>Area</th>
+            <th>Temperature</th>
+            <th>Humidity</th>
+          </tr>
+          <tr>
+            <td>Outdoor</td>
+            <td>{{ states('sensor.thermal_comfort_outside_simmerzone') | regex_replace(find='_', replace=' ') | title }}</td>
+            <td>{{ states('sensor.thermal_comfort_outside_perception') | regex_replace(find='_', replace=' ') | title }}</td>
+          </tr>
+          <tr>
+            <td>Living Room</td>
+            <td>{{ states('sensor.thermal_comfort_living_room_simmerzone') | regex_replace(find='_', replace=' ') | title }}</td>
+            <td>{{ states('sensor.thermal_comfort_living_room_perception') | regex_replace(find='_', replace=' ') | title }}</td>
+          </tr>
+          <tr>
+            <td>Bedroom</td>
+            <td>{{ states('sensor.thermal_comfort_bedroom_simmerzone') | regex_replace(find='_', replace=' ') | title }}</td>
+            <td>{{ states('sensor.thermal_comfort_bedroom_perception') | regex_replace(find='_', replace=' ') | title }}</td>
+          </tr>
+          <tr>
+            <td>Study</td>
+            <td>{{ states('sensor.thermal_comfort_study_simmerzone') | regex_replace(find='_', replace=' ') | title }}</td>
+            <td>{{ states('sensor.thermal_comfort_study_perception') | regex_replace(find='_', replace=' ') | title }}</td>
+          </tr>
+          <tr>
+            <td>Bathroom</td>
+            <td>{{ states('sensor.thermal_comfort_bathroom_simmerzone') | regex_replace(find='_', replace=' ') | title }}</td>
+            <td>{{ states('sensor.thermal_comfort_bathroom_perception') | regex_replace(find='_', replace=' ') | title }}</td>
+          </tr>
+        </table>
+      card_mod:
+      style:
+        ha-markdown$: |
+          th, td { padding: 4px 0 8px; border-bottom: 1px solid,.05); }
+          th { font-size: var(--h6-font-size); text-align: left; text-transform: uppercase; padding-top: 0 !important; }
+          xth, xtr:last-child td { border-bottom: 1px solid) !important; }
+
+    - type: history-graph
+      entities:
+        - entity: binary_sensor.bedroom_window_sensor_contact
+          name: Bedroom
+        - entity: binary_sensor.study_window_sensor_contact
+          name: Study
+        - entity: binary_sensor.bedroom_2_window_sensor_contact
+          name: Baby room
+      hours_to_show: 36
+      title: Window Sensors
+      card_mod:
+        style: >
+          .card-header {
+            padding: 16px !important;
+            margin: 0 !important;
+            font-size: var(--body-font-size);
+            font-weight: var(--body-font-weight);
+            line-height: var(--body-line-height);
+          }

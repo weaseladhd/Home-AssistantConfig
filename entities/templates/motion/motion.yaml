@@ -1,0 +1,58 @@
+##############################################
+#           TEMPLATE BINARY SENSORS          #
+#       Motion & Presence Abstractions       #
+##############################################
+
+binary_sensor:
+  - name: "Motion detected in last hour"
+    unique_id: motion_detected_in_last_hour
+    state: >
+      {{ expand('binary_sensor.all_motion_sensors')
+        | selectattr('state', 'eq', 'on')
+        | list
+        | count > 0 }}
+    delay_off: "01:00:00"
+
+  - name: "Someone in the house in the last hour"
+    unique_id: someone_in_the_house_in_last_hour
+    state: >
+      {{ is_state("binary_sensor.motion_detected_in_last_hour", "on")
+        or is_state("group.persons", "home") }}
+
+  - name: "Activity in the living room"
+    unique_id: activity_in_living_room
+    state: >
+      {{ is_state("binary_sensor.living_room_motion_sensor_occupancy", "on") }}
+    delay_off: "00:02:00"
+
+  - name: "Activity in the kitchen"
+    unique_id: activity_in_kitchen
+    state: >
+      {{ is_state("binary_sensor.kitchen_motion_sensor_occupancy", "on") }}
+    delay_off: "00:02:00"
+
+  - name: "Activity in the hallway"
+    unique_id: activity_in_hallway
+    state: >
+      {{ is_state("binary_sensor.hallway_motion_sensor_occupancy", "on") }}
+    delay_off: "00:02:00"
+
+  - name: "Activity in the study"
+    unique_id: activity_in_study
+    state: >
+      {{ is_state("binary_sensor.study_motion_sensor_occupancy", "on") }}
+    delay_off: "00:02:00"
+
+  - name: "Activity in the landing"
+    unique_id: activity_in_landing
+    state: >
+      {{ is_state("binary_sensor.landing_motion_sensor_occupancy", "on") }}
+    delay_off: "00:02:00"
+
+  - name: "Activity in the attic"
+    unique_id: activity_in_attic
+    state: >
+      {{ is_state("binary_sensor.attic_motion_sensor_occupancy", "on") }}
+    delay_off: "00:02:00"
+
+

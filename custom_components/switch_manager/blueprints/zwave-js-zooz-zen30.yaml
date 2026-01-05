@@ -1,0 +1,104 @@
+name: Zooz Zen30
+service: Z-Wave JS
+event_type: zwave_js_value_notification
+identifier_key: node_id
+conditions:
+  - key: property
+    value: scene
+buttons:
+  - x: 38
+    y: 38
+    width: 290
+    height: 279
+    conditions:
+      - key: property_key
+        value: '001'
+    actions:
+      - title: press
+        conditions:
+          - key: value
+            value: KeyPressed
+      - title: press 2x
+        conditions:
+          - key: value
+            value: KeyPressed2x
+      - title: press 3x
+        conditions:
+          - key: value
+            value: KeyPressed3x
+      - title: press 4x
+        conditions:
+          - key: value
+            value: KeyPressed4x
+      - title: press 5x
+        conditions:
+          - key: value
+            value: KeyPressed5x
+      - title: hold
+        conditions:
+          - key: value
+            value: KeyHeldDown
+  - x: 38
+    y: 345
+    width: 290
+    height: 278
+    conditions:
+      - key: property_key
+        value: '002'
+    actions:
+      - title: press
+        conditions:
+          - key: value
+            value: KeyPressed
+      - title: press 2x
+        conditions:
+          - key: value
+            value: KeyPressed2x
+      - title: press 3x
+        conditions:
+          - key: value
+            value: KeyPressed3x
+      - title: press 4x
+        conditions:
+          - key: value
+            value: KeyPressed4x
+      - title: press 5x
+        conditions:
+          - key: value
+            value: KeyPressed5x
+      - title: hold
+        conditions:
+          - key: value
+            value: KeyHeldDown
+  - x: 38
+    y: 653
+    width: 290
+    height: 116
+    conditions:
+      - key: property_key
+        value: '003'
+    actions:
+      - title: press
+        conditions:
+          - key: value
+            value: KeyPressed
+      - title: press 2x
+        conditions:
+          - key: value
+            value: KeyPressed2x
+      - title: press 3x
+        conditions:
+          - key: value
+            value: KeyPressed3x
+      - title: press 4x
+        conditions:
+          - key: value
+            value: KeyPressed4x
+      - title: press 5x
+        conditions:
+          - key: value
+            value: KeyPressed5x
+      - title: hold
+        conditions:
+          - key: value
+            value: KeyHeldDown

@@ -1,0 +1,168 @@
+- type: custom:hui-markdown-card
+  content: |
+    {{ states('sensor.active_devices') }}
+
+- entities:
+    - entities:
+        - entity: light.living_room
+          type: custom:slider-entity-row
+        - entity: light.middle_room
+          type: custom:slider-entity-row
+        - entity: light.kitchen
+          type: custom:slider-entity-row
+        - entity: light.dining_room
+          type: custom:slider-entity-row
+      head: light.downstairs
+      type: custom:fold-entity-row
+    - entities:
+        - entity: light.study_light
+          type: custom:slider-entity-row
+        - entity: light.bedroom_light
+          type: custom:slider-entity-row
+      head: light.upstairs
+      type: custom:fold-entity-row
+  type: entities
+
+- cards:
+    - entity: binary_sensor.activity_in_hallway
+      icon: mdi:door
+      name: Hallway
+      state:
+        - value: 'off'
+      styles:
+        card:
+          - font-size: 12px
+          - height: 100px
+      type: custom:button-card
+    - entity: binary_sensor.activity_in_living_room
+      icon: mdi:sofa
+      name: Living Room
+      state:
+        - value: 'off'
+      styles:
+        card:
+          - font-size: 13px
+          - height: 100px
+      type: custom:button-card
+    - entity: binary_sensor.activity_in_study
+      icon: mdi:desk
+      name: Study
+      state:
+        - value: 'off'
+      styles:
+        card:
+          - font-size: 13px
+          - height: 100px
+      type: custom:button-card
+    - entity: binary_sensor.activity_in_landing
+      icon: mdi:stairs
+      name: Landing
+      state:
+        - value: 'off'
+      styles:
+        card:
+          - font-size: 13px
+          - height: 100px
+      type: custom:button-card
+  type: horizontal-stack
+
+- entity: media_player.spotify_weaseladhd
+  hide:
+    power_state: true
+    source: false
+    volume: false
+  icon: mdi:spotify
+  name: Spotify
+  type: custom:mini-media-player
+  group: false
+  replace_mute: play_pause
+  info: short
+  volume_stateless: false
+  source: full
+  sound_mode: icon
+  artwork: cover
+
+- entities:
+    - sensor.plex_wv_plex
+  font_size: 60
+  height: 62
+  hours_to_show: 168
+  name: Plex
+  points_per_hour: 0.25
+  type: custom:mini-graph-card
+
+- type: conditional
+  conditions:
+    - entity: media_player.plex_plex_web_firefox_2
+      state_not: idle
+    - entity: media_player.plex_plex_web_firefox_2
+      state_not: unavailable
+  card:
+    type: media-control
+    entity: media_player.plex_plex_web_firefox_2
+
+- card:
+    entity: media_player.plex_plex_for_lg_lg_oled65c9pla
+    type: media-control
+  conditions:
+    - entity: media_player.plex_plex_for_lg_lg_oled65c9pla
+      state_not: idle
+    - entity: media_player.plex_plex_for_lg_lg_oled65c9pla
+      state_not: unavailable
+  type: conditional
+
+- card:
+    entity: media_player.plex_xfenne_hotmail_com_plex_for_ios_iphone
+    type: media-control
+  conditions:
+    - entity: media_player.plex_xfenne_hotmail_com_plex_for_ios_iphone
+      state_not: unavailable
+    - entity: media_player.plex_xfenne_hotmail_com_plex_for_ios_iphone
+      state_not: idle
+  type: conditional
+
+- card:
+    type: media-control
+    entity: media_player.plex_plex_web_firefox_windows
+  conditions:
+    - entity: media_player.plex_plex_web_firefox_windows
+      state_not: unavailable
+  type: conditional
+
+- icon: mdi:television
+  name: LG TV
+  type: custom:mini-media-player
+  group: false
+  volume_stateless: true
+  toggle_power: true
+  artwork: cover
+  info: short
+  entity: media_player.living_room_tv
+
+- icon: mdi:apple
+  name: Apple TV
+  type: custom:mini-media-player
+  group: false
+  volume_stateless: true
+  toggle_power: true
+  info: short
+  artwork: cover
+  source: icon
+  sound_mode: icon
+  entity: media_player.downstairs
+
+- icon: mdi:speaker-multiple
+  name: Denon AVR X1700H
+  type: custom:mini-media-player
+  volume_stateless: false
+  group: false
+  entity: media_player.denon_avr_x1700h
+
+- show_state: true
+  show_name: true
+  camera_view: auto
+  aspect_ratio: 50%
+  camera_image: camera.uvc_g3_pro_front
+  name: UVC G3 Pro Front
+  type: picture-entity
+  entity: camera.uvc_g3_pro_front_high

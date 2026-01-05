@@ -1,0 +1,15 @@
+- type: sensor
+  hours_to_show: 48
+  graph: line
+  entity: sensor.adguard_dns_queries
+  detail: 2
+- type: sensor
+  hours_to_show: 48
+  graph: line
+  entity: sensor.adguard_dns_queries_blocked_ratio
+  detail: 2
+- type: sensor
+  hours_to_show: 48
+  detail: 2
+  graph: line
+  entity: sensor.adguard_average_processing_speed

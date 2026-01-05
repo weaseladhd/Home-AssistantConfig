@@ -1,0 +1,155 @@
+name: Aqara Opple 3x2
+service: deCONZ
+event_type: deconz_event
+identifier_key: device_id
+buttons:
+  - x: 69
+    y: 63
+    width: 157
+    height: 104
+    actions:
+      - title: press
+        conditions:
+          - key: event
+            value: 1002
+      - title: press 2x
+        conditions:
+          - key: event
+            value: 1004
+      - title: press 3x
+        conditions:
+          - key: event
+            value: 1005
+      - title: hold
+        conditions:
+          - key: event
+            value: 1001
+      - title: hold (released)
+        conditions:
+          - key: event
+            value: 1003
+  - x: 227
+    y: 63
+    width: 157
+    height: 104
+    actions:
+      - title: press
+        conditions:
+          - key: event
+            value: 2002
+      - title: press 2x
+        conditions:
+          - key: event
+            value: 2004
+      - title: press 3x
+        conditions:
+          - key: event
+            value: 2005
+      - title: hold
+        conditions:
+          - key: event
+            value: 2001
+      - title: hold (released)
+        conditions:
+          - key: event
+            value: 2003
+  - x: 69
+    y: 175
+    width: 157
+    height: 104
+    actions:
+      - title: press
+        conditions:
+          - key: event
+            value: 3002
+      - title: press 2x
+        conditions:
+          - key: event
+            value: 3004
+      - title: press 3x
+        conditions:
+          - key: event
+            value: 3005
+      - title: hold
+        conditions:
+          - key: event
+            value: 3001
+      - title: hold (released)
+        conditions:
+          - key: event
+            value: 3003
+  - x: 227
+    y: 175
+    width: 157
+    height: 104
+    actions:
+      - title: press
+        conditions:
+          - key: event
+            value: 4002
+      - title: press 2x
+        conditions:
+          - key: event
+            value: 4004
+      - title: press 3x
+        conditions:
+          - key: event
+            value: 4005
+      - title: hold
+        conditions:
+          - key: event
+            value: 4001
+      - title: hold (released)
+        conditions:
+          - key: event
+            value: 4003
+  - x: 69
+    y: 286
+    width: 157
+    height: 104
+    actions:
+      - title: press
+        conditions:
+          - key: event
+            value: 5002
+      - title: press 2x
+        conditions:
+          - key: event
+            value: 5004
+      - title: press 3x
+        conditions:
+          - key: event
+            value: 5005
+      - title: hold
+        conditions:
+          - key: event
+            value: 5001
+      - title: hold (released)
+        conditions:
+          - key: event
+            value: 5003
+  - x: 227
+    y: 286
+    width: 157
+    height: 104
+    actions:
+      - title: press
+        conditions:
+          - key: event
+            value: 6002
+      - title: press 2x
+        conditions:
+          - key: event
+            value: 6004
+      - title: press 3x
+        conditions:
+          - key: event
+            value: 6005
+      - title: hold
+        conditions:
+          - key: event
+            value: 6001
+      - title: hold (released)
+        conditions:
+          - key: event
+            value: 6003

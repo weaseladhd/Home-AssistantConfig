@@ -355,6 +355,9 @@
       entity_id:
       - binary_sensor.protection_window
       - sensor.current_uv_index
+    data:
+      entity_id:
+      - automation.update_openuv
 - id: '1741616822006'
   alias: Low Battery Notifications & Actions
   description: ''
