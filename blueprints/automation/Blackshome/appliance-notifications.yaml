@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 📳 Appliance Notifications & Actions
     
-    **Version: 3.8**
+    **Version: 3.9**
 
 
     🤔 Watts your appliance up to, you're always in the know from start to finish! 🛎️🔌💸
@@ -232,6 +232,29 @@ blueprint:
           default: []
           selector:
             text:
+        start_notify_url:
+          name: Notification URL
+          description: >
+            Opens a specific page or view in Home Assistant when the notification is tapped.
+
+
+            This is useful for jumping straight to a related dashboard or view.
+            Use the path from the Home Assistant address bar to set your URL.
+
+
+            If left blank, tapping the notification opens Home Assistant to your default page or the last viewed page, depending on your app settings.
+
+
+            Examples:
+
+            `/lovelace-dashboard/laundry`
+
+            `/lovelace-dashboard/kitchen`
+
+            `/lovelace-dashboard/garage`
+          default: []
+          selector:
+            text:
         start_notify_interruption_level:
           name: Interruption Level - iOS Only
           description: >
@@ -377,10 +400,33 @@ blueprint:
             You can use the same tag across start, end, and watchdog notifications to ensure only one active notification remains throughout the appliance cycle.
 
 
-            If this input is left blank, no tag will be applied and each notification will be treated as separate.
+            If left blank, tapping the notification opens Home Assistant to your default page or the last viewed page, depending on your app settings.
 
 
             For best results, use short, unique tags for each automation - for example: `washing-clothes`, `drying-clothes`, `washing-dishes`, etc.
+          default: []
+          selector:
+            text:
+        end_notify_url:
+          name: Notification URL
+          description: >
+            Opens a specific page or view in Home Assistant when the notification is tapped.
+
+
+            This is useful for jumping straight to a related dashboard or view.
+            Use the path from the Home Assistant address bar to set your URL.
+
+
+            If left blank, tapping the notification opens Home Assistant to the last viewed page.
+
+
+            Examples:
+
+            `/lovelace-dashboard/laundry`
+
+            `/lovelace-dashboard/kitchen`
+
+            `/lovelace-dashboard/garage`
           default: []
           selector:
             text:
@@ -1114,6 +1160,29 @@ blueprint:
           default: []
           selector:
             text:
+        watchdog_notify_url:
+          name: Notification URL
+          description: >
+            Opens a specific page or view in Home Assistant when the notification is tapped.
+
+
+            This is useful for jumping straight to a related dashboard or view.
+            Use the path from the Home Assistant address bar to set your URL.
+
+
+            If left blank, tapping the notification opens Home Assistant to your default page or the last viewed page, depending on your app settings.
+
+
+            Examples:
+
+            `/lovelace-dashboard/laundry`
+
+            `/lovelace-dashboard/kitchen`
+
+            `/lovelace-dashboard/garage`
+          default: []
+          selector:
+            text:
         watchdog_notify_interruption_level:
           name: Interruption Level - iOS Only
           description: >
@@ -1314,6 +1383,7 @@ variables:
   start_title: !input start_title
   start_message: !input start_message
   start_notify_tag: !input start_notify_tag
+  start_notify_url: !input start_notify_url
   start_notify_interruption_level: !input start_notify_interruption_level
   start_notify_sound: !input start_notify_sound
   start_notify_data: !input start_notify_data
@@ -1326,6 +1396,7 @@ variables:
   end_message_title: !input end_message_title
   end_message: !input end_message
   end_notify_tag: !input end_notify_tag
+  end_notify_url: !input end_notify_url
   end_notify_interruption_level: !input end_notify_interruption_level
   end_notify_sound: !input end_notify_sound
   end_notify_data: !input end_notify_data
@@ -1379,6 +1450,7 @@ variables:
   watchdog_title: !input watchdog_title
   watchdog_message: !input watchdog_message
   watchdog_notify_tag: !input watchdog_notify_tag
+  watchdog_notify_url: !input watchdog_notify_url
   watchdog_notify_interruption_level: !input watchdog_notify_interruption_level
   watchdog_notify_sound: !input watchdog_notify_sound
   watchdog_notify_data: !input watchdog_notify_data
@@ -1426,6 +1498,9 @@ variables:
     {% if start_notify_tag != [] %}
       {% set message.data = dict(message.data, **{ 'tag': start_notify_tag }) %}
     {% endif %}
+    {% if start_notify_url != [] %}
+      {% set message.data = dict(message.data, **{ 'url': start_notify_url, 'clickAction': start_notify_url }) %}
+    {% endif %}
     {{ message.data }}
 
 # End notify data
@@ -1461,6 +1536,9 @@ variables:
     {% if end_notify_tag != [] %}
       {% set message.data = dict(message.data, **{ 'tag': end_notify_tag }) %}
     {% endif %}
+    {% if end_notify_url != [] %}
+      {% set message.data = dict(message.data, **{ 'url': end_notify_url, 'clickAction': end_notify_url }) %}
+    {% endif %}
     {{ message.data }}
 
 # Watchdog notify data
@@ -1495,6 +1573,9 @@ variables:
     {% endif %}
     {% if watchdog_notify_tag != [] %}
       {% set message.data = dict(message.data, **{ 'tag': watchdog_notify_tag }) %}
+    {% endif %}
+    {% if watchdog_notify_url != [] %}
+      {% set message.data = dict(message.data, **{ 'url': watchdog_notify_url, 'clickAction': watchdog_notify_url }) %}
     {% endif %}
     {{ message.data }}
 
