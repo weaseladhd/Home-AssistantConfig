@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 📅 Calendar Notifications & Actions
 
-    **Version: 2.2**
+    **Version: 2.3**
 
 
     Transform Your Calendar: Turn Events Into Notifications and Actions! 📅🔔⚙️
@@ -166,14 +166,14 @@ blueprint:
           name: Start Notify - Title
           description: >
             Specify the notification title for the start of the calendar event.
-          default: "{{ trigger.calendar_event.summary }}"
+          default: "{{ trigger.calendar_event.get('summary', '') }}"
           selector:
             text:
         start_message:
           name: Start Notify - Message
           description: >
             Specify the notification message for the start of the calendar event.
-          default: "{{ trigger.calendar_event.description }}"
+          default: "{{ trigger.calendar_event.get('description', '') }}"
           selector:
             text:
         start_notify_tag:
@@ -496,14 +496,14 @@ blueprint:
           name: End Notify - Title
           description: >
             Specify the notification title for the end of the calendar event.
-          default: "{{ trigger.calendar_event.summary }}"
+          default: "{{ trigger.calendar_event.get('summary', '') }}"
           selector:
             text:
         end_message:
           name: End Notify - Message
           description: >
             Specify the notification message for the end of the calendar event.
-          default: "{{ trigger.calendar_event.description }}"
+          default: "{{ trigger.calendar_event.get('description', '') }}"
           selector:
             text:
         end_notify_tag:
