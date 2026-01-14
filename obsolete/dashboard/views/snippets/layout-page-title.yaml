@@ -1,6 +1,0 @@
-grid-template-columns: auto max-content
-grid-template-rows: auto
-mediaquery:
-  '(max-width: 800px)':
-    grid-template-columns: 1fr
-margin: 0

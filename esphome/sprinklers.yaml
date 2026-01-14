@@ -17,9 +17,9 @@ wifi:
 
   # Optional manual IP
   # manual_ip:
-    # static_ip: !secret sprinklers_ip
-    # gateway: !secret iot_gateway
-    # subnet: !secret iot_subnet
+  #   static_ip: !secret sprinklers_ip
+  #   gateway: !secret iot_gateway
+  #   subnet: !secret iot_subnet
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
@@ -31,7 +31,7 @@ web_server:
   port: 80
 
 logger:
-  baud_rate: 0 #need this to free up UART pins
+  baud_rate: 0  # need this to free up UART pins
 
 sensor:
   - platform: uptime
@@ -76,7 +76,7 @@ text_sensor:
     icon: mdi:clock-start
 
 uart:
-  baud_rate: 115200 # speed to STC15L101EW
+  baud_rate: 115200  # speed to STC15L101EW
   tx_pin: GPIO1
   rx_pin: GPIO3
 
@@ -118,7 +118,7 @@ switch:
 
 # Enable Home Assistant API
 api:
-  encryption: 
+  encryption:
     key: !secret sprinklers_encryption_key
 
 ota:
