@@ -1,4 +1,0 @@
-api:
-  server:
-    online_client:
-      credentials_path: /config/.storage/crowdsec/config/online_api_credentials.yaml
