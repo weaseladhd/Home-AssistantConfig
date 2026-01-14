@@ -21,3 +21,6 @@
 
 # Never commit real secrets
 secrets.yaml
+
+# Ignore CrowdSec runtime data
+.storage/crowdsec/
