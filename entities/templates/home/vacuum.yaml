@@ -14,7 +14,6 @@ sensor:
     state: >
       {{ state_attr("vacuum.roborock_s6", "battery_level") }}
 
-
   # Clean state (docked / paused / cleaning / returning)
   - name: "Roborock State"
     unique_id: sensor.roborock_state
@@ -33,13 +32,11 @@ sensor:
         {{ states(entity) }}
       {% endif %}
 
-
   # Fan speed
   - name: "Roborock Speed"
     unique_id: sensor.roborock_speed
     state: >
       {{ state_attr("vacuum.roborock_s6", "fan_speed") }}
-
 
   # Filter (% remaining)
   - name: "Roborock Filter"
@@ -49,7 +46,6 @@ sensor:
     state: >
       {{ (states("sensor.roborock_s6_filter_left") | float / 1.5) | round | default(0) }}
 
-
   # Main brush (% remaining)
   - name: "Roborock Main Brush"
     unique_id: sensor.roborock_mainbrush
@@ -57,7 +53,6 @@ sensor:
     unit_of_measurement: "%"
     state: >
       {{ (states("sensor.roborock_s6_main_brush_left") | float / 3) | round | default(0) }}
-
 
   # Sensors (% remaining)
   - name: "Roborock Sensors"
@@ -67,7 +62,6 @@ sensor:
     state: >
       {{ (states("sensor.roborock_s6_sensor_dirty_left") | float / 0.3) | round | default(0) }}
 
-
   # Side brush (% remaining)
   - name: "Roborock Side Brush"
     unique_id: sensor.roborock_sidebrush
@@ -75,7 +69,6 @@ sensor:
     unit_of_measurement: "%"
     state: >
       {{ (states("sensor.roborock_s6_side_brush_left") | float / 2) | round | default(0) }}
-
 
   # Time since last cleaning (“X days ago”, “Y hours ago”, etc.)
   - name: "Roborock Last Cleaned"
@@ -102,7 +95,6 @@ sensor:
       {% else %}
         Less than 1 minute ago
       {% endif %}
-
 
   # Whether tomorrow is a vacuum day (Mon / Fri)
   - name: "Vacuum day tomorrow"
