@@ -54,5 +54,3 @@ binary_sensor:
     state: >
       {{ is_state("binary_sensor.attic_motion_sensor_occupancy", "on") }}
     delay_off: "00:02:00"
-
-
