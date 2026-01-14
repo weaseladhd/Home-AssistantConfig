@@ -145,9 +145,7 @@
         - color_temp
       effect:
       color_mode:
-      brightness:
       color_temp_kelvin:
-      color_temp:
       hs_color:
       rgb_color:
       xy_color:
@@ -178,7 +176,6 @@
         - brightness
       effect:
       color_mode:
-      brightness:
       linkquality: 66
       power_on_behavior:
       update:
@@ -213,7 +210,6 @@
       color_mode: xy
       brightness: 181
       color_temp_kelvin:
-      color_temp:
       hs_color:
         - 29.712
         - 81.569
@@ -249,9 +245,7 @@
         - color_temp
       effect:
       color_mode:
-      brightness:
       color_temp_kelvin:
-      color_temp:
       hs_color:
       rgb_color:
       xy_color:
