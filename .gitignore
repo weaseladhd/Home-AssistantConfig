@@ -18,3 +18,6 @@
 
 # Re-ignore macOS metadata files (even if they match allowed extensions)
 ._*
+
+# Never commit real secrets
+secrets.yaml
