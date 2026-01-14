@@ -1,4 +1,4 @@
-
+---
 sun_elevation:
   series:
     - entity: sensor.sun_elevation
@@ -59,7 +59,9 @@ environment_chart:
         EVAL:function(value, { seriesIndex, dataPointIndex, w }) {
           console.log(w.config)
           if (dataPointIndex == w.config.series[seriesIndex].data.length - 2) {
-            return Math.round( value * 10 ) / 10 + " - " + w.config.series[seriesIndex].name  // + " " + dataPointIndex + " " + w.config.series[seriesIndex].data.length
+            const name = w.config.series[seriesIndex].name;
+            const valueText = Math.round(value * 10) / 10;
+            return valueText + " - " + name;
           } else { return '' }
         }
       offsetX: 4

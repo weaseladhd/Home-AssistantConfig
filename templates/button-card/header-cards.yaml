@@ -1,3 +1,4 @@
+---
 # Button Card Templates
 
 ## HEADERS AND TITLE CARDS
@@ -96,8 +97,6 @@ header_card:
             - border-radius: 4px 0 0 4px
             - padding: 4px 8px 6px
             - font-size: var(--subtitle-font-size)
-
-
 # Header Card (with no links)
 # Header text is 'name'.
 
@@ -127,4 +126,3 @@ header_card_no_link:
       - font-size: var(--body-font-size)
       - font-weight: 500
       - color: var(--secondary-text-color)
-

@@ -1,4 +1,0 @@
-grid-column-gap: 8px
-grid-template-columns: 'repeat(auto-fit, [col-start] minmax(380px, 1fr) [col-end])'
-grid-template-rows: auto
-margin: -1px

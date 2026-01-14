@@ -22,7 +22,9 @@ esphome:
           else:
             - logger.log:
                 level: info
-                format: "Not using decryption key. If you need to set a key use Home Assistant service 'ESPHome:  ${device_name}_set_dsmr_key'"
+                format: >-
+                  Not using decryption key. If you need to set a key use Home
+                  Assistant service 'ESPHome: ${device_name}_set_dsmr_key'
 
 esp8266:
   restore_from_flash: true
@@ -76,11 +78,11 @@ uart:
 globals:
   - id: has_key
     type: bool
-    restore_value: yes
+    restore_value: true
     initial_value: "false"
   - id: stored_decryption_key
     type: char[32]
-    restore_value: yes
+    restore_value: true
 
 dsmr:
   id: dsmr_instance
@@ -88,7 +90,7 @@ dsmr:
   # For Luxembourg users set here your decryption key.
   # Enable this when using decryption for Luxembourg;
   # key looks like '00112233445566778899AABBCCDDEEFF'
-  #decryption_key: !secret decryption_key
+  # decryption_key: !secret decryption_key
 
 sensor:
   - platform: dsmr
