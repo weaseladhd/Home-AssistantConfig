@@ -90,6 +90,10 @@ jobs:
         run: |
           git clone https://github.com/delzear/hass-formulaoneapi
           mv -v hass-formulaoneapi/custom_components/* ./custom_components
+      - name: Clone custom component Gotify
+        run: |
+          git clone https://github.com/1RandomDev/homeassistant-gotify.git
+          mv -v homeassistant-gotify/custom_components/* ./custom_components
       - name: Check configuration
         uses: frenck/action-home-assistant@v1.4
         with:
