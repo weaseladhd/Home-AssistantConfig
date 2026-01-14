@@ -1,105 +1,105 @@
-
+---
 - cal_id: 88717s3cbp1ok2vdn0gb3a1j1onifmlk@import.calendar.google.com
   entities:
-  - device_id: wielerkalender
-    ignore_availability: true
-    name: Cycling
-    track: true
+    - device_id: wielerkalender
+      ignore_availability: true
+      name: Cycling
+      track: true
 
 - cal_id: wesleyvinken@gmail.com
   entities:
-  - device_id: private
-    ignore_availability: true
-    name: Private
-    track: true
+    - device_id: private
+      ignore_availability: true
+      name: Private
+      track: true
 
 - cal_id: addressbook#contacts@group.v.calendar.google.com
   entities:
-  - device_id: contacts
-    ignore_availability: true
-    name: Contacts
-    track: true
+    - device_id: contacts
+      ignore_availability: true
+      name: Contacts
+      track: true
 
 - cal_id: en-gb.dutch#holiday@group.v.calendar.google.com
   entities:
-  - device_id: holidays_in_the_netherlands
-    ignore_availability: true
-    name: Holidays in the Netherlands
-    track: true
+    - device_id: holidays_in_the_netherlands
+      ignore_availability: true
+      name: Holidays in the Netherlands
+      track: true
 
 - cal_id: p#weeknum@group.v.calendar.google.com
   entities:
-  - device_id: week_numbers
-    ignore_availability: true
-    name: Week Numbers
-    track: true
+    - device_id: week_numbers
+      ignore_availability: true
+      name: Week Numbers
+      track: true
 
 - cal_id: lcq53tu7f0bg4amd1htlngfrlc@group.calendar.google.com
   entities:
-  - device_id: joint_calendar
-    ignore_availability: true
-    name: Joint Calendar
-    track: true
+    - device_id: joint_calendar
+      ignore_availability: true
+      name: Joint Calendar
+      track: true
 
 - cal_id: 2idg92fnr90cfn65j2mf0jcf6mt7k419@import.calendar.google.com
   entities:
-  - device_id: apple_event
-    ignore_availability: true
-    name: Apple Event
-    track: true
+    - device_id: apple_event
+      ignore_availability: true
+      name: Apple Event
+      track: true
 
 - cal_id: p07n98go11onamd08d0kmq6jhs@group.calendar.google.com
   entities:
-  - device_id: home_assistant_devs
-    ignore_availability: true
-    name: Home Assistant Devs
-    track: true
+    - device_id: home_assistant_devs
+      ignore_availability: true
+      name: Home Assistant Devs
+      track: true
 
 - cal_id: ekqk1nbdusr1baon1ic42oeeik@group.calendar.google.com
   entities:
-  - device_id: Formula 1
-    ignore_availability: true
-    name: Formula 1
-    track: true
+    - device_id: Formula 1
+      ignore_availability: true
+      name: Formula 1
+      track: true
 
 - cal_id: family15799978504477722932@group.calendar.google.com
   entities:
-  - device_id: family
-    ignore_availability: true
-    name: Family
+    - device_id: family
+      ignore_availability: true
+      name: Family
 
 - cal_id: q1d71ml05c9prenfkonv0qc88fvs34ol@import.calendar.google.com
   entities:
-  - device_id: sportlink_persoonlijk
-    ignore_availability: true
-    name: Sportlink - persoonlijk
+    - device_id: sportlink_persoonlijk
+      ignore_availability: true
+      name: Sportlink - persoonlijk
 
 - cal_id: m01rftec9jron00669njk5j7s85jdcq7@import.calendar.google.com
   entities:
-  - device_id: https_files_f1_motorsportcalendars_com_f1_calendar_p1_p2_p3_qualifying_sprint_gp_alarm_30_ics_t_1677590619854
-    ignore_availability: true
-    name: https://files-f1.motorsportcalendars.com/f1-calendar_p1_p2_p3_qualifying_sprint_gp_alarm-30.ics?t=1677590619854
+    - device_id: https_files_f1_motorsportcalendars_com_f1_calendar_p1_p2_p3_qualifying_sprint_gp_alarm_30_ics_t_1677590619854
+      ignore_availability: true
+      name: https://files-f1.motorsportcalendars.com/f1-calendar_p1_p2_p3_qualifying_sprint_gp_alarm-30.ics?t=1677590619854
 
 - cal_id: dcqb7er9ropnbbkuqjlsc7k3nqpntmgp@import.calendar.google.com
   entities:
-  - device_id: sportlink_swift_hs3
-    ignore_availability: true
-    name: Sportlink - Swift HS3
+    - device_id: sportlink_swift_hs3
+      ignore_availability: true
+      name: Sportlink - Swift HS3
 
 - cal_id: 3merug4enre7oiqe3pm145mosqa3620p@import.calendar.google.com
   entities:
-  - device_id: sportlink_swift_h_hs3
-    ignore_availability: true
-    name: Sportlink - Swift (H) HS3
+    - device_id: sportlink_swift_h_hs3
+      ignore_availability: true
+      name: Sportlink - Swift (H) HS3
 
 - cal_id: 01j54pplea4h0iigfi4bkoqm3j0l6ddq@import.calendar.google.com
   entities:
-  - device_id: https_www_apple_com_v_apple_events_home_ag_built_assets_event_event_ics
-    ignore_availability: true
-    name: https://www.apple.com/v/apple-events/home/ag/built/assets/event/event.ics
+    - device_id: https_www_apple_com_v_apple_events_home_ag_built_assets_event_event_ics
+      ignore_availability: true
+      name: https://www.apple.com/v/apple-events/home/ag/built/assets/event/event.ics
 
 - cal_id: b48pbt0ml6knth101s8sdh46fdgh0viq@import.calendar.google.com
   entities:
-  - device_id: sportlink_persoonlijk
-    ignore_availability: true
-    name: Sportlink - persoonlijk
+    - device_id: sportlink_persoonlijk
+      ignore_availability: true
+      name: Sportlink - persoonlijk
