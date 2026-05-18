@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 📳 Appliance Notifications & Actions
     
-    **Version: 3.9**
+    **Version: 4.0**
 
 
     🤔 Watts your appliance up to, you're always in the know from start to finish! 🛎️🔌💸
@@ -17,9 +17,9 @@ blueprint:
     <summary><b>The Automation Process:</b> 👈</summary>
 
       - **Appliance Trigger:**
-          - Enter the power sensor entity that measures the live current draw of the appliance. Common devices with these sensors include smart plugs, energy meters, etc.
-          - The automation is triggered when the appliance's current draw exceeds a set wattage.
-          - The automation ends when the appliance's current draw falls below a set value.
+          - Enter the power sensor entity that measures the appliance's real-time power draw (typically measured in watts). Common devices with these sensors include smart plugs, energy meters, and other smart appliances.
+          - The automation is triggered when the appliance's power draw exceeds a set wattage.
+          - The automation ends when the appliance's power draw falls below a set value.
 
       - **Notification Options:**
           - Send notification messages to one or multiple devices when the appliance starts, finishes or the watchdog is triggered.
@@ -88,8 +88,8 @@ blueprint:
         power_sensor:
           name: Power Sensor *
           description: >
-            Please enter the power sensor entity that measures the live current draw of the appliance.
-            Common devices that have these sensors include smart plugs.
+            Please enter the power sensor entity that measures the appliance's real-time power draw (typically measured in watts).
+            Common devices that provide these sensors include smart plugs.
             This sensor is essential for triggering the automation when the appliance starts and when it finishes.
           default: []
           selector:

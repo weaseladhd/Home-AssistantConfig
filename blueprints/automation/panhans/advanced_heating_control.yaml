@@ -48,7 +48,7 @@ blueprint:
     [![Open your Home Assistant instance and show an integration.](https://my.home-assistant.io/badges/integration.svg)](https://my.home-assistant.io/redirect/integration/?domain=uptime)
 
 
-    **Version**: 5.5.4
+    **Version**: 5.5.7
 
     **Help & FAQ**: [Advanced Heating Control](https://community.home-assistant.io/t/advanced-heating-control/469873)
 
@@ -3127,7 +3127,7 @@ variables:
       {{ 'off' }}
     {% elif entry_mode == 'off' %}
       {{ 'off' }}
-    {% elif is_off_if_nobody_home and is_person_defined and not is_anybody_home_or_proximity and not set_comfort %}
+    {% elif is_off_if_nobody_home and (is_person_defined or is_proximity_defined) and not is_anybody_home_or_proximity and not set_comfort %}
       {{ 'off' }}
     {% else %}
       {{ input_hvac_mode }}
@@ -3169,7 +3169,8 @@ variables:
       input_mode_guest == none and
       input_schedulers | count == 0 and
       input_presence_sensor == none and
-      input_proximity == none
+      input_proximity == none and
+      input_mode_party | count == 0
     }}
 
   changes: >
@@ -3297,7 +3298,14 @@ variables:
             )
         %}
 
-          {% set opening = 100 %}
+          {% set opening_min = state_attr(open_valve_entity,'min') | int(0) %}
+          {% set opening_max = state_attr(open_valve_entity,'max') | int(100) %}
+          
+          {% if opening_min < 0 %}
+            {% set opening_max = opening_max + abs(opening_min) %}
+          {% endif %}
+          
+          {% set opening_abs = opening_max %}
           {% set difference = target_temp - current_temp %}
           {% set step_size = input_valve_positioning_step_size | int %}
 
@@ -3307,22 +3315,28 @@ variables:
             {% set opening_pessimistic = sqrt(((100 / input_fully_open_difference) * difference) | abs) * 10 %}
             {% set opening_optimistic = ((100 / input_fully_open_difference) * difference)**2 / 100 %}
 
-            {% set opening = opening_regular %}
-            {% set opening = iif(input_valve_positioning_mode == 'pessimistic', opening_pessimistic, opening) %}
-            {% set opening = iif(input_valve_positioning_mode == 'optimistic', opening_optimistic, opening) %}
+            {% set opening_rel = opening_regular %}
+            {% set opening_rel = iif(input_valve_positioning_mode == 'pessimistic', opening_pessimistic, opening_rel) %}
+            {% set opening_rel = iif(input_valve_positioning_mode == 'optimistic', opening_optimistic, opening_rel) %}
 
-            {% set opening = iif(difference >= input_fully_open_difference, 100, opening) %}
-            {% set opening = iif(difference < 0, 0, opening) %}
+            {% set opening_abs = opening_abs * (opening_rel / 100) %}
 
-            {% set opening = opening / 100 * input_valve_positioning_max_opening %}
+            {% set opening_abs = iif(difference >= input_fully_open_difference, opening_max, opening_abs) %}
+            {% set opening_abs = iif(difference < 0, 0, opening_abs) %}
 
-            {% set opening = ((opening + step_size / 2) // step_size * step_size) | int %}
+            {% set opening_abs = opening_abs / 100 * input_valve_positioning_max_opening %}
+
+            {% set opening_abs = ((opening_abs + step_size / 2) // step_size * step_size) | int %}
           {% endif %}
 
           {% set open_valve_entity_value = states(open_valve_entity) | int %}
 
-          {% if open_valve_entity_value != opening %}
-            {% set n.dict = n.dict + [(valve, [{'entity': open_valve_entity , 'value': opening, 'current_temp': current_temp, 'target_temp': target_temp, 'difference': difference}])] %}
+          {% if opening_min < 0 %}
+            {% set opening_abs = opening_abs + opening_min %}
+          {% endif %}
+
+          {% if open_valve_entity_value != opening_abs %}
+            {% set n.dict = n.dict + [(valve, [{'entity': open_valve_entity , 'value': opening_abs, 'current_temp': current_temp, 'target_temp': target_temp, 'difference': difference}])] %}
           {% endif %}
 
         {% endif %}
@@ -3897,7 +3911,7 @@ actions:
 
                     - if:
                         - condition: template
-                          value_template: "{{ not is_minimal_config or is_liming_trigger }}"
+                          value_template: "{{ not is_minimal_config or minimal_config_bypass }}"
                         - condition: template
                           value_template: "{{ state_attr(thermostat, 'temperature') != temp_target and mode != 'off' }}"
                       then:
