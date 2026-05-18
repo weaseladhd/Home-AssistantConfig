@@ -1,8 +1,0 @@
----
-# Afvalwijzer
-platform: afvalwijzer
-provider: afvalstoffendienstkalender
-postal_code: !secret postal_code
-street_number: !secret street_number
-exclude_pickup_today: false
-default_label: None
