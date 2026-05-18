@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 🔆 Smart Light
 
-    **Version: 3.3**
+    **Version: 3.5**
 
 
     Smart Lighting: Your Lights, Your Way - Take Control and Customize it to Perfection!💡✨
@@ -225,6 +225,18 @@ blueprint:
               max: 500
               step: 10
               unit_of_measurement: lux
+        ambient_light_value_on_delay:
+          name: Ambient Light - Low Lux Time Delay
+          description: >
+            Set how long the ambient light level must remain below the **Low Lux Value** before the light turns ON.
+            This helps prevent the lights from turning ON due to brief dips in lux.
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 5
+              step: 0.25
+              unit_of_measurement: minutes
         ambient_light_value_off:
           name: Ambient Light - High Lux Value
           description: >
@@ -238,6 +250,18 @@ blueprint:
               max: 1000
               step: 10
               unit_of_measurement: lux
+        ambient_light_value_off_delay:
+          name: Ambient Light - High Lux Time Delay
+          description: >
+            Set how long the ambient light level must remain above the **High Lux Value** before the light turns OFF.
+            This helps prevent the lights from turning OFF due to brief spikes in lux.
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 5
+              step: 0.25
+              unit_of_measurement: minutes
     trigger_time:
       name: "Trigger - Time"
       icon: mdi:clock-outline
@@ -1212,7 +1236,9 @@ variables:
   include_ambient: !input include_ambient
   ambient_light_sensor: !input ambient_light_sensor
   ambient_light_value: !input ambient_light_value
+  ambient_light_value_on_delay: !input ambient_light_value_on_delay
   ambient_light_value_off: !input ambient_light_value_off
+  ambient_light_value_off_delay: !input ambient_light_value_off_delay
   include_time: !input include_time
   after_time: !input after_time
   before_time: !input before_time
@@ -1482,11 +1508,8 @@ variables:
 
   trigger_options_on: >
     {% set result = true %}
-    {% if 'entity_on' in include_entity_state %}
-      {% set result = result and (states[entity_input].state == 'on') %}
-    {% endif %}
-    {% if 'entity_off' in include_entity_state %}
-      {% set result = result and (states[entity_input].state == 'on') %}
+    {% if 'entity_on' in include_entity_state or 'entity_off' in include_entity_state %}
+      {% set result = result and is_state(entity_input, 'on') %}
     {% endif %}
     {% if 'sun_falling' in include_sun and 'sun_rising' in include_sun %}
       {% set sun_falling_condition = (is_state_attr('sun.sun', 'rising', false)) and (state_attr('sun.sun', 'elevation') <= sun_elevation | float(90)) %}
@@ -1510,18 +1533,31 @@ variables:
         {% set result = false %}
       {% endif %}
     {% endif %}
-    {% if 'ambient_high' in include_ambient and 'ambient_low' in include_ambient %}
-      {% set result = result and (states[ambient_light_sensor].state | float < ambient_light_value_off | float) %}
-    {% endif %}
-    {% if 'ambient_low' in include_ambient and not 'ambient_high' in include_ambient %}
-      {% set result = result and (states[ambient_light_sensor].state | float < ambient_light_value | float(90)) %}
-    {% endif %}
-    {% if 'ambient_high' in include_ambient and not 'ambient_low' in include_ambient%}
-      {% set result = result and (states[ambient_light_sensor].state | float < ambient_light_value_off | float) %}
+    {% if 'ambient_high' in include_ambient or 'ambient_low' in include_ambient %}
+      {% set lux = states(ambient_light_sensor) | float(none) %}
+      {% if lux is not none %}
+        {% if 'ambient_high' in include_ambient and 'ambient_low' in include_ambient %}
+          {% set result = result and (lux < ambient_light_value_off | float(none)) %}
+        {% endif %}
+        {% if 'ambient_low' in include_ambient and 'ambient_high' not in include_ambient %}
+          {% set result = result and (lux < ambient_light_value | float(none)) %}
+        {% endif %}
+        {% if 'ambient_high' in include_ambient and 'ambient_low' not in include_ambient %}
+          {% set result = result and (lux < ambient_light_value_off | float(none)) %}
+        {% endif %}
+      {% endif %}
     {% endif %}
     {% if 'time_on' in include_time and 'time_off' in include_time %}
-      {% set time_condition = (strptime(after_time, '%H:%M:%S').time() <= now().time() <= strptime(before_time, '%H:%M:%S').time()) %}
-      {% set result = result and time_condition %}
+      {% set current_time = now().hour + (now().minute / 60) %}
+      {% set start = after_time.split(':')[0] | int + (after_time.split(':')[1] | int / 60) %}
+      {% set end = before_time.split(':')[0] | int + (before_time.split(':')[1] | int / 60) %}
+      {% if end < start %}
+        {% if current_time < end %}
+          {% set current_time = current_time + 24 %}
+        {% endif %}
+        {% set end = end + 24 %}
+      {% endif %}
+      {% set result = result and (start <= current_time <= end) %}
     {% endif %}
     {% if 'time_on' in include_time and not 'time_off' in include_time %}
       {% set result = result and (now().time() >= strptime(after_time, '%H:%M:%S').time()) %}
@@ -1530,13 +1566,11 @@ variables:
       {% set result = result and (now().time() <= strptime(before_time, '%H:%M:%S').time()) %}
     {% endif %}
     {{ result }}
+
   trigger_options_off: >
     {% set result = true %}
-    {% if 'entity_on' in include_entity_state %}
-      {% set result = result and (states[entity_input].state == 'on') %}
-    {% endif %}
-    {% if 'entity_off' in include_entity_state %}
-      {% set result = result and (states[entity_input].state == 'on') %}
+    {% if 'entity_on' in include_entity_state or 'entity_off' in include_entity_state %}
+      {% set result = result and is_state(entity_input, 'on') %}
     {% endif %}
     {% if 'sun_falling' in include_sun and 'sun_rising' in include_sun %}
       {% set sun_falling_condition = (is_state_attr('sun.sun', 'rising', false)) and (state_attr('sun.sun', 'elevation') <= sun_elevation | float(90)) %}
@@ -1560,18 +1594,31 @@ variables:
         {% set result = false %}
       {% endif %}
     {% endif %}
-    {% if 'ambient_high' in include_ambient and 'ambient_low' in include_ambient %}
-      {% set result = result and (states[ambient_light_sensor].state | float < ambient_light_value_off | float) %}
-    {% endif %}
-    {% if 'ambient_low' in include_ambient and not 'ambient_high' in include_ambient %}
-      {% set result = result and (states[ambient_light_sensor].state | float < ambient_light_value | float(90)) %}
-    {% endif %}
-    {% if 'ambient_high' in include_ambient and not 'ambient_low' in include_ambient%}
-      {% set result = result and (states[ambient_light_sensor].state | float < ambient_light_value_off | float) %}
+    {% if 'ambient_high' in include_ambient or 'ambient_low' in include_ambient %}
+      {% set lux = states(ambient_light_sensor) | float(none) %}
+      {% if lux is not none %}
+        {% if 'ambient_high' in include_ambient and 'ambient_low' in include_ambient %}
+          {% set result = result and (lux < ambient_light_value_off | float(none)) %}
+        {% endif %}
+        {% if 'ambient_low' in include_ambient and 'ambient_high' not in include_ambient %}
+          {% set result = result and (lux < ambient_light_value | float(none)) %}
+        {% endif %}
+        {% if 'ambient_high' in include_ambient and 'ambient_low' not in include_ambient %}
+          {% set result = result and (lux < ambient_light_value_off | float(none)) %}
+        {% endif %}
+      {% endif %}
     {% endif %}
     {% if 'time_on' in include_time and 'time_off' in include_time %}
-      {% set time_condition = (strptime(after_time, '%H:%M:%S').time() <= now().time() <= strptime(before_time, '%H:%M:%S').time()) %}
-      {% set result = result and time_condition %}
+      {% set current_time = now().hour + (now().minute / 60) %}
+      {% set start = after_time.split(':')[0] | int + (after_time.split(':')[1] | int / 60) %}
+      {% set end = before_time.split(':')[0] | int + (before_time.split(':')[1] | int / 60) %}
+      {% if end < start %}
+        {% if current_time < end %}
+          {% set current_time = current_time + 24 %}
+        {% endif %}
+        {% set end = end + 24 %}
+      {% endif %}
+      {% set result = result and (start <= current_time <= end) %}
     {% endif %}
     {% if 'time_on' in include_time and not 'time_off' in include_time %}
       {% set result = result and (now().time() >= strptime(after_time, '%H:%M:%S').time()) %}
@@ -1615,10 +1662,14 @@ triggers:
     id: "t4"
     entity_id: !input ambient_light_sensor
     below: !input ambient_light_value
+    for: 
+      minutes: !input ambient_light_value_on_delay
   - trigger: numeric_state
     id: "t5"
     entity_id: !input ambient_light_sensor
     above: !input ambient_light_value_off
+    for: 
+      minutes: !input ambient_light_value_off_delay
   - trigger: time
     id: "t6"
     at: !input after_time

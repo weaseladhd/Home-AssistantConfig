@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 🪫 Low Battery Notifications & Actions
 
-    **Version: 3.3**
+    **Version: 3.4**
     
     
     🚀 Stay Charged, Stay Smart! Let's automate and take charge of your battery maintenance!🔋⚡
@@ -1950,236 +1950,240 @@ condition:
     conditions: !input global_conditions
 
 action:
-  - choose:
-    - alias: "Perform the custom actions"
-      conditions:
-        - condition: template
-          value_template: "{{ include_custom_actions == 'enable_custom_actions' }}"
-      sequence: !input custom_actions
-  - choose:
-    - alias: "Use the easy notify device options"
-      conditions:
-        - condition: template
-          value_template: "{{ (include_easy_notify == 'enable_easy_notify') or (include_easy_notify == 'enable_easy_okay_notify') }}"
-        - condition: template
-          value_template: "{{ notify_device | length > 0 }}"
-      sequence:
-        - alias: "Send a notification to each device"
-          repeat:
-            for_each: !input notify_device
-            sequence:
-              - choose:
-                - alias: "Sensors have been found"
-                  conditions:
-                    - "{{ easy_notify_message != '' }}"
-                  sequence:
-                    - choose:
-                      - alias: "Easy notify with no action button"
-                        conditions:
-                          - "{{ notify_action_buttons == 'disabled_notify_action_buttons' }}"
-                        sequence:
-                          - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-                            data:
-                              title: !input notify_title
-                              message: "{{easy_notify_message}}"
-                              data: "{{ device_message_data }}"
-                            continue_on_error: true
-                      - alias: "Easy notify with action button"
-                        conditions:
-                          - "{{ notify_action_buttons != 'disabled_notify_action_buttons' }}"
-                        sequence:
-                          - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-                            data:
-                              title: !input notify_title
-                              message: "{{easy_notify_message}}"
-                              data: "{{ device_message_data_action_button }}"
-                            continue_on_error: true
-                - alias: "No sensors have been found"
-                  conditions:
-                    - "{{ easy_notify_message == '' }}"
-                    - "{{ include_easy_notify == 'enable_easy_okay_notify' }}"
-                  sequence:
-                    - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-                      data:
-                        title: !input notify_title
-                        message: !input notify_okay_message
-                        data: "{{ device_message_data }}"
-                      continue_on_error: true
-  - choose:
-    - alias: "Use the easy notify persistent notification options"
-      conditions:
-        - condition: template
-          value_template: "{{ (include_persistent_notification == 'enable_persistent_notification') or (include_persistent_notification == 'enable_persistent_okay_notification') }}"
-      sequence:
-        - choose:
-          - alias: "Sensors have been found"
-            conditions:
-              - "{{ persistent_easy_notify_message != '' }}"
-            sequence:
-              - action: persistent_notification.create
-                data: "{{ persistent_message_data }}"
-          - alias: "No sensors have been found"
-            conditions:
-              - "{{ persistent_easy_notify_message == '' }}"
-              - "{{ include_persistent_notification == 'enable_persistent_okay_notification' }}"
-            sequence:
-              - action: persistent_notification.create
-                data: "{{ persistent_okay_message_data }}"
-  - choose:
-    - alias: "Use the easy notify dashboard notification options"
-      conditions:
-        - condition: template
-          value_template: >
-            {{ include_dashboard_notification == 'enable_dashboard_okay_notification' }}
-      sequence:
-        - choose:
-          - alias: "Sensors have been found"
-            conditions:
-              - "{{ dashboard_easy_notify_message != '' }}"
-            sequence:
-              - action: input_text.set_value
-                target:
-                  entity_id: !input dashboard_notification_text_helper
-                data_template:
-                  value: "{{ now().strftime('%d %b %Y') }} - {{ now().strftime('%I')|int }}:{{ now().strftime('%M %p') ~ '\n\n' ~ dashboard_easy_notify_message[:228] }}"
-          - alias: "No sensors have been found"
-            conditions:
-              - "{{ dashboard_easy_notify_message == '' }}"
-            sequence:
-              - action: input_text.set_value
-                target:
-                  entity_id: !input dashboard_notification_text_helper
-                data_template:
-                  value: "{{ now().strftime('%d %b %Y') }} - {{ now().strftime('%I')|int }}:{{ now().strftime('%M %p') ~ '\n\n' ~ dashboard_notify_okay_message[:228] }}"
-  - choose:
-    - alias: "Check if the easy notify - device To-Do action button is enabled"
-      conditions:
-        - condition: template
-          value_template: "{{ (include_easy_notify == 'enable_easy_notify') or (include_easy_notify == 'enable_easy_okay_notify') }}"
-        - condition: template
-          value_template: "{{(notify_action_buttons == 'enable_to_do_list_button') or (notify_action_buttons == 'enable_to_do_list_button_and_confirmation') or (notify_action_buttons == 'enable_to_do_list_button_and_clear')}}"
-        - condition: template
-          value_template: "{{ notify_device | length > 0 }}"
-      sequence:
-        - alias: "Wait for a response from the action buttons"
-          wait_for_trigger:
-            - trigger: event
-              event_type: mobile_app_notification_action
-              event_data:
-                action: "{{ action_button_to_do }}"
-            - trigger: event
-              event_type: mobile_app_notification_action
-              event_data:
-                action: "{{ action_button_cancel }}"
-        - choose:
-          - alias: "Check if confirmation message is disabled"
-            conditions:
-              - condition: template
-                value_template: "{{ notify_action_buttons == 'enable_to_do_list_button' }}"
-            sequence:
-              - if:
-                  - alias: "Confirmation from the action buttons"
-                    condition: template
-                    value_template: "{{ wait.trigger.idx is defined }}"
-                then:
-                  - alias: "Perform the chosen actions"
-                    choose:
-                      - conditions: "{{ wait.trigger.event.data.action == action_button_to_do }}"
-                        sequence:
-                          - alias: "Add task to To-Do list"
-                            action: todo.add_item
-                            metadata: {}
-                            data:
-                              item: !input to_do_task_title
-                              description: "{{easy_notify_message}}"
-                            target:
-                              entity_id: !input to_do_list
-                      - conditions: "{{ wait.trigger.event.data.action == action_button_cancel }}"
-                        sequence:
-                          - stop: "Stop the automation"
-          - alias: "Check if confirmation message is enabled"
-            conditions:
-              - condition: template
-                value_template: "{{ (notify_action_buttons == 'enable_to_do_list_button_and_confirmation') or (notify_action_buttons == 'enable_to_do_list_button_and_clear') }}"
-            sequence:
-              - if:
-                  - alias: "Confirmation from the action buttons"
-                    condition: template
-                    value_template: "{{ wait.trigger.idx is defined }}"
-                then:
-                  - alias: "Perform the chosen actions"
-                    choose:
-                      - conditions: "{{ wait.trigger.event.data.action == action_button_to_do }}"
-                        sequence:
-                          - alias: "Add task to To-Do list"
-                            action: todo.add_item
-                            metadata: {}
-                            data:
-                              item: !input to_do_task_title
-                              description: "{{easy_notify_message}}"
-                            target:
-                              entity_id: !input to_do_list
-                          - choose:
-                            - alias: "Check if confirmation message is enabled"
-                              conditions:
-                                - condition: template
-                                  value_template: "{{ notify_action_buttons == 'enable_to_do_list_button_and_confirmation' }}"
-                              sequence:
-                                - alias: "Send a notification to each device"
-                                  repeat:
-                                    for_each: !input notify_device
-                                    sequence:
-                                      - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-                                        data:
-                                          title: !input action_button_confirmation_title
-                                          message: !input action_button_confirmation_message
-                                          data: "{{ device_confirmation_message_data }}"
-                                        continue_on_error: true
-                            - alias: "Check if clear when done is enabled"
-                              conditions:
-                                - condition: template
-                                  value_template: "{{ notify_action_buttons == 'enable_to_do_list_button_and_clear' }}"
-                              sequence:
-                                - alias: "Send a notification to each device"
-                                  repeat:
-                                    for_each: !input notify_device
-                                    sequence:
-                                      - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-                                        data:
-                                          message: clear_notification
-                                          data:
-                                            tag: !input notify_tag
-                                        continue_on_error: true
-                      - conditions: "{{ wait.trigger.event.data.action == action_button_cancel }}"
-                        sequence:
-                          - choose:
-                            - alias: "Check if confirmation message is enabled"
-                              conditions:
-                                - condition: template
-                                  value_template: "{{ notify_action_buttons == 'enable_to_do_list_button_and_confirmation' }}"
-                              sequence:
-                                - alias: "Send a notification to each device"
-                                  repeat:
-                                    for_each: !input notify_device
-                                    sequence:
-                                      - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-                                        data:
-                                          title: !input action_button_confirmation_title
-                                          message: !input cancel_action_button_confirmation_message
-                                          data: "{{ device_message_data }}"
-                                        continue_on_error: true
-                            - alias: "Check if clear when done is enabled"
-                              conditions:
-                                - condition: template
-                                  value_template: "{{ notify_action_buttons == 'enable_to_do_list_button_and_clear' }}"
-                              sequence:
-                                - alias: "Send a notification to each device"
-                                  repeat:
-                                    for_each: !input notify_device
-                                    sequence:
-                                      - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
-                                        data:
-                                          message: clear_notification
-                                          data:
-                                            tag: !input notify_tag
-                                        continue_on_error: true
+  - alias: "Parallel actions to split custom actions"
+    parallel:
+      - sequence:
+          - choose:
+            - alias: "Perform the custom actions"
+              conditions:
+                - condition: template
+                  value_template: "{{ include_custom_actions == 'enable_custom_actions' }}"
+              sequence: !input custom_actions
+      - sequence:
+          - choose:
+            - alias: "Use the easy notify device options"
+              conditions:
+                - condition: template
+                  value_template: "{{ (include_easy_notify == 'enable_easy_notify') or (include_easy_notify == 'enable_easy_okay_notify') }}"
+                - condition: template
+                  value_template: "{{ notify_device | length > 0 }}"
+              sequence:
+                - alias: "Send a notification to each device"
+                  repeat:
+                    for_each: !input notify_device
+                    sequence:
+                      - choose:
+                        - alias: "Sensors have been found"
+                          conditions:
+                            - "{{ easy_notify_message != '' }}"
+                          sequence:
+                            - choose:
+                              - alias: "Easy notify with no action button"
+                                conditions:
+                                  - "{{ notify_action_buttons == 'disabled_notify_action_buttons' }}"
+                                sequence:
+                                  - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                                    data:
+                                      title: !input notify_title
+                                      message: "{{easy_notify_message}}"
+                                      data: "{{ device_message_data }}"
+                                    continue_on_error: true
+                              - alias: "Easy notify with action button"
+                                conditions:
+                                  - "{{ notify_action_buttons != 'disabled_notify_action_buttons' }}"
+                                sequence:
+                                  - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                                    data:
+                                      title: !input notify_title
+                                      message: "{{easy_notify_message}}"
+                                      data: "{{ device_message_data_action_button }}"
+                                    continue_on_error: true
+                        - alias: "No sensors have been found"
+                          conditions:
+                            - "{{ easy_notify_message == '' }}"
+                            - "{{ include_easy_notify == 'enable_easy_okay_notify' }}"
+                          sequence:
+                            - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                              data:
+                                title: !input notify_title
+                                message: !input notify_okay_message
+                                data: "{{ device_message_data }}"
+                              continue_on_error: true
+          - choose:
+            - alias: "Use the easy notify persistent notification options"
+              conditions:
+                - condition: template
+                  value_template: "{{ (include_persistent_notification == 'enable_persistent_notification') or (include_persistent_notification == 'enable_persistent_okay_notification') }}"
+              sequence:
+                - choose:
+                  - alias: "Sensors have been found"
+                    conditions:
+                      - "{{ persistent_easy_notify_message != '' }}"
+                    sequence:
+                      - action: persistent_notification.create
+                        data: "{{ persistent_message_data }}"
+                  - alias: "No sensors have been found"
+                    conditions:
+                      - "{{ persistent_easy_notify_message == '' }}"
+                      - "{{ include_persistent_notification == 'enable_persistent_okay_notification' }}"
+                    sequence:
+                      - action: persistent_notification.create
+                        data: "{{ persistent_okay_message_data }}"
+          - choose:
+            - alias: "Use the easy notify dashboard notification options"
+              conditions:
+                - condition: template
+                  value_template: >
+                    {{ include_dashboard_notification == 'enable_dashboard_okay_notification' }}
+              sequence:
+                - choose:
+                  - alias: "Sensors have been found"
+                    conditions:
+                      - "{{ dashboard_easy_notify_message != '' }}"
+                    sequence:
+                      - action: input_text.set_value
+                        target:
+                          entity_id: !input dashboard_notification_text_helper
+                        data_template:
+                          value: "{{ now().strftime('%d %b %Y') }} - {{ now().strftime('%I')|int }}:{{ now().strftime('%M %p') ~ '\n\n' ~ dashboard_easy_notify_message[:228] }}"
+                  - alias: "No sensors have been found"
+                    conditions:
+                      - "{{ dashboard_easy_notify_message == '' }}"
+                    sequence:
+                      - action: input_text.set_value
+                        target:
+                          entity_id: !input dashboard_notification_text_helper
+                        data_template:
+                          value: "{{ now().strftime('%d %b %Y') }} - {{ now().strftime('%I')|int }}:{{ now().strftime('%M %p') ~ '\n\n' ~ dashboard_notify_okay_message[:228] }}"
+          - choose:
+            - alias: "Check if the easy notify - device To-Do action button is enabled"
+              conditions:
+                - condition: template
+                  value_template: "{{ (include_easy_notify == 'enable_easy_notify') or (include_easy_notify == 'enable_easy_okay_notify') }}"
+                - condition: template
+                  value_template: "{{(notify_action_buttons == 'enable_to_do_list_button') or (notify_action_buttons == 'enable_to_do_list_button_and_confirmation') or (notify_action_buttons == 'enable_to_do_list_button_and_clear')}}"
+                - condition: template
+                  value_template: "{{ notify_device | length > 0 }}"
+              sequence:
+                - alias: "Wait for a response from the action buttons"
+                  wait_for_trigger:
+                    - trigger: event
+                      event_type: mobile_app_notification_action
+                      event_data:
+                        action: "{{ action_button_to_do }}"
+                    - trigger: event
+                      event_type: mobile_app_notification_action
+                      event_data:
+                        action: "{{ action_button_cancel }}"
+                - choose:
+                  - alias: "Check if confirmation message is disabled"
+                    conditions:
+                      - condition: template
+                        value_template: "{{ notify_action_buttons == 'enable_to_do_list_button' }}"
+                    sequence:
+                      - if:
+                          - alias: "Confirmation from the action buttons"
+                            condition: template
+                            value_template: "{{ wait.trigger.idx is defined }}"
+                        then:
+                          - alias: "Perform the chosen actions"
+                            choose:
+                              - conditions: "{{ wait.trigger.event.data.action == action_button_to_do }}"
+                                sequence:
+                                  - alias: "Add task to To-Do list"
+                                    action: todo.add_item
+                                    metadata: {}
+                                    data:
+                                      item: !input to_do_task_title
+                                      description: "{{easy_notify_message}}"
+                                    target:
+                                      entity_id: !input to_do_list
+                              - conditions: "{{ wait.trigger.event.data.action == action_button_cancel }}"
+                                sequence:
+                                  - stop: "Stop the automation"
+                  - alias: "Check if confirmation message is enabled"
+                    conditions:
+                      - condition: template
+                        value_template: "{{ (notify_action_buttons == 'enable_to_do_list_button_and_confirmation') or (notify_action_buttons == 'enable_to_do_list_button_and_clear') }}"
+                    sequence:
+                      - if:
+                          - alias: "Confirmation from the action buttons"
+                            condition: template
+                            value_template: "{{ wait.trigger.idx is defined }}"
+                        then:
+                          - alias: "Perform the chosen actions"
+                            choose:
+                              - conditions: "{{ wait.trigger.event.data.action == action_button_to_do }}"
+                                sequence:
+                                  - alias: "Add task to To-Do list"
+                                    action: todo.add_item
+                                    metadata: {}
+                                    data:
+                                      item: !input to_do_task_title
+                                      description: "{{easy_notify_message}}"
+                                    target:
+                                      entity_id: !input to_do_list
+                                  - choose:
+                                    - alias: "Check if confirmation message is enabled"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ notify_action_buttons == 'enable_to_do_list_button_and_confirmation' }}"
+                                      sequence:
+                                        - alias: "Send a notification to each device"
+                                          repeat:
+                                            for_each: !input notify_device
+                                            sequence:
+                                              - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                                                data:
+                                                  title: !input action_button_confirmation_title
+                                                  message: !input action_button_confirmation_message
+                                                  data: "{{ device_confirmation_message_data }}"
+                                                continue_on_error: true
+                                    - alias: "Check if clear when done is enabled"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ notify_action_buttons == 'enable_to_do_list_button_and_clear' }}"
+                                      sequence:
+                                        - alias: "Send a notification to each device"
+                                          repeat:
+                                            for_each: !input notify_device
+                                            sequence:
+                                              - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                                                data:
+                                                  message: clear_notification
+                                                  data:
+                                                    tag: !input notify_tag
+                                                continue_on_error: true
+                              - conditions: "{{ wait.trigger.event.data.action == action_button_cancel }}"
+                                sequence:
+                                  - choose:
+                                    - alias: "Check if confirmation message is enabled"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ notify_action_buttons == 'enable_to_do_list_button_and_confirmation' }}"
+                                      sequence:
+                                        - alias: "Send a notification to each device"
+                                          repeat:
+                                            for_each: !input notify_device
+                                            sequence:
+                                              - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                                                data:
+                                                  title: !input action_button_confirmation_title
+                                                  message: !input cancel_action_button_confirmation_message
+                                                  data: "{{ device_message_data }}"
+                                                continue_on_error: true
+                                    - alias: "Check if clear when done is enabled"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ notify_action_buttons == 'enable_to_do_list_button_and_clear' }}"
+                                      sequence:
+                                        - alias: "Send a notification to each device"
+                                          repeat:
+                                            for_each: !input notify_device
+                                            sequence:
+                                              - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                                                data:
+                                                  message: clear_notification
+                                                  data:
+                                                    tag: !input notify_tag
+                                                continue_on_error: true
