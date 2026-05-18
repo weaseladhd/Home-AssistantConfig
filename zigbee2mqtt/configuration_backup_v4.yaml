@@ -1,3 +1,4 @@
+---
 devices:
   - devices.yaml
 groups:
@@ -55,4 +56,4 @@ frontend:
   port: 8099
 availability:
   enabled: true
-version: 5
+version: 4
