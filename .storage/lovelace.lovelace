@@ -1,7 +1,7 @@
 {
   "version": 1,
   "minor_version": 1,
-  "key": "lovelace",
+  "key": "lovelace.lovelace",
   "data": {
     "config": {
       "apexcharts_card_templates": {
@@ -862,6 +862,16 @@
                   "type": "energy-distribution"
                 },
                 {
+                  "type": "energy-grid-balance"
+                },
+                {
+                  "type": "energy-self-sufficiency-gauge",
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": "auto"
+                  }
+                },
+                {
                   "type": "gauge",
                   "max": 5000,
                   "entity": "sensor.solaredge_current_power",
@@ -875,8 +885,8 @@
                   "name": "PV Yield",
                   "min": 0,
                   "grid_options": {
-                    "columns": 12,
-                    "rows": 3
+                    "columns": 6,
+                    "rows": "auto"
                   }
                 },
                 {
@@ -889,14 +899,22 @@
                     "return_home",
                     "start_pause",
                     "locate"
-                  ]
+                  ],
+                  "grid_options": {
+                    "columns": 9,
+                    "rows": 2
+                  }
                 },
                 {
                   "show_name": true,
                   "show_icon": true,
                   "type": "button",
                   "entity": "input_boolean.vacuum_tomorrow",
-                  "show_state": true
+                  "show_state": true,
+                  "grid_options": {
+                    "columns": 3,
+                    "rows": 2
+                  }
                 },
                 {
                   "type": "custom:mushroom-entity-card",
@@ -923,7 +941,7 @@
                     "sensor.afvalwijzer_gft",
                     "sensor.afvalwijzer_restafval",
                     "sensor.afvalwijzer_papier",
-                    "sensor.afvalwijzer_pd"
+                    "sensor.afvalwijzer_pmd"
                   ],
                   "filter": {
                     "include": [],
