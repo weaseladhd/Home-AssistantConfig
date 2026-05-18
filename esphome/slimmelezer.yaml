@@ -17,8 +17,9 @@ esphome:
             lambda: return id(has_key);
           then:
             - lambda: |-
-                std::string key(id(stored_decryption_key), 32);
-                id(dsmr_instance).set_decryption_key(key);
+                // Ensure null-termination (safety)
+                id(stored_decryption_key)[32] = '\0';
+                id(dsmr_instance).set_decryption_key(id(stored_decryption_key));
           else:
             - logger.log:
                 level: info
@@ -31,22 +32,30 @@ esp8266:
   board: d1_mini
 
 wifi:
+  min_auth_mode: WPA2
+
+  # Watchdog reboot if WiFi can't connect for a while
+  reboot_timeout: 10min
+
   networks:
     - ssid: !secret wifi_ssid
       password: !secret wifi_password
 
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: ${device_name}
     ap_timeout: 15s
+    # Optional: set AP password (recommended)
+    # password: !secret slimmelezer_ap_password
 
 captive_portal:
 
-# Enable logging
 logger:
 
-# Enable Home Assistant API
 api:
+  # (4) Encrypt Home Assistant API traffic
+  encryption:
+    key: !secret slimmelezer_api_encryption_key
+
   services:
     service: set_dsmr_key
     variables:
@@ -55,13 +64,24 @@ api:
       - logger.log:
           format: Setting private key %s. Set to empty string to disable
           args: [private_key.c_str()]
+
       - globals.set:
           id: has_key
           value: !lambda "return private_key.length() == 32;"
+
       - lambda: |-
-          if (private_key.length() == 32)
+          if (private_key.length() == 32) {
+            // Copy 32 chars into persistent buffer and terminate
             private_key.copy(id(stored_decryption_key), 32);
-          id(dsmr_instance).set_decryption_key(private_key);
+            id(stored_decryption_key)[32] = '\0';
+
+            // Use the persistent C-string
+            id(dsmr_instance).set_decryption_key(id(stored_decryption_key));
+          } else {
+            // Disable / clear key
+            id(stored_decryption_key)[0] = '\0';
+            id(dsmr_instance).set_decryption_key("");
+          }
 
 ota:
   platform: esphome
@@ -75,22 +95,24 @@ uart:
   rx_pin: D7
   rx_buffer_size: 1000
 
+  # (5) Explicit serial settings (reduces weird default-related issues)
+  data_bits: 8
+  parity: NONE
+  stop_bits: 1
+
 globals:
   - id: has_key
     type: bool
     restore_value: true
     initial_value: "false"
   - id: stored_decryption_key
-    type: char[32]
+    type: char[33]
     restore_value: true
 
 dsmr:
   id: dsmr_instance
   max_telegram_length: 1700
-  # For Luxembourg users set here your decryption key.
-  # Enable this when using decryption for Luxembourg;
-  # key looks like '00112233445566778899AABBCCDDEEFF'
-  # decryption_key: !secret decryption_key
+  # decryption_key: !secret decryption_key  # optional static key
 
 sensor:
   - platform: dsmr
@@ -151,8 +173,10 @@ sensor:
     gas_delivered:
       name: "Gas Consumed"
       state_class: total_increasing
+
   - platform: uptime
     name: "SlimmeLezer Uptime"
+
   - platform: wifi_signal
     name: "SlimmeLezer Wi-Fi Signal"
     update_interval: 60s
@@ -163,6 +187,7 @@ text_sensor:
       name: "DSMR Identification"
     p1_version:
       name: "DSMR Version"
+
   - platform: wifi_info
     ip_address:
       name: "SlimmeLezer IP Address"
@@ -170,6 +195,7 @@ text_sensor:
       name: "SlimmeLezer Wi-Fi SSID"
     bssid:
       name: "SlimmeLezer Wi-Fi BSSID"
+
   - platform: version
     name: "ESPHome Version"
     hide_timestamp: true
