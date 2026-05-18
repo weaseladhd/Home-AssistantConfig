@@ -1,14 +1,19 @@
 # A vintage style theme
 # Creater: Anup - @surendrananup updated and adapted to HACS by @Banditen01
 vintage:
-  # Header:
+
+# Var:
   primary-font-family: "Lucida Console"
   turmeric-color: "#DEB853"
   light-turmeric-color: "#E2D9A2"
   slate-color: "#0A373A"
   light-slate-color: "#789F8A"
   maroon-color: "#862715"
-  app-header-text-color: "#fafcfb"
+  text-color: "#fafcfb"
+
+  # Header:
+  app-header-text-color: "var(--text-color)"
+  app-header-background-color: "var(--slate-color)"
 
   # Main Interface Colors
   primary-color: "var(--slate-color)"
