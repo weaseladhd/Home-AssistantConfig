@@ -30,5 +30,73 @@ websocket_diagnostics:
       selector:
         boolean:
 
+valve_open:
+  description: Open a valve for the specified duration.
+  fields:
+    device_id:
+      description: The HA device ID or Gardena device UUID. Required if service_id is not provided.
+      example: "d8a1faef-2ee3-421d-a3f8-f8ed577c2ad3"
+      selector:
+        text:
+    service_id:
+      description: The Gardena VALVE service ID (e.g. '<device-uuid>:2'). Use this to target a specific valve on multi-valve devices.
+      example: "d8a1faef-2ee3-421d-a3f8-f8ed577c2ad3:2"
+      selector:
+        text:
+    duration:
+      description: Duration in seconds (must be a multiple of 60).
+      required: false
+      example: "3600"
+      default: "3600"
+      selector:
+        number:
+          min: 60
+          max: 14400
+          unit_of_measurement: seconds
+          mode: box
+
+valve_close:
+  description: Close a valve immediately.
+  fields:
+    device_id:
+      description: The HA device ID or Gardena device UUID. Required if service_id is not provided.
+      example: "d8a1faef-2ee3-421d-a3f8-f8ed577c2ad3"
+      selector:
+        text:
+    service_id:
+      description: The Gardena VALVE service ID (e.g. '<device-uuid>:2'). Use this to target a specific valve on multi-valve devices.
+      example: "d8a1faef-2ee3-421d-a3f8-f8ed577c2ad3:2"
+      selector:
+        text:
+
+valve_pause:
+  description: Pause automatic valve operation.
+  fields:
+    device_id:
+      description: The HA device ID or Gardena device UUID. Required if service_id is not provided.
+      example: "d8a1faef-2ee3-421d-a3f8-f8ed577c2ad3"
+      selector:
+        text:
+    service_id:
+      description: The Gardena VALVE service ID (e.g. '<device-uuid>:2'). Use this to target a specific valve on multi-valve devices.
+      example: "d8a1faef-2ee3-421d-a3f8-f8ed577c2ad3:2"
+      selector:
+        text:
+
+valve_unpause:
+  description: Resume automatic valve operation.
+  fields:
+    device_id:
+      description: The HA device ID or Gardena device UUID. Required if service_id is not provided.
+      example: "d8a1faef-2ee3-421d-a3f8-f8ed577c2ad3"
+      selector:
+        text:
+    service_id:
+      description: The Gardena VALVE service ID (e.g. '<device-uuid>:2'). Use this to target a specific valve on multi-valve devices.
+      example: "d8a1faef-2ee3-421d-a3f8-f8ed577c2ad3:2"
+      selector:
+        text:
+
+
 reconnect_websocket:
   description: Force WebSocket reconnection for the Gardena Smart System integration.
