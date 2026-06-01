@@ -4597,36 +4597,9 @@
                 },
                 {
                   "type": "heading",
-                  "icon": "phu:adguard",
-                  "heading": "Adguard Home",
+                  "icon": "phu:technitium-dns",
+                  "heading": "DNS",
                   "heading_style": "title"
-                },
-                {
-                  "entities": [
-                    {
-                      "entity": "switch.adguard_home_protection",
-                      "secondary_info": "last-changed"
-                    },
-                    {
-                      "entity": "switch.adguard_home_filtering",
-                      "secondary_info": "last-changed"
-                    },
-                    {
-                      "entity": "sensor.adguard_home_dns_queries"
-                    },
-                    {
-                      "entity": "sensor.adguard_home_rules_count"
-                    },
-                    {
-                      "entity": "sensor.adguard_home_dns_queries_blocked_ratio"
-                    },
-                    {
-                      "entity": "sensor.adguard_home_average_processing_speed"
-                    }
-                  ],
-                  "title": "Adguard",
-                  "type": "entities",
-                  "show_header_toggle": true
                 }
               ]
             },
@@ -4778,9 +4751,6 @@
                     },
                     {
                       "entity": "sensor.truenas_cloudsync_applications_backup"
-                    },
-                    {
-                      "entity": "sensor.truenas_cloudsync_devices_backup"
                     }
                   ]
                 },
@@ -4812,9 +4782,6 @@
                     },
                     {
                       "entity": "sensor.truenas_datasets_data_media"
-                    },
-                    {
-                      "entity": "sensor.truenas_datasets_data_backup_applications"
                     },
                     {
                       "entity": "sensor.truenas_datasets_data_backup"
