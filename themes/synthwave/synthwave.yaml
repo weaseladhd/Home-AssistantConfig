@@ -173,6 +173,11 @@ synthwave:
   ha-color-neutral-90: '#e4e3e7'
   ha-color-neutral-95: '#f1f1f3'
 
+  # override default values to make form fields readable
+  ha-color-form-background: 'var(--ha-color-primary-20)'
+  ha-color-form-background-disabled: 'var(--ha-color-primary-80)'
+  ha-color-form-background-hover: 'var(--ha-color-primary-50)'
+
   # semantic color tokens from the default dark theme (Home Assistant 2026.1)
   ha-color-text-primary: var(--white-color)
   ha-color-text-secondary: var(--ha-color-neutral-80)
