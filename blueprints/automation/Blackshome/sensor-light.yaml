@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 💡 Sensor Light
 
-    **Version: 8.5**
+    **Version: 8.6**
 
 
     Your lighting experience, your way - take control and customize it to perfection! 💡✨
@@ -338,7 +338,7 @@ blueprint:
           name: Use The Dynamic Lighting Options (Optional)
           description: >
             This option makes continual adjustments to your normal lighting setup by modulating brightness based on floating lux values, or adapting both colour temperature and brightness according to the sun's changing elevation or the time of day.
-            Choose from thirteen preset options available in the dropdown menu.
+            Choose from sixteen preset options available in the dropdown menu.
 
               1 - Lux Controlled Brightness
               2 - Lux Controlled Brightness Inverted
@@ -353,10 +353,13 @@ blueprint:
               11 - Time Controlled - Brightness
               12 - Time Controlled - Brightness Inverted
               13 - Time Controlled - Colour Temp + Brightness
+              14 - Time Controlled - Colour Temp + Brightness Inverted
+              15 - Time Controlled - Colour Temp + Lux Controlled Brightness
+              16 - Time Controlled - Colour Temp + Lux Controlled Brightness Inverted
 
             A numbering system has been implemented to facilitate navigation within the dropdown selections. Each number corresponds to a specific configuration,
-            aiding users in identifying and adjusting the settings used within each selection. For instance, when selecting "3 - Sun Elevation Lighting - Colour Temp"
-            as a dropdown option, settings marked "Used in options 3, 6, 7, 8, 9, 10 or 13" are required for that respective selection because number 3 is included in those options.
+            aiding users in identifying and adjusting the settings used within each selection. For instance, when selecting `3 - Sun Elevation Lighting - Colour Temp`
+            as a dropdown option, settings marked "Used in options 3, 4, 5, 6, 7, 8 or 9" are required for that respective selection because number 3 is included in those options.
 
 
             For more information on dynamic lighting settings [Click Here](https://community.home-assistant.io/t/481048/837)
@@ -393,10 +396,16 @@ blueprint:
                   value: "enable_time_controled_brightness_inv"
                 - label: 13 - Time Controlled - Colour Temp + Brightness
                   value: "enable_time_controled_colour_brightness"
+                - label: 14 - Time Controlled - Colour Temp + Brightness Inverted
+                  value: "enable_time_controled_colour_brightness_inv"
+                - label: 15 - Time Controlled - Colour Temp + Lux Controlled Brightness
+                  value: "enable_time_controled_colour_lux_brightness"
+                - label: 16 - Time Controlled - Colour Temp + Lux Controlled Brightness Inverted
+                  value: "enable_time_controled_colour_lux_brightness_inv"
         dynamic_lighting_lux_sensor:
           name: Dynamic Lighting - Ambient Light Sensor
           description: >
-            **Used in options 1, 2, 8 or 9** - Enter the specific ambient light sensor to be used, based on your selected Dynamic Lighting option.
+            **Used in options 1, 2, 8, 9, 15 or 16** - Enter the specific ambient light sensor to be used, based on your selected Dynamic Lighting option.
           default: []
           selector:
             entity:
@@ -406,7 +415,7 @@ blueprint:
         dynamic_lighting_max_lux:
           name: Dynamic Lighting - Max Lux Value
           description: >
-            **Used in options 1, 2, 8 or 9** - Specify the maximum lux value. Once the lux level meets or surpasses this set point, your lights will adjust to either their maximum or minimum brightness, depending on your chosen option. 
+            **Used in options 1, 2, 8, 9, 15 or 16** - Specify the maximum lux value. Once the lux level meets or surpasses this set point, your lights will adjust to either their maximum or minimum brightness, depending on your chosen option. 
             This value indicates when you prefer your lights to start turning on or off.
           default: 400
           selector:
@@ -418,7 +427,7 @@ blueprint:
         dynamic_lighting_min_lux:
           name: Dynamic Lighting - Min Lux Value
           description: >
-            **Used in options 1, 2, 8 or 9** - Specify the minimum lux value. Once the lux level meets or surpasses this set point, your lights will adjust to either their maximum or minimum brightness, depending on your chosen option. 
+            **Used in options 1, 2, 8, 9, 15 or 16** - Specify the minimum lux value. Once the lux level meets or surpasses this set point, your lights will adjust to either their maximum or minimum brightness, depending on your chosen option. 
             This value indicates when you prefer your lights to start turning on or off.
           default: 40
           selector:
@@ -430,7 +439,7 @@ blueprint:
         dynamic_lighting_max_brightness:
           name: Dynamic Lighting - Max Brightness Value
           description: >
-            **Used in options 1, 2, 4, 5, 6, 7, 8, 9, 11, 12 or 13** - Define the maximum brightness value, determines the peak brightness level for your lights.
+            **Used in options 1, 2, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15 or 16** - Define the maximum brightness value, determines the peak brightness level for your lights.
           default: 100
           selector:
             number:
@@ -441,7 +450,7 @@ blueprint:
         dynamic_lighting_min_brightness:
           name: Dynamic Lighting - Min Brightness Value
           description: >
-            **Used in options 1, 2, 4, 5, 6, 7, 8, 9, 11, 12 or 13** - Specify the minimum brightness value, establishing the lowest brightness level for your lights.
+            **Used in options 1, 2, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15 or 16** - Specify the minimum brightness value, establishing the lowest brightness level for your lights.
             When setting the brightness to 0%, the light will be turned off.
           default: 0
           selector:
@@ -453,7 +462,7 @@ blueprint:
         dynamic_lighting_boolean:
           name: Dynamic Lighting - Toggle Helper (Optional)
           description: >
-            **Used in options 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12 or 13** - If you have chosen a brightness level of 0%,
+            **Used in options 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15 or 16** - If you have chosen a brightness level of 0%,
             then it's essential to create an independent toggle helper and enter it here.
             This toggle helper can also address issues if the automation doesn't behave as expected due to the occasional unavailability of light entities.
             While it may not always be necessary, if you're open to creating toggle helpers, it's highly recommended to utilize this option to ensure proper functionality of the automation.
@@ -466,7 +475,7 @@ blueprint:
         dynamic_lighting_max_colour_temp:
           name: Dynamic Lighting - Max Colour Temperature
           description: >
-            **Used in options 3, 6, 7, 8, 9, 10 or 13** - Specify the highest colour temperature value, determining the coolest colour setting for your lights.
+            **Used in options 3, 6, 7, 8, 9, 10, 13, 14, 15 or 16** - Specify the highest colour temperature value, determining the coolest colour setting for your lights.
           default: 5000
           selector:
             number:
@@ -478,7 +487,7 @@ blueprint:
         dynamic_lighting_min_colour_temp:
           name: Dynamic Lighting - Min Colour Temperature
           description: >
-            **Used in options 3, 6, 7, 8, 9, 10 or 13** - Set the lowest colour temperature value, defining the warmest colour setting for your lights.
+            **Used in options 3, 6, 7, 8, 9, 10, 13, 14, 15 or 16** - Set the lowest colour temperature value, defining the warmest colour setting for your lights.
           default: 3000
           selector:
             number:
@@ -538,7 +547,7 @@ blueprint:
         dynamic_lighting_time_start_morning:
           name: Dynamic Lighting - Time Morning - Start Point
           description: >
-            **Used in options 10, 11, 12 or 13** - When the time passes over the start point, both the colour temperature and brightness
+            **Used in options 10, 11, 12, 13, 14, 15 or 16** - When the time passes over the start point, both the colour temperature and brightness
             percentage will transition linearly from their minimum to maximum values until they reach the rising endpoint, based on your selected Dynamic Lighting option.
           default: "06:00:00"
           selector:
@@ -546,7 +555,7 @@ blueprint:
         dynamic_lighting_time_end_morning:
           name: Dynamic Lighting - Time Morning - End Point
           description: >
-            **Used in options 10, 11, 12 or 13** - When the time passes over the end point, the maximum colour temperature and maximum brightness value will
+            **Used in options 10, 11, 12, 13, 14, 15 or 16** - When the time passes over the end point, the maximum colour temperature and maximum brightness value will
             be established, based on your selected Dynamic Lighting option.
           default: "09:00:00"
           selector:
@@ -554,7 +563,7 @@ blueprint:
         dynamic_lighting_time_start_evening:
           name: Dynamic Lighting - Time Evening - Start Point
           description: >
-            **Used in options 10, 11, 12 or 13** - When the time passes over the start point, both the colour temperature and brightness percentage will
+            **Used in options 10, 11, 12, 13, 14, 15 or 16** - When the time passes over the start point, both the colour temperature and brightness percentage will
             transition linearly from their maximum to minimum values until they reach the descending endpoint, based on your selected Dynamic Lighting option.
           default: "17:00:00"
           selector:
@@ -562,7 +571,7 @@ blueprint:
         dynamic_lighting_time_end_evening:
           name: Dynamic Lighting - Time Evening - End Point
           description: >
-            **Used in options 10, 11, 12 or 13** - When the time passes over the end point, the minimum colour temperature and minimum brightness value will 
+            **Used in options 10, 11, 12, 13, 14, 15 or 16** - When the time passes over the end point, the minimum colour temperature and minimum brightness value will 
             be established, based on your selected Dynamic Lighting option.
           default: "19:00:00"
           selector:
@@ -570,11 +579,11 @@ blueprint:
         dynamic_lighting_heartbeat:
           name: Dynamic Lighting - Heartbeat
           description: >
-            **Used in options 1, 2, 8, 9, 10, 11, 12 or 13** - Define the heartbeat rate to set the operational speed.
+            **Used in options 1, 2, 8, 9, 10, 11, 12, 13, 14, 15 or 16** - Define the heartbeat rate to set the operational speed.
             During each heartbeat, it may evaluate the lux value, light brightness, colour temperature, target colour temperature, and target brightness, adjusting the colour temperature or brightness based on your selected Dynamic Lighting option.
 
 
-            **Note** - When using a **Time Controlled** option (10, 11, 12, or 13), the minimum heartbeat should be set to no lower than 1 minute, with adjustments made in 1-minute increments (e.g., 1, 2, 3, 4, 5, and so on), as setting it lower will not provide any benefit and may slow down your system's performance.
+            **Note** - When using a **Time Controlled** option (10, 11, 12, 13, 14, 15 or 16), the minimum heartbeat should be set to no lower than 1 minute, with adjustments made in 1-minute increments (e.g., 1, 2, 3, 4, 5, and so on), as setting it lower will not provide any benefit and may slow down your system's performance.
             Depending on the duration between the start and end points of the light transition, adjusting this value will determine the size of the step value. A longer heartbeat generally improves performance, but it may also result in larger step values that could be bothersome to the eye. Take the time to determine the correct heartbeat value for your needs.
             The heartbeat is only active between the start and end points.
           default: 1
@@ -587,7 +596,7 @@ blueprint:
         dynamic_lighting_step_value:
           name: Dynamic Lighting - Step Value
           description: >
-            **Used in options 1, 2, 8, or 9** - With every heartbeat, the system evaluates the lux value, light brightness, and targeted brightness.
+            **Used in options 1, 2, 8, 9, 15 or 16** - With every heartbeat, the system evaluates the lux value, light brightness, and targeted brightness.
             If the targeted brightness exceeds the predefined step value, the system applies the set step value to gradually moderate the rate of change, ensuring a smoother transition in light brightness.
           default: 4
           selector:
@@ -599,7 +608,7 @@ blueprint:
         dynamic_lighting_dead_zone:
           name: Dynamic Lighting - Dead Zone (±)
           description: >
-            **Used in options 1, 2, 8, or 9** - With every heartbeat, the system evaluates the current light brightness and the targeted brightness.
+            **Used in options 1, 2, 8, 9, 15 or 16** - With every heartbeat, the system evaluates the current light brightness and the targeted brightness.
             If the targeted brightness falls within the defined dead zone, the system maintains the current light brightness.
             This prevents minor fluctuations in light intensity that could be bothersome to the eye.
           default: 7
@@ -6483,8 +6492,8 @@ action:
                                 {% set lux = states(dynamic_lighting_lux_sensor) | float %}
                                 {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_max_lux - dynamic_lighting_min_lux) %}
                                 {% set ak = (( slope * dynamic_lighting_min_lux) * -1) + dynamic_lighting_max_brightness %}
-                                {% set le = light_entities %}
-                                {% set lec = expand(le) | map(attribute='entity_id') | list | length %}
+                                {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                {% set lec = le | count %}
                                 {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
                                 {% if lux <= dynamic_lighting_min_lux %}
                                   {% set bv = dynamic_lighting_max_brightness %}
@@ -6532,8 +6541,8 @@ action:
                                 {% set lux = states(dynamic_lighting_lux_sensor) | float %}
                                 {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_max_lux - dynamic_lighting_min_lux) %}
                                 {% set ak = (( slope * dynamic_lighting_min_lux) * -1) + dynamic_lighting_max_brightness %}
-                                {% set le = light_entities %}
-                                {% set lec = expand(le) | map(attribute='entity_id') | list | length %}
+                                {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                {% set lec = le | count %}
                                 {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
                                 {% if lux <= dynamic_lighting_min_lux %}
                                   {% set bv = dynamic_lighting_max_brightness %}
@@ -6693,8 +6702,8 @@ action:
                                 {% set lux = states(dynamic_lighting_lux_sensor) | float %}
                                 {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_min_lux - dynamic_lighting_max_lux) %}
                                 {% set ak = (( slope * dynamic_lighting_min_lux) * -1) + dynamic_lighting_min_brightness %}
-                                {% set le = light_entities %}
-                                {% set lec = expand(le) | map(attribute='entity_id') | list | length %}
+                                {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                {% set lec = le | count %}
                                 {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
                                 {% if lux <= dynamic_lighting_min_lux %}
                                   {% set bv = dynamic_lighting_min_brightness %}
@@ -6742,8 +6751,8 @@ action:
                                 {% set lux = states(dynamic_lighting_lux_sensor) | float %}
                                 {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_min_lux - dynamic_lighting_max_lux) %}
                                 {% set ak = (( slope * dynamic_lighting_min_lux) * -1) + dynamic_lighting_min_brightness %}
-                                {% set le = light_entities %}
-                                {% set lec = expand(le) | map(attribute='entity_id') | list | length %}
+                                {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                {% set lec = le | count %}
                                 {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
                                 {% if lux <= dynamic_lighting_min_lux %}
                                   {% set bv = dynamic_lighting_min_brightness %}
@@ -7137,8 +7146,8 @@ action:
                                 {% endif %}
                                 {{ light.data }}
                               should_wait: >
-                                {% set le = light_entities %}
-                                {% set lec = expand(le) | map(attribute='entity_id') | list | length %}
+                                {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                {% set lec = le | count %}
                                 {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
                                 {% set elevation = state_attr('sun.sun', 'elevation') | float %}
                                 {% set start_slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_sun_elevation_start_rising - dynamic_lighting_sun_elevation_end_rising) %}
@@ -7359,8 +7368,8 @@ action:
                                 {% endif %}
                                 {{ light.data }}
                               should_wait: >
-                                {% set le = light_entities %}
-                                {% set lec = expand(le) | map(attribute='entity_id') | list | length %}
+                                {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                {% set lec = le | count %}
                                 {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
                                 {% set elevation = state_attr('sun.sun', 'elevation') | float %}
                                 {% set start_slope = (dynamic_lighting_max_brightness - dynamic_lighting_min_brightness) / (dynamic_lighting_sun_elevation_start_rising - dynamic_lighting_sun_elevation_end_rising) %}
@@ -7594,8 +7603,8 @@ action:
                                 {% endif %}
                                 {{ light.data }}
                               should_wait: >
-                                {% set le = light_entities %}
-                                {% set lec = expand(le) | map(attribute='entity_id') | list | length %}
+                                {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                {% set lec = le | count %}
                                 {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
                                 {% set elevation = state_attr('sun.sun', 'elevation') | float %}
                                 {% set start_slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_sun_elevation_start_rising - dynamic_lighting_sun_elevation_end_rising) %}
@@ -7818,8 +7827,8 @@ action:
                                 {% endif %}
                                 {{ light.data }}
                               should_wait: >
-                                {% set le = light_entities %}
-                                {% set lec = expand(le) | map(attribute='entity_id') | list | length %}
+                                {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                {% set lec = le | count %}
                                 {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
                                 {% set elevation = state_attr('sun.sun', 'elevation') | float %}
                                 {% set start_slope = (dynamic_lighting_max_brightness - dynamic_lighting_min_brightness) / (dynamic_lighting_sun_elevation_start_rising - dynamic_lighting_sun_elevation_end_rising) %}
@@ -7992,8 +8001,8 @@ action:
                                         {% set lux = states(dynamic_lighting_lux_sensor) | float %}
                                         {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_max_lux - dynamic_lighting_min_lux) %}
                                         {% set ak = (( slope * dynamic_lighting_min_lux) * -1) + dynamic_lighting_max_brightness %}
-                                        {% set le = light_entities %}
-                                        {% set lec = expand(le) | map(attribute='entity_id') | list | length %}
+                                        {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                        {% set lec = le | count %}
                                         {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
                                         {% if lux <= dynamic_lighting_min_lux %}
                                           {% set bv = dynamic_lighting_max_brightness %}
@@ -8063,8 +8072,8 @@ action:
                                         {% set lux = states(dynamic_lighting_lux_sensor) | float %}
                                         {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_max_lux - dynamic_lighting_min_lux) %}
                                         {% set ak = (( slope * dynamic_lighting_min_lux) * -1) + dynamic_lighting_max_brightness %}
-                                        {% set le = light_entities %}
-                                        {% set lec = expand(le) | map(attribute='entity_id') | list | length %}
+                                        {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                        {% set lec = le | count %}
                                         {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
                                         {% if lux <= dynamic_lighting_min_lux %}
                                           {% set bv = dynamic_lighting_max_brightness %}
@@ -8393,8 +8402,8 @@ action:
                                         {% set lux = states(dynamic_lighting_lux_sensor) | float %}
                                         {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_min_lux - dynamic_lighting_max_lux) %}
                                         {% set ak = (( slope * dynamic_lighting_min_lux) * -1) + dynamic_lighting_min_brightness %}
-                                        {% set le = light_entities %}
-                                        {% set lec = expand(le) | map(attribute='entity_id') | list | length %}
+                                        {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                        {% set lec = le | count %}
                                         {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
                                         {% if lux <= dynamic_lighting_min_lux %}
                                           {% set bv = dynamic_lighting_min_brightness %}
@@ -8464,8 +8473,8 @@ action:
                                         {% set lux = states(dynamic_lighting_lux_sensor) | float %}
                                         {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_min_lux - dynamic_lighting_max_lux) %}
                                         {% set ak = (( slope * dynamic_lighting_min_lux) * -1) + dynamic_lighting_min_brightness %}
-                                        {% set le = light_entities %}
-                                        {% set lec = expand(le) | map(attribute='entity_id') | list | length %}
+                                        {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                        {% set lec = le | count %}
                                         {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
                                         {% if lux <= dynamic_lighting_min_lux %}
                                           {% set bv = dynamic_lighting_min_brightness %}
@@ -9676,6 +9685,1093 @@ action:
                                 - alias: "Dynamic lighting heartbeat"
                                   delay:
                                     minutes: !input dynamic_lighting_heartbeat
+              - choose:
+                - alias: "14 - Dynamic Lighting - Time Controlled - Colour Temp & Brightness Inverted"
+                  conditions:
+                    - condition: template
+                      value_template: "{{ include_dynamic_lighting == 'enable_time_controled_colour_brightness_inv' }}"
+                  sequence:
+                    - alias: "Dynamic Lighting Control"
+                      repeat:
+                        until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
+                        sequence:
+                          - variables:
+                              dynamic_brightness_pct: >
+                                {% set current_time = now().hour + (now().minute / 60) %}
+                                {% set start_time_morning = dynamic_lighting_time_start_morning.split(':')[0] | int + (dynamic_lighting_time_start_morning.split(':')[1] | int / 60) %}
+                                {% set end_time_morning = dynamic_lighting_time_end_morning.split(':')[0] | int + (dynamic_lighting_time_end_morning.split(':')[1] | int / 60) %}
+                                {% set start_time_evening = dynamic_lighting_time_start_evening.split(':')[0] | int + (dynamic_lighting_time_start_evening.split(':')[1] | int / 60) %}
+                                {% set end_time_evening = dynamic_lighting_time_end_evening.split(':')[0] | int + (dynamic_lighting_time_end_evening.split(':')[1] | int / 60) %}
+                                {% if end_time_morning < start_time_morning %}
+                                  {% if current_time < end_time_evening %}
+                                    {% set current_time = current_time + 24 %}
+                                  {% endif %}
+                                  {% set end_time_morning = end_time_morning + 24 %}
+                                  {% set start_time_evening = start_time_evening + 24 %}
+                                  {% set end_time_evening = end_time_evening + 24 %}
+                                {% endif %}
+                                {% if end_time_evening < start_time_evening %}
+                                  {% if current_time < end_time_evening %}
+                                    {% set current_time = current_time + 24 %}
+                                  {% endif %}
+                                  {% set end_time_evening = end_time_evening + 24 %}
+                                {% endif %}
+                                {% set start_slope = (dynamic_lighting_max_brightness - dynamic_lighting_min_brightness) / (start_time_morning - end_time_morning) %}
+                                {% set start_ak = (start_slope * (-end_time_morning)) + dynamic_lighting_min_brightness %}
+                                {% set end_slope = (dynamic_lighting_max_brightness - dynamic_lighting_min_brightness) / (end_time_evening - start_time_evening) %}
+                                {% set end_ak = (end_slope * (-end_time_evening)) + dynamic_lighting_max_brightness %}
+                                {% if current_time >= start_time_morning and current_time <= end_time_morning %}
+                                  {% set brightness_value = (start_slope * current_time + start_ak) | round(1) %}
+                                {% elif current_time >= start_time_evening and current_time <= end_time_evening %}
+                                  {% set brightness_value = (end_slope * current_time + end_ak) | round(1) %}
+                                {% elif current_time > end_time_morning and current_time < start_time_evening %}
+                                  {% set brightness_value = dynamic_lighting_min_brightness %}
+                                {% elif current_time < start_time_morning %}
+                                  {% set brightness_value = dynamic_lighting_max_brightness %}
+                                {% elif current_time > end_time_evening %}
+                                  {% set brightness_value = dynamic_lighting_max_brightness %}
+                                {% else %}
+                                  {% set brightness_value = dynamic_lighting_min_brightness %}
+                                {% endif %}
+                                {{ brightness_value | round(0) }}
+                              dynamic_kelvin: >
+                                {% set current_time = now().hour + (now().minute / 60) %}
+                                {% set start_time_morning = dynamic_lighting_time_start_morning.split(':')[0] | int + (dynamic_lighting_time_start_morning.split(':')[1] | int / 60) %}
+                                {% set end_time_morning = dynamic_lighting_time_end_morning.split(':')[0] | int + (dynamic_lighting_time_end_morning.split(':')[1] | int / 60) %}
+                                {% set start_time_evening = dynamic_lighting_time_start_evening.split(':')[0] | int + (dynamic_lighting_time_start_evening.split(':')[1] | int / 60) %}
+                                {% set end_time_evening = dynamic_lighting_time_end_evening.split(':')[0] | int + (dynamic_lighting_time_end_evening.split(':')[1] | int / 60) %}
+                                {% if end_time_morning < start_time_morning %}
+                                  {% if current_time < end_time_evening %}
+                                    {% set current_time = current_time + 24 %}
+                                  {% endif %}
+                                  {% set end_time_morning = end_time_morning + 24 %}
+                                  {% set start_time_evening = start_time_evening + 24 %}
+                                  {% set end_time_evening = end_time_evening + 24 %}
+                                {% endif %}
+                                {% if end_time_evening < start_time_evening %}
+                                  {% if current_time < end_time_evening %}
+                                    {% set current_time = current_time + 24 %}
+                                  {% endif %}
+                                  {% set end_time_evening = end_time_evening + 24 %}
+                                {% endif %}
+                                {% set start_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (start_time_morning - end_time_morning) %}
+                                {% set start_ak = (start_slope * (-end_time_morning)) + dynamic_lighting_max_colour_temp %}
+                                {% set end_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (end_time_evening - start_time_evening) %}
+                                {% set end_ak = (end_slope * (-end_time_evening)) + dynamic_lighting_min_colour_temp %}
+                                {% if current_time >= start_time_morning and current_time <= end_time_morning %}
+                                  {% set colour_temp_value = (start_slope * current_time + start_ak) | round(1) %}
+                                {% elif current_time >= start_time_evening and current_time <= end_time_evening %}
+                                  {% set colour_temp_value = (end_slope * current_time + end_ak) | round(1) %}
+                                {% elif current_time > end_time_morning and current_time < start_time_evening %}
+                                  {% set colour_temp_value = dynamic_lighting_max_colour_temp %}
+                                {% elif current_time < start_time_morning %}
+                                  {% set colour_temp_value = dynamic_lighting_min_colour_temp %}
+                                {% elif current_time > end_time_evening %}
+                                  {% set colour_temp_value = dynamic_lighting_min_colour_temp %}
+                                {% else %}
+                                  {% set colour_temp_value = dynamic_lighting_max_colour_temp %}
+                                {% endif %}
+                                {{ colour_temp_value | round(0) }}
+                              dynamic_light_data: >
+                                {% set light = namespace(data={}) %}
+                                {% set light.data = dict(light.data, **{ 'color_temp_kelvin': dynamic_kelvin }) %}
+                                {% set light.data = dict(light.data, **{ 'brightness_pct': dynamic_brightness_pct }) %}
+                                {% if 'use_transition' in include_light_control %}
+                                  {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                {% endif %}
+                                {{ light.data }}
+                              should_wait: >
+                                {% set current_time = now().hour + (now().minute / 60) %}
+                                {% set start_time_morning = dynamic_lighting_time_start_morning.split(':')[0] | int + (dynamic_lighting_time_start_morning.split(':')[1] | int / 60) %}
+                                {% set end_time_morning = dynamic_lighting_time_end_morning.split(':')[0] | int + (dynamic_lighting_time_end_morning.split(':')[1] | int / 60) %}
+                                {% set start_time_evening = dynamic_lighting_time_start_evening.split(':')[0] | int + (dynamic_lighting_time_start_evening.split(':')[1] | int / 60) %}
+                                {% set end_time_evening = dynamic_lighting_time_end_evening.split(':')[0] | int + (dynamic_lighting_time_end_evening.split(':')[1] | int / 60) %}
+                                {% if end_time_morning < start_time_morning %}
+                                  {% if current_time < end_time_evening %}
+                                    {% set current_time = current_time + 24 %}
+                                  {% endif %}
+                                  {% set end_time_morning = end_time_morning + 24 %}
+                                  {% set start_time_evening = start_time_evening + 24 %}
+                                  {% set end_time_evening = end_time_evening + 24 %}
+                                {% endif %}
+                                {% if end_time_evening < start_time_evening %}
+                                  {% if current_time < end_time_evening %}
+                                    {% set current_time = current_time + 24 %}
+                                  {% endif %}
+                                  {% set end_time_evening = end_time_evening + 24 %}
+                                {% endif %}
+                                {% set lights_on = expand(light_entities) | selectattr('state', '==', 'on') | list | count > 0 %}
+                                {% set in_morning = start_time_morning <= current_time <= end_time_morning %}
+                                {% set in_evening = start_time_evening <= current_time <= end_time_evening %}
+                                {{ lights_on and not (in_morning or in_evening) }}
+                          - choose:
+                            - alias: "If dim before OFF is selected - Restore Lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                - condition: state
+                                  entity_id: !input dim_before_off_boolean
+                                  state: "on"
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - repeat:
+                                    for_each: "{{ light_entities }}"
+                                    sequence:
+                                      - variables:
+                                          restore_bri: >
+                                            {% set bri = state_attr(repeat.item, 'brightness') %}
+                                            {% if bri in [None, 0] %}
+                                              {{ 0 }}
+                                            {% else %}
+                                              {% set bri_pct = bri / 255 * 100 %}
+                                              {% set restored = bri_pct / dim_before_off_factor %}
+                                              {{ [restored | round(0), 100] | min }}
+                                            {% endif %}
+                                          restore_light_data: >-
+                                            {% set light = namespace(data={}) %}
+                                            {% set light.data = dict(light.data, **{ 'color_temp_kelvin': dynamic_kelvin }) %}
+                                            {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                            {% if 'use_transition' in include_light_control %}
+                                              {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                            {% endif %}
+                                            {{ light.data }}
+                                      - action: light.turn_on
+                                        target:
+                                          entity_id: "{{ repeat.item }}"
+                                        data: "{{ restore_light_data }}"
+                                - action: input_boolean.turn_off
+                                  target:
+                                    entity_id: !input dim_before_off_boolean
+                                - alias: "Dynamic lighting heartbeat"
+                                  delay:
+                                    minutes: !input dynamic_lighting_heartbeat
+                            - alias: "Stop when crossing over"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ 'if_lights_are_on_adjust_when_crossing_over' not in include_night_light_control }}"
+                                - condition: trigger
+                                  id: 
+                                    - 't12'
+                                    - 't13'
+                                    - 't14'
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - stop: "Stop the automation"
+                            - alias: "Adjust the lights settings when crossing over if lights are ON is selected in night light control"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ 'if_lights_are_on_adjust_when_crossing_over' in include_night_light_control }}"
+                                - condition: trigger
+                                  id: 
+                                    - 't12'
+                                    - 't13'
+                                    - 't14'
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - action: light.turn_on
+                                  target:
+                                    entity_id: "{{ light_entities }}"
+                                  data: "{{ dynamic_light_data }}"
+                                - alias: "Dynamic lighting heartbeat"
+                                  delay:
+                                    minutes: !input dynamic_lighting_heartbeat
+                            - alias: "Adjust the light settings when all bypasses are off or state control is enabled, and the entity is turned ON"
+                              conditions:
+                                - condition: trigger
+                                  id:
+                                    - 't15'
+                                    - 't8_on'
+                                    - 't8_off'
+                                    - 't8_stop'
+                                - condition: template
+                                  value_template: "{{ repeat.index == 1 }}"
+                              sequence:
+                                - action: light.turn_on
+                                  target:
+                                    entity_id: "{{ light_entities }}"
+                                  data: "{{ dynamic_light_data }}"
+                                - alias: "Dynamic lighting heartbeat"
+                                  delay:
+                                    minutes: !input dynamic_lighting_heartbeat
+                            - alias: "If time is outside the adjustment zone and the lights are ON"
+                              conditions: "{{ should_wait }}"
+                              sequence:
+                                - choose:
+                                    - conditions:
+                                        - condition: time
+                                          after: !input dynamic_lighting_time_end_morning
+                                          before: !input dynamic_lighting_time_start_evening
+                                      sequence:
+                                        - wait_for_trigger:
+                                            - trigger: time
+                                              at: !input dynamic_lighting_time_start_evening
+                                    - conditions:
+                                        - condition: time
+                                          after: !input dynamic_lighting_time_end_evening
+                                          before: !input dynamic_lighting_time_start_morning
+                                      sequence:
+                                        - wait_for_trigger:
+                                            - trigger: time
+                                              at: !input dynamic_lighting_time_start_morning
+                            - alias: "Set the dynamic lighting brightness for the normal lights"
+                              conditions:
+                                - condition: template
+                                  value_template: "{{ include_dynamic_lighting == 'enable_time_controled_colour_brightness_inv' }}"
+                              sequence:
+                                - action: light.turn_on
+                                  target:
+                                    entity_id: "{{ light_entities }}"
+                                  data: "{{ dynamic_light_data }}"
+                                - alias: "Dynamic lighting heartbeat"
+                                  delay:
+                                    minutes: !input dynamic_lighting_heartbeat
+              - choose:
+                - alias: "15 - Dynamic Lighting - Time Controlled Colour Temp + Lux Controlled Brightness"
+                  conditions:
+                    - condition: template
+                      value_template: "{{ include_dynamic_lighting == 'enable_time_controled_colour_lux_brightness' }}"
+                  sequence:
+                    - alias: "Parallel actions for dynamic lighting"
+                      parallel:
+                        - sequence:
+                            - alias: "Dynamic Lighting Control"
+                              repeat:
+                                until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
+                                sequence:
+                                  - variables:
+                                      dynamic_brightness_pct: >
+                                        {% set lux = states(dynamic_lighting_lux_sensor) | float %}
+                                        {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_max_lux - dynamic_lighting_min_lux) %}
+                                        {% set ak = (( slope * dynamic_lighting_min_lux) * -1) + dynamic_lighting_max_brightness %}
+                                        {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                        {% set lec = le | count %}
+                                        {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
+                                        {% if lux <= dynamic_lighting_min_lux %}
+                                          {% set bv = dynamic_lighting_max_brightness %}
+                                        {% elif lux >= dynamic_lighting_max_lux %}
+                                          {% set bv = dynamic_lighting_min_brightness %}
+                                        {% else %}
+                                          {% set bv = ((slope * lux) + ak) | round(1) %}
+                                        {% endif %}
+                                        {% if lp <= 0 %}
+                                          {% set bv = bv %}
+                                        {% elif (bv > lp) and (dynamic_lighting_max_brightness - lp) <= dynamic_lighting_dead_zone %}
+                                          {% set bv = dynamic_lighting_max_brightness %}
+                                        {% elif (lp > bv) and (lp - dynamic_lighting_min_brightness) <= dynamic_lighting_dead_zone %}
+                                          {% set bv = dynamic_lighting_min_brightness %}
+                                        {% elif (bv > lp) and (bv - lp) <= dynamic_lighting_dead_zone %}
+                                          {% set bv = lp %}
+                                        {% elif (lp > bv) and (lp - bv) <= dynamic_lighting_dead_zone %}
+                                          {% set bv = lp %}
+                                        {% elif bv > (lp + dynamic_lighting_step_value) %}
+                                          {% set bv = lp + dynamic_lighting_step_value %}
+                                        {% elif bv < (lp - dynamic_lighting_step_value) %}
+                                          {% set bv = lp - dynamic_lighting_step_value %}
+                                        {% endif %}
+                                        {{ bv | round(0) }}
+                                      dynamic_kelvin: >
+                                        {% set current_time = now().hour + (now().minute / 60) %}
+                                        {% set start_time_morning = dynamic_lighting_time_start_morning.split(':')[0] | int + (dynamic_lighting_time_start_morning.split(':')[1] | int / 60) %}
+                                        {% set end_time_morning = dynamic_lighting_time_end_morning.split(':')[0] | int + (dynamic_lighting_time_end_morning.split(':')[1] | int / 60) %}
+                                        {% set start_time_evening = dynamic_lighting_time_start_evening.split(':')[0] | int + (dynamic_lighting_time_start_evening.split(':')[1] | int / 60) %}
+                                        {% set end_time_evening = dynamic_lighting_time_end_evening.split(':')[0] | int + (dynamic_lighting_time_end_evening.split(':')[1] | int / 60) %}
+                                        {% if end_time_morning < start_time_morning %}
+                                          {% if current_time < end_time_evening %}
+                                            {% set current_time = current_time + 24 %}
+                                          {% endif %}
+                                          {% set end_time_morning = end_time_morning + 24 %}
+                                          {% set start_time_evening = start_time_evening + 24 %}
+                                          {% set end_time_evening = end_time_evening + 24 %}
+                                        {% endif %}
+                                        {% if end_time_evening < start_time_evening %}
+                                          {% if current_time < end_time_evening %}
+                                            {% set current_time = current_time + 24 %}
+                                          {% endif %}
+                                          {% set end_time_evening = end_time_evening + 24 %}
+                                        {% endif %}
+                                        {% set start_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (start_time_morning - end_time_morning) %}
+                                        {% set start_ak = (start_slope * (-end_time_morning)) + dynamic_lighting_max_colour_temp %}
+                                        {% set end_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (end_time_evening - start_time_evening) %}
+                                        {% set end_ak = (end_slope * (-end_time_evening)) + dynamic_lighting_min_colour_temp %}
+                                        {% if current_time >= start_time_morning and current_time <= end_time_morning %}
+                                          {% set colour_temp_value = (start_slope * current_time + start_ak) | round(1) %}
+                                        {% elif current_time >= start_time_evening and current_time <= end_time_evening %}
+                                          {% set colour_temp_value = (end_slope * current_time + end_ak) | round(1) %}
+                                        {% elif current_time > end_time_morning and current_time < start_time_evening %}
+                                          {% set colour_temp_value = dynamic_lighting_max_colour_temp %}
+                                        {% elif current_time < start_time_morning %}
+                                          {% set colour_temp_value = dynamic_lighting_min_colour_temp %}
+                                        {% elif current_time > end_time_evening %}
+                                          {% set colour_temp_value = dynamic_lighting_min_colour_temp %}
+                                        {% else %}
+                                          {% set colour_temp_value = dynamic_lighting_max_colour_temp %}
+                                        {% endif %}
+                                        {{ colour_temp_value | round(0) }}
+                                      dynamic_light_off_data: >
+                                        {% set light = namespace(data={}) %}
+                                        {% set light.data = dict(light.data, **{ 'brightness_pct': dynamic_brightness_pct }) %}
+                                        {% set light.data = dict(light.data, **{ 'color_temp_kelvin': dynamic_kelvin }) %}
+                                        {% if 'use_transition' in include_light_control %}
+                                          {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                        {% endif %}
+                                        {{ light.data }}
+                                      dynamic_light_data: >
+                                        {% set light = namespace(data={}) %}
+                                        {% set light.data = dict(light.data, **{ 'brightness_pct': dynamic_brightness_pct }) %}
+                                        {% if 'use_transition' in include_light_control %}
+                                          {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                        {% endif %}
+                                        {{ light.data }}
+                                      in_dead_zone: >
+                                        {% set lux = states(dynamic_lighting_lux_sensor) | float %}
+                                        {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_max_lux - dynamic_lighting_min_lux) %}
+                                        {% set ak = (( slope * dynamic_lighting_min_lux) * -1) + dynamic_lighting_max_brightness %}
+                                        {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                        {% set lec = le | count %}
+                                        {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
+                                        {% if lux <= dynamic_lighting_min_lux %}
+                                          {% set bv = dynamic_lighting_max_brightness %}
+                                        {% elif lux >= dynamic_lighting_max_lux %}
+                                          {% set bv = dynamic_lighting_min_brightness %}
+                                        {% else %}
+                                          {% set bv = ((slope * lux) + ak) | round(1) %}
+                                        {% endif %}
+                                        {% if (bv > lp) and (dynamic_lighting_max_brightness - lp) <= dynamic_lighting_dead_zone %}
+                                          false
+                                        {% elif (lp > bv) and (lp - dynamic_lighting_min_brightness) <= dynamic_lighting_dead_zone %}
+                                          false
+                                        {% elif (bv >= lp) and (bv - lp) <= dynamic_lighting_dead_zone %}
+                                          true
+                                        {% elif (lp >= bv) and (lp - bv) <= dynamic_lighting_dead_zone %}
+                                          true
+                                        {% else %}
+                                          false
+                                        {% endif %}
+                                  - choose:
+                                    - alias: "If dim before OFF is selected - Restore Lights"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                        - condition: state
+                                          entity_id: !input dim_before_off_boolean
+                                          state: "on"
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - alias: "Delay for parallel actions needed for when the light is on"
+                                          delay:
+                                            milliseconds: 100
+                                        - repeat:
+                                            for_each: "{{ light_entities }}"
+                                            sequence:
+                                              - variables:
+                                                  restore_bri: >
+                                                    {% set bri = state_attr(repeat.item, 'brightness') %}
+                                                    {% if bri in [None, 0] %}
+                                                      {{ 0 }}
+                                                    {% else %}
+                                                      {% set bri_pct = bri / 255 * 100 %}
+                                                      {% set restored = bri_pct / dim_before_off_factor %}
+                                                      {{ [restored | round(0), 100] | min }}
+                                                    {% endif %}
+                                                  restore_light_data: >-
+                                                    {% set light = namespace(data={}) %}
+                                                    {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                                    {% if 'use_transition' in include_light_control %}
+                                                      {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                                    {% endif %}
+                                                    {{ light.data }}
+                                              - action: light.turn_on
+                                                target:
+                                                  entity_id: "{{ repeat.item }}"
+                                                data: "{{ restore_light_data }}"
+                                        - action: input_boolean.turn_off
+                                          target:
+                                            entity_id: !input dim_before_off_boolean
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "Check if the light is off"
+                                      conditions: "{{ expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0 }}"
+                                      sequence:
+                                        - alias: "Delay for parallel actions needed for when the light is off"
+                                          delay:
+                                            milliseconds: 100
+                                  - choose:
+                                    - alias: "Stop when crossing over"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ 'if_lights_are_on_adjust_when_crossing_over' not in include_night_light_control }}"
+                                        - condition: trigger
+                                          id: 
+                                            - 't12'
+                                            - 't13'
+                                            - 't14'
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - stop: "Stop the automation"
+                                    - alias: "Adjust the lights settings when crossing over if lights are ON is selected in night light control"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ 'if_lights_are_on_adjust_when_crossing_over' in include_night_light_control }}"
+                                        - condition: trigger
+                                          id: 
+                                            - 't12'
+                                            - 't13'
+                                            - 't14'
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - alias: "Delay for parallel actions needed for when the light is on"
+                                          delay:
+                                            milliseconds: 100
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "Adjust the light settings when all bypasses are off or state control is enabled, and the entity is turned ON"
+                                      conditions:
+                                        - condition: trigger
+                                          id:
+                                            - 't15'
+                                            - 't8_on'
+                                            - 't8_off'
+                                            - 't8_stop'
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - alias: "Delay for parallel actions needed for when the light is on"
+                                          delay:
+                                            milliseconds: 100
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "If dynamic lighting brightness is in the dead zone"
+                                      conditions: 
+                                        - condition: template
+                                          value_template: "{{ in_dead_zone }}"
+                                        - condition: template
+                                          value_template: "{{ repeat.index != 1 }}"
+                                      sequence:
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "Set dynamic lighting lux brightness and dynamic time controlled colour temperature for the normal lights"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ include_dynamic_lighting == 'enable_time_controled_colour_lux_brightness' }}"
+                                        - "{{ expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0 }}"
+                                      sequence:
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_off_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "Set dynamic lighting lux brightness for the normal lights"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ include_dynamic_lighting == 'enable_time_controled_colour_lux_brightness' }}"
+                                      sequence:
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                        - sequence:
+                            - alias: "Dynamic Lighting Control"
+                              repeat:
+                                until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
+                                sequence:
+                                  - variables:
+                                      dynamic_kelvin: >
+                                        {% set current_time = now().hour + (now().minute / 60) %}
+                                        {% set start_time_morning = dynamic_lighting_time_start_morning.split(':')[0] | int + (dynamic_lighting_time_start_morning.split(':')[1] | int / 60) %}
+                                        {% set end_time_morning = dynamic_lighting_time_end_morning.split(':')[0] | int + (dynamic_lighting_time_end_morning.split(':')[1] | int / 60) %}
+                                        {% set start_time_evening = dynamic_lighting_time_start_evening.split(':')[0] | int + (dynamic_lighting_time_start_evening.split(':')[1] | int / 60) %}
+                                        {% set end_time_evening = dynamic_lighting_time_end_evening.split(':')[0] | int + (dynamic_lighting_time_end_evening.split(':')[1] | int / 60) %}
+                                        {% if end_time_morning < start_time_morning %}
+                                          {% if current_time < end_time_evening %}
+                                            {% set current_time = current_time + 24 %}
+                                          {% endif %}
+                                          {% set end_time_morning = end_time_morning + 24 %}
+                                          {% set start_time_evening = start_time_evening + 24 %}
+                                          {% set end_time_evening = end_time_evening + 24 %}
+                                        {% endif %}
+                                        {% if end_time_evening < start_time_evening %}
+                                          {% if current_time < end_time_evening %}
+                                            {% set current_time = current_time + 24 %}
+                                          {% endif %}
+                                          {% set end_time_evening = end_time_evening + 24 %}
+                                        {% endif %}
+                                        {% set start_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (start_time_morning - end_time_morning) %}
+                                        {% set start_ak = (start_slope * (-end_time_morning)) + dynamic_lighting_max_colour_temp %}
+                                        {% set end_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (end_time_evening - start_time_evening) %}
+                                        {% set end_ak = (end_slope * (-end_time_evening)) + dynamic_lighting_min_colour_temp %}
+                                        {% if current_time >= start_time_morning and current_time <= end_time_morning %}
+                                          {% set colour_temp_value = (start_slope * current_time + start_ak) | round(1) %}
+                                        {% elif current_time >= start_time_evening and current_time <= end_time_evening %}
+                                          {% set colour_temp_value = (end_slope * current_time + end_ak) | round(1) %}
+                                        {% elif current_time > end_time_morning and current_time < start_time_evening %}
+                                          {% set colour_temp_value = dynamic_lighting_max_colour_temp %}
+                                        {% elif current_time < start_time_morning %}
+                                          {% set colour_temp_value = dynamic_lighting_min_colour_temp %}
+                                        {% elif current_time > end_time_evening %}
+                                          {% set colour_temp_value = dynamic_lighting_min_colour_temp %}
+                                        {% else %}
+                                          {% set colour_temp_value = dynamic_lighting_max_colour_temp %}
+                                        {% endif %}
+                                        {{ colour_temp_value | round(0) }}
+                                      dynamic_light_data: >
+                                        {% set light = namespace(data={}) %}
+                                        {% set light.data = dict(light.data, **{ 'color_temp_kelvin': dynamic_kelvin }) %}
+                                        {% if 'use_transition' in include_light_control %}
+                                          {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                        {% endif %}
+                                        {{ light.data }}
+                                      should_wait: >
+                                        {% set current_time = now().hour + (now().minute / 60) %}
+                                        {% set start_time_morning = dynamic_lighting_time_start_morning.split(':')[0] | int + (dynamic_lighting_time_start_morning.split(':')[1] | int / 60) %}
+                                        {% set end_time_morning = dynamic_lighting_time_end_morning.split(':')[0] | int + (dynamic_lighting_time_end_morning.split(':')[1] | int / 60) %}
+                                        {% set start_time_evening = dynamic_lighting_time_start_evening.split(':')[0] | int + (dynamic_lighting_time_start_evening.split(':')[1] | int / 60) %}
+                                        {% set end_time_evening = dynamic_lighting_time_end_evening.split(':')[0] | int + (dynamic_lighting_time_end_evening.split(':')[1] | int / 60) %}
+                                        {% if end_time_morning < start_time_morning %}
+                                          {% if current_time < end_time_evening %}
+                                            {% set current_time = current_time + 24 %}
+                                          {% endif %}
+                                          {% set end_time_morning = end_time_morning + 24 %}
+                                          {% set start_time_evening = start_time_evening + 24 %}
+                                          {% set end_time_evening = end_time_evening + 24 %}
+                                        {% endif %}
+                                        {% if end_time_evening < start_time_evening %}
+                                          {% if current_time < end_time_evening %}
+                                            {% set current_time = current_time + 24 %}
+                                          {% endif %}
+                                          {% set end_time_evening = end_time_evening + 24 %}
+                                        {% endif %}
+                                        {% set lights_on = expand(light_entities) | selectattr('state', '==', 'on') | list | count > 0 %}
+                                        {% set in_morning = start_time_morning <= current_time <= end_time_morning %}
+                                        {% set in_evening = start_time_evening <= current_time <= end_time_evening %}
+                                        {{ lights_on and not (in_morning or in_evening) }}
+                                  - choose:
+                                    - alias: "Stop when crossing over"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ 'if_lights_are_on_adjust_when_crossing_over' not in include_night_light_control }}"
+                                        - condition: trigger
+                                          id: 
+                                            - 't12'
+                                            - 't13'
+                                            - 't14'
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - stop: "Stop the automation"
+                                    - alias: "Adjust the lights settings when crossing over if lights are ON is selected in night light control"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ 'if_lights_are_on_adjust_when_crossing_over' in include_night_light_control }}"
+                                        - condition: trigger
+                                          id: 
+                                            - 't12'
+                                            - 't13'
+                                            - 't14'
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "Adjust the light settings when all bypasses are off or state control is enabled, and the entity is turned ON"
+                                      conditions:
+                                        - condition: trigger
+                                          id:
+                                            - 't15'
+                                            - 't8_on'
+                                            - 't8_off'
+                                            - 't8_stop'
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "If time is outside the adjustment zone and the lights are ON"
+                                      conditions: "{{ should_wait }}"
+                                      sequence:
+                                        - choose:
+                                            - conditions:
+                                                - condition: time
+                                                  after: !input dynamic_lighting_time_end_morning
+                                                  before: !input dynamic_lighting_time_start_evening
+                                              sequence:
+                                                - wait_for_trigger:
+                                                    - trigger: time
+                                                      at: !input dynamic_lighting_time_start_evening
+                                            - conditions:
+                                                - condition: time
+                                                  after: !input dynamic_lighting_time_end_evening
+                                                  before: !input dynamic_lighting_time_start_morning
+                                              sequence:
+                                                - wait_for_trigger:
+                                                    - trigger: time
+                                                      at: !input dynamic_lighting_time_start_morning
+                                    - alias: "Set the dynamic lighting brightness for the normal lights"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ include_dynamic_lighting == 'enable_time_controled_colour_lux_brightness' }}"
+                                      sequence:
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+              - choose:
+                - alias: "16 - Dynamic Lighting - Time Controlled Colour Temp + Lux Controlled Brightness Inverted"
+                  conditions:
+                    - condition: template
+                      value_template: "{{ include_dynamic_lighting == 'enable_time_controled_colour_lux_brightness_inv' }}"
+                  sequence:
+                    - alias: "Parallel actions for dynamic lighting"
+                      parallel:
+                        - sequence:
+                            - alias: "Dynamic Lighting Control"
+                              repeat:
+                                until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
+                                sequence:
+                                  - variables:
+                                      dynamic_brightness_pct: >
+                                        {% set lux = states(dynamic_lighting_lux_sensor) | float %}
+                                        {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_min_lux - dynamic_lighting_max_lux) %}
+                                        {% set ak = (( slope * dynamic_lighting_min_lux) * -1) + dynamic_lighting_min_brightness %}
+                                        {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                        {% set lec = le | count %}
+                                        {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
+                                        {% if lux <= dynamic_lighting_min_lux %}
+                                          {% set bv = dynamic_lighting_min_brightness %}
+                                        {% elif lux >= dynamic_lighting_max_lux %}
+                                          {% set bv = dynamic_lighting_max_brightness %}
+                                        {% else %}
+                                          {% set bv = ((slope * lux) + ak) | round(1) %}
+                                        {% endif %}
+                                        {% if lp <= 0 %}
+                                          {% set bv = bv %}
+                                        {% elif (bv > lp) and (dynamic_lighting_max_brightness - lp) <= dynamic_lighting_dead_zone %}
+                                          {% set bv = dynamic_lighting_max_brightness %}
+                                        {% elif (lp > bv) and (lp - dynamic_lighting_min_brightness) <= dynamic_lighting_dead_zone %}
+                                          {% set bv = dynamic_lighting_min_brightness %}
+                                        {% elif (bv > lp) and (bv - lp) <= dynamic_lighting_dead_zone %}
+                                          {% set bv = lp %}
+                                        {% elif (lp > bv) and  (lp - bv) <= dynamic_lighting_dead_zone %}
+                                          {% set bv = lp %}
+                                        {% elif bv > (lp + dynamic_lighting_step_value) %}
+                                          {% set bv = lp + dynamic_lighting_step_value %}
+                                        {% elif bv < (lp - dynamic_lighting_step_value) %}
+                                          {% set bv = lp - dynamic_lighting_step_value %}
+                                        {% endif %}
+                                        {{ bv | round(0) }}
+                                      dynamic_kelvin: >
+                                        {% set current_time = now().hour + (now().minute / 60) %}
+                                        {% set start_time_morning = dynamic_lighting_time_start_morning.split(':')[0] | int + (dynamic_lighting_time_start_morning.split(':')[1] | int / 60) %}
+                                        {% set end_time_morning = dynamic_lighting_time_end_morning.split(':')[0] | int + (dynamic_lighting_time_end_morning.split(':')[1] | int / 60) %}
+                                        {% set start_time_evening = dynamic_lighting_time_start_evening.split(':')[0] | int + (dynamic_lighting_time_start_evening.split(':')[1] | int / 60) %}
+                                        {% set end_time_evening = dynamic_lighting_time_end_evening.split(':')[0] | int + (dynamic_lighting_time_end_evening.split(':')[1] | int / 60) %}
+                                        {% if end_time_morning < start_time_morning %}
+                                          {% if current_time < end_time_evening %}
+                                            {% set current_time = current_time + 24 %}
+                                          {% endif %}
+                                          {% set end_time_morning = end_time_morning + 24 %}
+                                          {% set start_time_evening = start_time_evening + 24 %}
+                                          {% set end_time_evening = end_time_evening + 24 %}
+                                        {% endif %}
+                                        {% if end_time_evening < start_time_evening %}
+                                          {% if current_time < end_time_evening %}
+                                            {% set current_time = current_time + 24 %}
+                                          {% endif %}
+                                          {% set end_time_evening = end_time_evening + 24 %}
+                                        {% endif %}
+                                        {% set start_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (start_time_morning - end_time_morning) %}
+                                        {% set start_ak = (start_slope * (-end_time_morning)) + dynamic_lighting_max_colour_temp %}
+                                        {% set end_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (end_time_evening - start_time_evening) %}
+                                        {% set end_ak = (end_slope * (-end_time_evening)) + dynamic_lighting_min_colour_temp %}
+                                        {% if current_time >= start_time_morning and current_time <= end_time_morning %}
+                                          {% set colour_temp_value = (start_slope * current_time + start_ak) | round(1) %}
+                                        {% elif current_time >= start_time_evening and current_time <= end_time_evening %}
+                                          {% set colour_temp_value = (end_slope * current_time + end_ak) | round(1) %}
+                                        {% elif current_time > end_time_morning and current_time < start_time_evening %}
+                                          {% set colour_temp_value = dynamic_lighting_max_colour_temp %}
+                                        {% elif current_time < start_time_morning %}
+                                          {% set colour_temp_value = dynamic_lighting_min_colour_temp %}
+                                        {% elif current_time > end_time_evening %}
+                                          {% set colour_temp_value = dynamic_lighting_min_colour_temp %}
+                                        {% else %}
+                                          {% set colour_temp_value = dynamic_lighting_max_colour_temp %}
+                                        {% endif %}
+                                        {{ colour_temp_value | round(0) }}
+                                      dynamic_light_off_data: >
+                                        {% set light = namespace(data={}) %}
+                                        {% set light.data = dict(light.data, **{ 'brightness_pct': dynamic_brightness_pct }) %}
+                                        {% set light.data = dict(light.data, **{ 'color_temp_kelvin': dynamic_kelvin }) %}
+                                        {% if 'use_transition' in include_light_control %}
+                                          {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                        {% endif %}
+                                        {{ light.data }}
+                                      dynamic_light_data: >
+                                        {% set light = namespace(data={}) %}
+                                        {% set light.data = dict(light.data, **{ 'brightness_pct': dynamic_brightness_pct }) %}
+                                        {% if 'use_transition' in include_light_control %}
+                                          {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                        {% endif %}
+                                        {{ light.data }}
+                                      in_dead_zone: >
+                                        {% set lux = states(dynamic_lighting_lux_sensor) | float %}
+                                        {% set slope = (dynamic_lighting_min_brightness - dynamic_lighting_max_brightness) / (dynamic_lighting_min_lux - dynamic_lighting_max_lux) %}
+                                        {% set ak = (( slope * dynamic_lighting_min_lux) * -1) + dynamic_lighting_min_brightness %}
+                                        {% set le = expand(light_entities) | rejectattr('state', 'in', ['unavailable', 'unknown']) | selectattr('attributes.brightness', 'defined') | map(attribute='entity_id') | list %}
+                                        {% set lec = le | count %}
+                                        {% set lp = (expand(le) | map(attribute='attributes.brightness') | reject('equalto', None) | sum | float(default=255) / 255 * 100 / lec) | round(0) %}
+                                        {% if lux <= dynamic_lighting_min_lux %}
+                                          {% set bv = dynamic_lighting_min_brightness %}
+                                        {% elif lux >= dynamic_lighting_max_lux %}
+                                          {% set bv = dynamic_lighting_max_brightness %}
+                                        {% else %}
+                                          {% set bv = ((slope * lux) + ak) | round(1) %}
+                                        {% endif %}
+                                        {% if (bv > lp) and (dynamic_lighting_max_brightness - lp) <= dynamic_lighting_dead_zone %}
+                                          true
+                                        {% elif (lp > bv) and (lp - dynamic_lighting_min_brightness) <= dynamic_lighting_dead_zone %}
+                                          false
+                                        {% elif (bv >= lp) and (bv - lp) <= dynamic_lighting_dead_zone %}
+                                          true
+                                        {% elif (lp >= bv) and (lp - bv) <= dynamic_lighting_dead_zone %}
+                                          true
+                                        {% else %}
+                                          false
+                                        {% endif %}
+                                  - choose:
+                                    - alias: "If dim before OFF is selected - Restore Lights"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ include_dim_before_off == 'dim_before_off_enabled' }}"
+                                        - condition: state
+                                          entity_id: !input dim_before_off_boolean
+                                          state: "on"
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - alias: "Delay for parallel actions needed for when the light is on"
+                                          delay:
+                                            milliseconds: 100
+                                        - repeat:
+                                            for_each: "{{ light_entities }}"
+                                            sequence:
+                                              - variables:
+                                                  restore_bri: >
+                                                    {% set bri = state_attr(repeat.item, 'brightness') %}
+                                                    {% if bri in [None, 0] %}
+                                                      {{ 0 }}
+                                                    {% else %}
+                                                      {% set bri_pct = bri / 255 * 100 %}
+                                                      {% set restored = bri_pct / dim_before_off_factor %}
+                                                      {{ [restored | round(0), 100] | min }}
+                                                    {% endif %}
+                                                  restore_light_data: >-
+                                                    {% set light = namespace(data={}) %}
+                                                    {% set light.data = dict(light.data, **{ 'brightness_pct': restore_bri }) %}
+                                                    {% if 'use_transition' in include_light_control %}
+                                                      {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                                    {% endif %}
+                                                    {{ light.data }}
+                                              - action: light.turn_on
+                                                target:
+                                                  entity_id: "{{ repeat.item }}"
+                                                data: "{{ restore_light_data }}"
+                                        - action: input_boolean.turn_off
+                                          target:
+                                            entity_id: !input dim_before_off_boolean
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "Check if the light is off"
+                                      conditions: "{{ expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0 }}"
+                                      sequence:
+                                        - alias: "Delay for parallel actions needed for when the light is off"
+                                          delay:
+                                            milliseconds: 100
+                                  - choose:
+                                    - alias: "Stop when crossing over"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ 'if_lights_are_on_adjust_when_crossing_over' not in include_night_light_control }}"
+                                        - condition: trigger
+                                          id: 
+                                            - 't12'
+                                            - 't13'
+                                            - 't14'
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - stop: "Stop the automation"
+                                    - alias: "Adjust the lights settings when crossing over if lights are ON is selected in night light control"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ 'if_lights_are_on_adjust_when_crossing_over' in include_night_light_control }}"
+                                        - condition: trigger
+                                          id: 
+                                            - 't12'
+                                            - 't13'
+                                            - 't14'
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - alias: "Delay for parallel actions needed for when the light is on"
+                                          delay:
+                                            milliseconds: 100
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "Adjust the light settings when all bypasses are off or state control is enabled, and the entity is turned ON"
+                                      conditions:
+                                        - condition: trigger
+                                          id:
+                                            - 't15'
+                                            - 't8_on'
+                                            - 't8_off'
+                                            - 't8_stop'
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - alias: "Delay for parallel actions needed for when the light is on"
+                                          delay:
+                                            milliseconds: 100
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "If dynamic lighting brightness is in the dead zone"
+                                      conditions: 
+                                        - condition: template
+                                          value_template: "{{ in_dead_zone }}"
+                                        - condition: template
+                                          value_template: "{{ repeat.index != 1 }}"
+                                      sequence:
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "Set dynamic lighting lux brightness and dynamic time controlled colour temperature for the normal lights"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ include_dynamic_lighting == 'enable_time_controled_colour_lux_brightness_inv' }}"
+                                        - "{{ expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0 }}"
+                                      sequence:
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_off_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "Set dynamic lighting lux brightness for the normal lights"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ include_dynamic_lighting == 'enable_time_controled_colour_lux_brightness_inv' }}"
+                                      sequence:
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                        - sequence:
+                            - alias: "Dynamic Lighting Control"
+                              repeat:
+                                until: "{{ ((dynamic_lighting_boolean == []) and (expand(light_entities) | selectattr('state', '==', 'off') | list | count > 0)) or ((dynamic_lighting_boolean != []) and (is_state(dynamic_lighting_boolean, 'off'))) }}"
+                                sequence:
+                                  - variables:
+                                      dynamic_kelvin: >
+                                        {% set current_time = now().hour + (now().minute / 60) %}
+                                        {% set start_time_morning = dynamic_lighting_time_start_morning.split(':')[0] | int + (dynamic_lighting_time_start_morning.split(':')[1] | int / 60) %}
+                                        {% set end_time_morning = dynamic_lighting_time_end_morning.split(':')[0] | int + (dynamic_lighting_time_end_morning.split(':')[1] | int / 60) %}
+                                        {% set start_time_evening = dynamic_lighting_time_start_evening.split(':')[0] | int + (dynamic_lighting_time_start_evening.split(':')[1] | int / 60) %}
+                                        {% set end_time_evening = dynamic_lighting_time_end_evening.split(':')[0] | int + (dynamic_lighting_time_end_evening.split(':')[1] | int / 60) %}
+                                        {% if end_time_morning < start_time_morning %}
+                                          {% if current_time < end_time_evening %}
+                                            {% set current_time = current_time + 24 %}
+                                          {% endif %}
+                                          {% set end_time_morning = end_time_morning + 24 %}
+                                          {% set start_time_evening = start_time_evening + 24 %}
+                                          {% set end_time_evening = end_time_evening + 24 %}
+                                        {% endif %}
+                                        {% if end_time_evening < start_time_evening %}
+                                          {% if current_time < end_time_evening %}
+                                            {% set current_time = current_time + 24 %}
+                                          {% endif %}
+                                          {% set end_time_evening = end_time_evening + 24 %}
+                                        {% endif %}
+                                        {% set start_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (start_time_morning - end_time_morning) %}
+                                        {% set start_ak = (start_slope * (-end_time_morning)) + dynamic_lighting_max_colour_temp %}
+                                        {% set end_slope = (dynamic_lighting_min_colour_temp - dynamic_lighting_max_colour_temp) / (end_time_evening - start_time_evening) %}
+                                        {% set end_ak = (end_slope * (-end_time_evening)) + dynamic_lighting_min_colour_temp %}
+                                        {% if current_time >= start_time_morning and current_time <= end_time_morning %}
+                                          {% set colour_temp_value = (start_slope * current_time + start_ak) | round(1) %}
+                                        {% elif current_time >= start_time_evening and current_time <= end_time_evening %}
+                                          {% set colour_temp_value = (end_slope * current_time + end_ak) | round(1) %}
+                                        {% elif current_time > end_time_morning and current_time < start_time_evening %}
+                                          {% set colour_temp_value = dynamic_lighting_max_colour_temp %}
+                                        {% elif current_time < start_time_morning %}
+                                          {% set colour_temp_value = dynamic_lighting_min_colour_temp %}
+                                        {% elif current_time > end_time_evening %}
+                                          {% set colour_temp_value = dynamic_lighting_min_colour_temp %}
+                                        {% else %}
+                                          {% set colour_temp_value = dynamic_lighting_max_colour_temp %}
+                                        {% endif %}
+                                        {{ colour_temp_value | round(0) }}
+                                      dynamic_light_data: >
+                                        {% set light = namespace(data={}) %}
+                                        {% set light.data = dict(light.data, **{ 'color_temp_kelvin': dynamic_kelvin }) %}
+                                        {% if 'use_transition' in include_light_control %}
+                                          {% set light.data = dict(light.data, **{ 'transition': light_transition_on }) %}
+                                        {% endif %}
+                                        {{ light.data }}
+                                      should_wait: >
+                                        {% set current_time = now().hour + (now().minute / 60) %}
+                                        {% set start_time_morning = dynamic_lighting_time_start_morning.split(':')[0] | int + (dynamic_lighting_time_start_morning.split(':')[1] | int / 60) %}
+                                        {% set end_time_morning = dynamic_lighting_time_end_morning.split(':')[0] | int + (dynamic_lighting_time_end_morning.split(':')[1] | int / 60) %}
+                                        {% set start_time_evening = dynamic_lighting_time_start_evening.split(':')[0] | int + (dynamic_lighting_time_start_evening.split(':')[1] | int / 60) %}
+                                        {% set end_time_evening = dynamic_lighting_time_end_evening.split(':')[0] | int + (dynamic_lighting_time_end_evening.split(':')[1] | int / 60) %}
+                                        {% if end_time_morning < start_time_morning %}
+                                          {% if current_time < end_time_evening %}
+                                            {% set current_time = current_time + 24 %}
+                                          {% endif %}
+                                          {% set end_time_morning = end_time_morning + 24 %}
+                                          {% set start_time_evening = start_time_evening + 24 %}
+                                          {% set end_time_evening = end_time_evening + 24 %}
+                                        {% endif %}
+                                        {% if end_time_evening < start_time_evening %}
+                                          {% if current_time < end_time_evening %}
+                                            {% set current_time = current_time + 24 %}
+                                          {% endif %}
+                                          {% set end_time_evening = end_time_evening + 24 %}
+                                        {% endif %}
+                                        {% set lights_on = expand(light_entities) | selectattr('state', '==', 'on') | list | count > 0 %}
+                                        {% set in_morning = start_time_morning <= current_time <= end_time_morning %}
+                                        {% set in_evening = start_time_evening <= current_time <= end_time_evening %}
+                                        {{ lights_on and not (in_morning or in_evening) }}
+                                  - choose:
+                                    - alias: "Stop when crossing over"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ 'if_lights_are_on_adjust_when_crossing_over' not in include_night_light_control }}"
+                                        - condition: trigger
+                                          id: 
+                                            - 't12'
+                                            - 't13'
+                                            - 't14'
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - stop: "Stop the automation"
+                                    - alias: "Adjust the lights settings when crossing over if lights are ON is selected in night light control"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ 'if_lights_are_on_adjust_when_crossing_over' in include_night_light_control }}"
+                                        - condition: trigger
+                                          id: 
+                                            - 't12'
+                                            - 't13'
+                                            - 't14'
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "Adjust the light settings when all bypasses are off or state control is enabled, and the entity is turned ON"
+                                      conditions:
+                                        - condition: trigger
+                                          id:
+                                            - 't15'
+                                            - 't8_on'
+                                            - 't8_off'
+                                            - 't8_stop'
+                                        - condition: template
+                                          value_template: "{{ repeat.index == 1 }}"
+                                      sequence:
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
+                                    - alias: "If time is outside the adjustment zone and the lights are ON"
+                                      conditions: "{{ should_wait }}"
+                                      sequence:
+                                        - choose:
+                                            - conditions:
+                                                - condition: time
+                                                  after: !input dynamic_lighting_time_end_morning
+                                                  before: !input dynamic_lighting_time_start_evening
+                                              sequence:
+                                                - wait_for_trigger:
+                                                    - trigger: time
+                                                      at: !input dynamic_lighting_time_start_evening
+                                            - conditions:
+                                                - condition: time
+                                                  after: !input dynamic_lighting_time_end_evening
+                                                  before: !input dynamic_lighting_time_start_morning
+                                              sequence:
+                                                - wait_for_trigger:
+                                                    - trigger: time
+                                                      at: !input dynamic_lighting_time_start_morning
+                                    - alias: "Set the dynamic lighting brightness for the normal lights"
+                                      conditions:
+                                        - condition: template
+                                          value_template: "{{ include_dynamic_lighting == 'enable_time_controled_colour_lux_brightness_inv' }}"
+                                      sequence:
+                                        - action: light.turn_on
+                                          target:
+                                            entity_id: "{{ light_entities }}"
+                                          data: "{{ dynamic_light_data }}"
+                                        - alias: "Dynamic lighting heartbeat"
+                                          delay:
+                                            minutes: !input dynamic_lighting_heartbeat
               - stop: "Stop the automation"
           - sequence:
               - choose:

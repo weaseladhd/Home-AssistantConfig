@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 📍 State Notifications & Actions
 
-    **Version: 1.7**
+    **Version: 1.8**
 
 
     State Your Trigger: Turn State Changes Into Notifications and Actions! 🚀
@@ -974,8 +974,12 @@ blueprint:
           selector:
             condition:
 
-mode: restart
+mode: parallel
+max: 10
 max_exceeded: silent
+
+trace:
+  stored_traces: 10
 
 variables:
 
