@@ -2,6 +2,9 @@
 # irrigation unlimited
 irrigation_unlimited:
   controllers:
+    all_zones_config:
+      show:
+        timeline: true
     zones:
       name: 'Lawn'
       entity_id: "input_boolean.irrigation_lawn"
