@@ -250,11 +250,6 @@
         "id": "26d5896267ee4681badeb0fbefd23c48"
       },
       {
-        "url": "/hacsfiles/Irrigation-Card/irrigation-card.js?hacstag=57229725220241001",
-        "type": "module",
-        "id": "a3488cf93b604fc99e1c6c0f78f5267d"
-      },
-      {
         "url": "/hacsfiles/tabbed-card/tabbed-card.js?hacstag=452866308033",
         "type": "module",
         "id": "257f21c8ed584b46944e427d4da2cf00"
@@ -301,7 +296,7 @@
       },
       {
         "id": "3640dd77f200467b94b172f3c8060f07",
-        "url": "/hacsfiles/better-thermostat-ui-card/better-thermostat-ui-card.js?hacstag=439367892221",
+        "url": "/hacsfiles/better-thermostat-ui-card/better-thermostat-ui-card.js?hacstag=439367892300",
         "type": "module"
       },
       {

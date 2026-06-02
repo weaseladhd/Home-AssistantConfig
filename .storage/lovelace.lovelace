@@ -3289,23 +3289,29 @@
                     "columns": "full",
                     "rows": 1
                   },
-                  "entity": "lawn_mower.sileno_backyard_lawn_mower",
-                  "show_entity_picture": false,
+                  "entity": "lawn_mower.mowy_lawn_mower",
+                  "show_entity_picture": true,
                   "hide_state": false,
                   "vertical": false,
-                  "features_position": "bottom"
+                  "features": [
+                    {
+                      "type": "lawn-mower-commands",
+                      "commands": [
+                        "start_pause",
+                        "dock"
+                      ]
+                    }
+                  ],
+                  "features_position": "inline"
                 },
                 {
                   "type": "entities",
                   "entities": [
                     {
-                      "entity": "sensor.gardena_websocket_status"
+                      "entity": "binary_sensor.websocket_status_gardena_websocket_connected"
                     },
                     {
-                      "entity": "binary_sensor.sileno_backyard_online"
-                    },
-                    {
-                      "entity": "sensor.sileno_backyard_battery_level"
+                      "entity": "update.gardena_smart_system_update"
                     }
                   ]
                 }
