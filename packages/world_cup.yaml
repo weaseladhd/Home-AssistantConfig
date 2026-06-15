@@ -1,0 +1,98 @@
+rest:
+  - resource: https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard
+    scan_interval: 60
+    timeout: 20
+    sensor:
+      - name: World Cup Scoreboard
+        unique_id: world_cup_scoreboard
+        value_template: "{{ value_json.events | count }}"
+        json_attributes:
+          - events
+  - resource: https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/standings
+    scan_interval: 300
+    timeout: 20
+    sensor:
+      - name: World Cup Standings
+        unique_id: world_cup_standings
+        value_template: "{{ value_json.children | count }}"
+        json_attributes:
+          - children
+
+template:
+  - binary_sensor:
+      - name: World Cup US Today
+        unique_id: world_cup_us_today
+        icon: mdi:soccer
+        state: >
+          {% set evs = state_attr('sensor.world_cup_scoreboard', 'events') or [] %}
+          {% set ns = namespace(found=false) %}
+          {% for e in evs %}
+            {% for c in e.competitions[0].competitors %}
+              {% if c.team.abbreviation == 'USA' %}{% set ns.found = true %}{% endif %}
+            {% endfor %}
+          {% endfor %}
+          {{ ns.found }}
+      - name: World Cup US Live
+        unique_id: world_cup_us_live
+        icon: mdi:soccer-field
+        state: >
+          {% set evs = state_attr('sensor.world_cup_scoreboard', 'events') or [] %}
+          {% set ns = namespace(live=false) %}
+          {% for e in evs %}
+            {% if e.status.type.state == 'in' %}
+              {% for c in e.competitions[0].competitors %}
+                {% if c.team.abbreviation == 'USA' %}{% set ns.live = true %}{% endif %}
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.live }}
+
+# Full tournament schedule (all ~104 matches) reshaped to a compact list so the
+# whole-tournament fixtures/results/venues are available without a 750KB attribute.
+command_line:
+  - sensor:
+      name: World Cup Schedule
+      unique_id: world_cup_schedule
+      scan_interval: 900
+      command_timeout: 30
+      command: |
+        python3 -c "
+        import json,urllib.request as u
+        d=json.loads(u.urlopen('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719',timeout=30).read())
+        def row(e):
+         c=e['competitions'][0];cs=c['competitors']
+         h=[x for x in cs if x['homeAway']=='home'][0];a=[x for x in cs if x['homeAway']=='away'][0]
+         v=c.get('venue',{}) or {};ad=v.get('address',{}) or {}
+         return {'d':e['date'],'rnd':(e.get('season') or {}).get('slug',''),'a':a['team'].get('abbreviation'),'h':h['team'].get('abbreviation'),'an':a['team'].get('displayName'),'hn':h['team'].get('displayName'),'af':a['team'].get('logo') or '','hf':h['team'].get('logo') or '','as':a.get('score'),'hs':h.get('score'),'s':e['status']['type']['state'],'det':e['status']['type']['shortDetail'],'v':', '.join(x for x in [v.get('fullName'),ad.get('city'),ad.get('country')] if x)}
+        ev=d.get('events',[])
+        print(json.dumps({'count':len(ev),'matches':[row(e) for e in ev]}))
+        "
+      value_template: "{{ value_json.count }}"
+      json_attributes:
+        - matches
+
+# Keep the large JSON payloads out of the history DB.
+recorder:
+  exclude:
+    entities:
+      - sensor.world_cup_scoreboard
+      - sensor.world_cup_standings
+      - sensor.world_cup_schedule
+
+# --- Automation: faster polling while the USA is playing live ---
+automation:
+  - id: '1780630600000'
+    alias: World Cup - Fast Refresh While USA Live
+    description: While a USA match is in progress, force-refresh the ESPN scoreboard every 3 seconds for near real-time scores, the clock ticker and the goal-celebration flash. The normal refresh stays at 60s the rest of the time.
+    triggers:
+    - trigger: time_pattern
+      seconds: /3
+    conditions:
+    - condition: state
+      entity_id: binary_sensor.world_cup_us_live
+      state: 'on'
+    actions:
+    - action: homeassistant.update_entity
+      target:
+        entity_id: sensor.world_cup_scoreboard
+    mode: single

@@ -1,14 +1,6 @@
-save_current_target_temperature:
-  name: Save target temperature
-  description: Save the current target temperature for later use.
-  target:
-    entity:
-      domain: climate
-      integration: better_thermostat
-
-restore_saved_target_temperature:
-  name: Restore target temperature
-  description: Restore the previously saved target temperature.
+run_valve_maintenance:
+  name: Run valve maintenance now
+  description: Run the valve maintenance cycle immediately for this Better Thermostat entity.
   target:
     entity:
       domain: climate
@@ -22,21 +14,51 @@ reset_heating_power:
       domain: climate
       integration: better_thermostat
 
-set_temp_target_temperature:
-  name: Set temporary (ECO) target temperature
-  description: Set a temporary target temperature and save the current temperature.
+reset_pid_learnings:
+  name: Reset PID learnings
+  description: Clear all learned PID state (and optionally learned open caps) for this entity.
   fields:
-    temperature:
-      name: Temperature
-      description: New target temperature to set
-      required: true
+    include_open_caps:
+      name: Also clear learned open caps
+      description: If enabled, also clears learned min/max open percentages per TRV/target bucket.
+      required: false
+      default: false
+      selector:
+        boolean: {}
+    apply_pid_defaults:
+      name: Apply PID defaults after reset
+      description: If enabled, seeds the current target bucket(s) with PID default gains (kp/ki/kd). You can override defaults below.
+      required: false
+      default: false
+      selector:
+        boolean: {}
+    defaults_kp:
+      name: Default kp
+      description: Proportional gain to seed after reset (falls back to BalanceParams.kp if not provided).
+      required: false
       selector:
         number:
           min: 0
-          max: 35
-          step: 0.5
-          mode: box
-          unit_of_measurement: °C
+          max: 1000
+          step: 0.1
+    defaults_ki:
+      name: Default ki
+      description: Integral gain to seed after reset (falls back to BalanceParams.ki if not provided).
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 1
+          step: 0.001
+    defaults_kd:
+      name: Default kd
+      description: Derivative gain to seed after reset (falls back to BalanceParams.kd if not provided).
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 10000
+          step: 10
   target:
     entity:
       domain: climate
