@@ -4,7 +4,7 @@ homeassistant:
   # External_url: !secret ext_url
 
   # Load packages
-  packages: !include_dir_named integrations
+  packages: !include_dir_named packages
 
 # default_config:
 default_config:

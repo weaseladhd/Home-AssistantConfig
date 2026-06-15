@@ -5,15 +5,6 @@
   "data": {
     "items": [
       {
-        "id": "map",
-        "icon": "mdi:map",
-        "title": "Map",
-        "url_path": "map",
-        "show_in_sidebar": true,
-        "require_admin": false,
-        "mode": "storage"
-      },
-      {
         "id": "dashboard_areas",
         "show_in_sidebar": true,
         "icon": "mdi:test-tube",
@@ -30,6 +21,24 @@
         "show_in_sidebar": true,
         "require_admin": false,
         "mode": "storage"
+      },
+      {
+        "id": "dashboard_map",
+        "show_in_sidebar": true,
+        "icon": "mdi:map",
+        "title": "Map",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "dashboard-map"
+      },
+      {
+        "id": "world_cup",
+        "show_in_sidebar": true,
+        "icon": "mdi:soccer",
+        "title": "World Cup",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "world-cup"
       }
     ]
   }

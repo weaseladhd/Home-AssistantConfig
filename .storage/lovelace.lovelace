@@ -477,24 +477,21 @@
                   "type": "horizontal-stack"
                 },
                 {
-                  "type": "custom:mushroom-climate-card",
-                  "entity": "climate.living_room",
+                  "low_battery_threshold": 10,
+                  "type": "custom:better-thermostat-mini-climate-card",
+                  "entity": "climate.downstairs_thermostat",
+                  "fill_container": false,
+                  "show_current_as_primary": false,
+                  "show_secondary": false,
                   "show_temperature_control": true,
-                  "hvac_modes": [
-                    "auto",
-                    "heat",
-                    "off"
-                  ],
                   "collapsible_controls": true,
-                  "icon_type": "icon",
                   "grid_options": {
                     "columns": 8,
                     "rows": 2
                   },
                   "tap_action": {
                     "action": "more-info"
-                  },
-                  "secondary_info": "state"
+                  }
                 },
                 {
                   "type": "custom:mushroom-entity-card",
@@ -618,6 +615,23 @@
                   "name": "Bedroom Humidifier"
                 },
                 {
+                  "low_battery_threshold": 10,
+                  "type": "custom:better-thermostat-mini-climate-card",
+                  "entity": "climate.study",
+                  "fill_container": false,
+                  "show_current_as_primary": false,
+                  "show_secondary": false,
+                  "show_temperature_control": true,
+                  "collapsible_controls": true,
+                  "grid_options": {
+                    "columns": 12,
+                    "rows": 2
+                  },
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                },
+                {
                   "type": "custom:mini-graph-card",
                   "entities": [
                     {
@@ -669,22 +683,6 @@
                   },
                   "card_mod": {
                     "style": ".graph .graph__legend {\n  font-size: 12px;\n}\n"
-                  }
-                },
-                {
-                  "type": "custom:mushroom-climate-card",
-                  "entity": "climate.study",
-                  "fill_container": false,
-                  "layout": "horizontal",
-                  "show_temperature_control": true,
-                  "hvac_modes": [
-                    "off",
-                    "auto",
-                    "heat"
-                  ],
-                  "collapsible_controls": true,
-                  "tap_action": {
-                    "action": "more-info"
                   }
                 }
               ]
@@ -3455,45 +3453,6 @@
                   "icon": "mdi:download"
                 },
                 {
-                  "card": {
-                    "entities": [
-                      {
-                        "entity": "sensor.sabnzbd_status"
-                      },
-                      {
-                        "entity": "sensor.sabnzbd_speed"
-                      },
-                      {
-                        "entity": "sensor.sabnzbd_left_to_download"
-                      },
-                      {
-                        "entity": "sensor.sabnzbd_free_disk_space"
-                      },
-                      {
-                        "entity": "sensor.sabnzbd_queue_count"
-                      },
-                      {
-                        "entity": "sensor.sabnzbd_queue"
-                      },
-                      {
-                        "entity": "sensor.sabnzbd_daily_total"
-                      },
-                      {
-                        "entity": "sensor.sabnzbd_overall_total"
-                      }
-                    ],
-                    "title": "Sabnzbd",
-                    "type": "entities"
-                  },
-                  "conditions": [
-                    {
-                      "entity": "sensor.sabnzbd_status",
-                      "state_not": "Idle"
-                    }
-                  ],
-                  "type": "conditional"
-                },
-                {
                   "type": "entities",
                   "entities": [
                     {
@@ -4317,11 +4276,7 @@
                   "type": "heading",
                   "heading_style": "title",
                   "heading": "System",
-                  "icon": "mdi:server",
-                  "grid_options": {
-                    "columns": 9,
-                    "rows": 1
-                  }
+                  "icon": "mdi:server"
                 },
                 {
                   "entities": [

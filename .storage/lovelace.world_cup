@@ -1,0 +1,1591 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.world_cup",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "title": "World Cup",
+          "path": "world-cup",
+          "icon": "mdi:soccer",
+          "cards": [
+            {
+              "type": "vertical-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "entity": "sensor.world_cup_scoreboard",
+                  "triggers_update": [
+                    "sensor.world_cup_scoreboard"
+                  ],
+                  "show_icon": false,
+                  "show_name": false,
+                  "show_state": false,
+                  "show_label": false,
+                  "tap_action": {
+                    "action": "none"
+                  },
+                  "custom_fields": {
+                    "content": "[[[\n  const sb = states['sensor.world_cup_scoreboard'];\n  const events = (sb && sb.attributes && sb.attributes.events) || [];\n  const esc = s => (s==null?'':String(s));\n  const venueStr = c => { const v=(c&&c.venue)||{}; const a=v.address||{}; return [v.fullName,a.city,a.country].filter(Boolean).join(', '); };\n  const fmtTime = iso => { try { return new Date(iso).toLocaleString([], {weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'}); } catch(e){ return esc(iso); } };\n  let us=null,opp=null,ust=null,usEvent=null;\n  for (const e of events){ const cps=e.competitions[0].competitors; const u=cps.find(c=>c.team.abbreviation==='USA'); if(u){us=u;opp=cps.find(c=>c.team.abbreviation!=='USA');ust=e.status.type;usEvent=e;} }\n  if(!us) return '<div style=\"color:#888;text-align:center;padding:8px;\">No USA match today.</div>';\n  const cur=parseInt(us.score);\n  if(!isNaN(cur)){ const prev=window.__wcUsScore; if(typeof prev==='number'&&cur>prev){window.__wcFlashUntil=Date.now()+10000;} window.__wcUsScore=cur; }\n  const flash=!!(window.__wcFlashUntil&&Date.now()<window.__wcFlashUntil);\n  const live=ust.state==='in';\n  const badge=live?('🔴 LIVE · '+ust.shortDetail):(ust.state==='post'?('✅ '+ust.shortDetail):('🕐 '+ust.shortDetail));\n  let ticker='';\n  if(live){ const f=usEvent.status||{}; const sd=(ust.shortDetail||'').toUpperCase();\n    if(sd==='HT'||(ust.description||'')==='Halftime'){ticker='⏸ Halftime';}\n    else{ const mins=Math.floor((f.clock||0)/60); const half=f.period===1?'1st Half':(f.period>=2?'2nd Half':'In Play'); const endAt=f.period===1?45:90; const rem=endAt-mins; const rt=rem>0?('~'+rem+' min left'+(f.period===1?' in half':'')):'+ stoppage time'; ticker='⏱ '+half+' · '+esc(f.displayClock)+' · '+rt; } }\n  const anim=flash?'animation: wcUsGoal 1s ease-in-out 10;':'';\n  const baseBg='background:linear-gradient(120deg,#0a2342,#1d4e89);box-shadow:0 0 28px rgba(29,78,137,.55);';\n  return `<div style=\"${baseBg}${anim}border-radius:20px;padding:20px;display:flex;align-items:center;justify-content:center;gap:28px;border:1px solid rgba(255,255,255,.18);\">\n    <div style=\"text-align:center;\"><img src=\"${us.team.logo}\" style=\"height:96px;\"><div style=\"color:#fff;font-weight:700;margin-top:6px;\">${esc(us.team.abbreviation)}</div></div>\n    <div style=\"text-align:center;color:#fff;\">\n      ${flash?'<div style=\"font-size:13px;font-weight:800;letter-spacing:1px;color:#bbf7d0;\">⚽ GOAL! USA! ⚽</div>':''}\n      <div style=\"font-size:48px;font-weight:800;line-height:1;\">${esc(us.score)} – ${esc(opp.score)}</div>\n      <div style=\"margin-top:8px;font-size:15px;opacity:.95;\">${badge}</div>\n      ${ticker?`<div style=\"margin-top:8px;display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:4px 14px;font-size:14px;font-weight:700;color:#fff;\">${ticker}</div>`:''}\n      <div style=\"font-size:12px;opacity:.7;margin-top:6px;\">USA vs ${esc(opp.team.displayName)}</div>\n      <div style=\"font-size:12px;opacity:.85;margin-top:4px;\">🕒 ${fmtTime(usEvent.date)} &nbsp; 📍 ${esc(venueStr(usEvent.competitions[0]))}</div>\n    </div>\n    <div style=\"text-align:center;\"><img src=\"${opp.team.logo}\" style=\"height:96px;\"><div style=\"color:#fff;font-weight:700;margin-top:6px;\">${esc(opp.team.abbreviation)}</div></div>\n  </div>`;\n]]]"
+                  },
+                  "styles": {
+                    "card": [
+                      {
+                        "background": "transparent"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "border": "none"
+                      },
+                      {
+                        "padding": "0"
+                      }
+                    ],
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"content\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      }
+                    ],
+                    "custom_fields": {
+                      "content": [
+                        {
+                          "justify-self": "stretch"
+                        },
+                        {
+                          "width": "100%"
+                        }
+                      ]
+                    }
+                  },
+                  "extra_styles": "@keyframes wcUsGoal {\n  0%   { background: linear-gradient(120deg,#16a34a,#22c55e); box-shadow:0 0 48px rgba(34,197,94,.95); }\n  50%  { background: linear-gradient(120deg,#0a2342,#1d4e89); box-shadow:0 0 12px rgba(29,78,137,.4); }\n  100% { background: linear-gradient(120deg,#16a34a,#22c55e); box-shadow:0 0 48px rgba(34,197,94,.95); }\n}\n"
+                },
+                {
+                  "type": "markdown",
+                  "content": "## ⚽ Matches Today"
+                },
+                {
+                  "type": "custom:button-card",
+                  "entity": "sensor.world_cup_scoreboard",
+                  "triggers_update": [
+                    "sensor.world_cup_scoreboard"
+                  ],
+                  "show_icon": false,
+                  "show_name": false,
+                  "show_state": false,
+                  "show_label": false,
+                  "tap_action": {
+                    "action": "none"
+                  },
+                  "custom_fields": {
+                    "content": "[[[\n  const sb=states['sensor.world_cup_scoreboard'];\n  const events=(sb&&sb.attributes&&sb.attributes.events)||[];\n  const esc=s=>(s==null?'':String(s));\n  const flag=(u,h)=>u?`<img src=\"${u}\" style=\"height:${h}px;vertical-align:middle;border-radius:3px;\">`:'';\n  let chips=events.map(e=>{const cps=e.competitions[0].competitors;const home=cps.find(x=>x.homeAway==='home');const away=cps.find(x=>x.homeAway==='away');const t=e.status.type;const mark=t.state==='in'?'🔴':(t.state==='post'?'✅':'🕐');const css=t.state==='in'?'border:1px solid #ef4444;box-shadow:0 0 14px rgba(239,68,68,.45);':'border:1px solid rgba(255,255,255,.1);';\n    return `<div style=\"background:rgba(40,40,40,.5);border-radius:14px;padding:10px 14px;${css}display:flex;flex-direction:column;align-items:center;min-width:170px;\">\n      <div style=\"display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;color:#fff;\">${flag(away.team.logo,26)} ${esc(away.team.abbreviation)} <span style=\"opacity:.7;font-size:15px;\">${esc(away.score)}–${esc(home.score)}</span> ${esc(home.team.abbreviation)} ${flag(home.team.logo,26)}</div>\n      <div style=\"font-size:11px;color:#bbb;margin-top:5px;\">${mark} ${esc(t.shortDetail)} · 📍 ${esc((e.competitions[0].venue||{}).fullName||'')}</div></div>`;}).join('');\n  if(!chips) chips='<div style=\"color:#999;\">No matches today.</div>';\n  return `<div style=\"display:flex;flex-wrap:wrap;gap:10px;\">${chips}</div>`;\n]]]"
+                  },
+                  "styles": {
+                    "card": [
+                      {
+                        "background": "transparent"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "border": "none"
+                      },
+                      {
+                        "padding": "0"
+                      }
+                    ],
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"content\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      }
+                    ],
+                    "custom_fields": {
+                      "content": [
+                        {
+                          "justify-self": "stretch"
+                        },
+                        {
+                          "width": "100%"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "content": "## 🏆 Group Stage\n_Tap a group to see its full fixtures, venues &amp; results._"
+                },
+                {
+                  "type": "grid",
+                  "columns": 3,
+                  "square": false,
+                  "cards": [
+                    {
+                      "type": "custom:button-card",
+                      "entity": "sensor.world_cup_standings",
+                      "triggers_update": [
+                        "sensor.world_cup_standings"
+                      ],
+                      "show_icon": false,
+                      "show_name": false,
+                      "show_state": false,
+                      "show_label": false,
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "Group A",
+                            "content": {
+                              "type": "custom:button-card",
+                              "entity": "sensor.world_cup_schedule",
+                              "triggers_update": [
+                                "sensor.world_cup_schedule",
+                                "sensor.world_cup_scoreboard",
+                                "sensor.world_cup_standings"
+                              ],
+                              "show_icon": false,
+                              "show_name": false,
+                              "show_state": false,
+                              "show_label": false,
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "custom_fields": {
+                                "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const sch=states['sensor.world_cup_schedule'];\n  const sb=states['sensor.world_cup_scoreboard'];\n  const TARGET=\"Group A\";\n  const esc=s=>(s==null?'':String(s));\n  const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return esc(iso);}};\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const g=groups.find(x=>x.name===TARGET);\n  const teams=g?((g.standings&&g.standings.entries)||[]).map(e=>e.team.abbreviation):[];\n  let matches=(sch&&sch.attributes&&sch.attributes.matches)||[];\n  if(!matches.length&&sb){matches=((sb.attributes&&sb.attributes.events)||[]).map(e=>{const c=e.competitions[0],cs=c.competitors;const h=cs.find(x=>x.homeAway==='home'),a=cs.find(x=>x.homeAway==='away');const v=c.venue||{},ad=v.address||{};return{d:e.date,a:a.team.abbreviation,h:h.team.abbreviation,as:a.score,hs:h.score,s:e.status.type.state,det:e.status.type.shortDetail,v:[v.fullName,ad.city,ad.country].filter(Boolean).join(', ')};});}\n  const gm=matches.filter(m=>teams.includes(m.a)||teams.includes(m.h)).sort((x,y)=>(x.d<y.d?-1:(x.d>y.d?1:0)));\n  const body=gm.length?gm.map(m=>{const sl=m.s==='post'?'✅ Concluded (Final)':(m.s==='in'?'🔴 In progress · '+esc(m.det):'🕐 Scheduled');const score=(m.s!=='pre'&&m.as!=null&&m.hs!=null)?` <span style=\"opacity:.85;font-weight:700;\">${esc(m.as)}–${esc(m.hs)}</span>`:'';\n    return `<div style=\"padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.08);\"><div style=\"color:#fff;font-weight:700;font-size:15px;\">${esc(m.a)} v ${esc(m.h)}${score}</div><div style=\"color:#cbd5e1;font-size:13px;margin-top:3px;\">🗓 ${fmt(m.d)}</div><div style=\"color:#cbd5e1;font-size:13px;\">📍 ${esc(m.v)}</div><div style=\"font-size:13px;margin-top:3px;\">${sl}</div></div>`;}).join(''):'<div style=\"color:#888;padding:8px;\">No fixtures found.</div>';\n  return `<div style=\"text-align:left;padding:4px;\">${body}</div>`;\n]]]"
+                              },
+                              "styles": {
+                                "card": [
+                                  {
+                                    "background": "transparent"
+                                  },
+                                  {
+                                    "box-shadow": "none"
+                                  },
+                                  {
+                                    "border": "none"
+                                  },
+                                  {
+                                    "padding": "0"
+                                  }
+                                ],
+                                "grid": [
+                                  {
+                                    "grid-template-areas": "\"content\""
+                                  },
+                                  {
+                                    "grid-template-columns": "1fr"
+                                  }
+                                ],
+                                "custom_fields": {
+                                  "content": [
+                                    {
+                                      "justify-self": "stretch"
+                                    },
+                                    {
+                                      "width": "100%"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "custom_fields": {
+                        "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const TARGET=\"Group A\";\n  const esc=s=>(s==null?'':String(s));\n  const flag=u=>u?`<img src=\"${u}\" style=\"height:20px;vertical-align:middle;border-radius:3px;\">`:'';\n  const g=groups.find(x=>x.name===TARGET);\n  let rh='<div style=\"color:#888;font-size:12px;\">No data yet</div>';\n  if(g){ const rows=((g.standings&&g.standings.entries)||[]).map(en=>{let rank=99,pts='0';for(const s of en.stats){if(s.name==='rank')rank=parseInt(s.value);if(s.name==='points')pts=s.displayValue;}return{rank,abbr:en.team.abbreviation,flag:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:''),pts};}).sort((a,b)=>a.rank-b.rank);\n    rh=rows.map(r=>{const adv=r.rank<=2;return `<div style=\"display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:3px solid ${adv?'#22c55e':'transparent'};background:${adv?'rgba(34,197,94,.12)':'transparent'};border-radius:4px;\"><span style=\"width:12px;color:${adv?'#22c55e':'#888'};font-weight:700;font-size:12px;\">${r.rank}</span>${flag(r.flag)}<span style=\"flex:1;color:#fff;font-size:13px;font-weight:${adv?'700':'500'};\">${esc(r.abbr)}</span><span style=\"color:#cbd5e1;font-weight:700;font-size:13px;\">${esc(r.pts)}</span></div>`;}).join(''); }\n  return `<div style=\"text-align:left;\"><div style=\"font-weight:800;color:#fff;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.13);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;\">${TARGET}<span style=\"font-size:10px;opacity:.5;font-weight:500;\">tap ⓘ</span></div>${rh}</div>`;\n]]]"
+                      },
+                      "styles": {
+                        "card": [
+                          {
+                            "background": "rgba(30,30,30,.55)"
+                          },
+                          {
+                            "border": "1px solid rgba(255,255,255,.1)"
+                          },
+                          {
+                            "border-radius": "16px"
+                          },
+                          {
+                            "padding": "12px"
+                          },
+                          {
+                            "backdrop-filter": "blur(12px)"
+                          },
+                          {
+                            "cursor": "pointer"
+                          }
+                        ],
+                        "grid": [
+                          {
+                            "grid-template-areas": "\"content\""
+                          },
+                          {
+                            "grid-template-columns": "1fr"
+                          }
+                        ],
+                        "custom_fields": {
+                          "content": [
+                            {
+                              "justify-self": "stretch"
+                            },
+                            {
+                              "width": "100%"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "entity": "sensor.world_cup_standings",
+                      "triggers_update": [
+                        "sensor.world_cup_standings"
+                      ],
+                      "show_icon": false,
+                      "show_name": false,
+                      "show_state": false,
+                      "show_label": false,
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "Group B",
+                            "content": {
+                              "type": "custom:button-card",
+                              "entity": "sensor.world_cup_schedule",
+                              "triggers_update": [
+                                "sensor.world_cup_schedule",
+                                "sensor.world_cup_scoreboard",
+                                "sensor.world_cup_standings"
+                              ],
+                              "show_icon": false,
+                              "show_name": false,
+                              "show_state": false,
+                              "show_label": false,
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "custom_fields": {
+                                "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const sch=states['sensor.world_cup_schedule'];\n  const sb=states['sensor.world_cup_scoreboard'];\n  const TARGET=\"Group B\";\n  const esc=s=>(s==null?'':String(s));\n  const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return esc(iso);}};\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const g=groups.find(x=>x.name===TARGET);\n  const teams=g?((g.standings&&g.standings.entries)||[]).map(e=>e.team.abbreviation):[];\n  let matches=(sch&&sch.attributes&&sch.attributes.matches)||[];\n  if(!matches.length&&sb){matches=((sb.attributes&&sb.attributes.events)||[]).map(e=>{const c=e.competitions[0],cs=c.competitors;const h=cs.find(x=>x.homeAway==='home'),a=cs.find(x=>x.homeAway==='away');const v=c.venue||{},ad=v.address||{};return{d:e.date,a:a.team.abbreviation,h:h.team.abbreviation,as:a.score,hs:h.score,s:e.status.type.state,det:e.status.type.shortDetail,v:[v.fullName,ad.city,ad.country].filter(Boolean).join(', ')};});}\n  const gm=matches.filter(m=>teams.includes(m.a)||teams.includes(m.h)).sort((x,y)=>(x.d<y.d?-1:(x.d>y.d?1:0)));\n  const body=gm.length?gm.map(m=>{const sl=m.s==='post'?'✅ Concluded (Final)':(m.s==='in'?'🔴 In progress · '+esc(m.det):'🕐 Scheduled');const score=(m.s!=='pre'&&m.as!=null&&m.hs!=null)?` <span style=\"opacity:.85;font-weight:700;\">${esc(m.as)}–${esc(m.hs)}</span>`:'';\n    return `<div style=\"padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.08);\"><div style=\"color:#fff;font-weight:700;font-size:15px;\">${esc(m.a)} v ${esc(m.h)}${score}</div><div style=\"color:#cbd5e1;font-size:13px;margin-top:3px;\">🗓 ${fmt(m.d)}</div><div style=\"color:#cbd5e1;font-size:13px;\">📍 ${esc(m.v)}</div><div style=\"font-size:13px;margin-top:3px;\">${sl}</div></div>`;}).join(''):'<div style=\"color:#888;padding:8px;\">No fixtures found.</div>';\n  return `<div style=\"text-align:left;padding:4px;\">${body}</div>`;\n]]]"
+                              },
+                              "styles": {
+                                "card": [
+                                  {
+                                    "background": "transparent"
+                                  },
+                                  {
+                                    "box-shadow": "none"
+                                  },
+                                  {
+                                    "border": "none"
+                                  },
+                                  {
+                                    "padding": "0"
+                                  }
+                                ],
+                                "grid": [
+                                  {
+                                    "grid-template-areas": "\"content\""
+                                  },
+                                  {
+                                    "grid-template-columns": "1fr"
+                                  }
+                                ],
+                                "custom_fields": {
+                                  "content": [
+                                    {
+                                      "justify-self": "stretch"
+                                    },
+                                    {
+                                      "width": "100%"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "custom_fields": {
+                        "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const TARGET=\"Group B\";\n  const esc=s=>(s==null?'':String(s));\n  const flag=u=>u?`<img src=\"${u}\" style=\"height:20px;vertical-align:middle;border-radius:3px;\">`:'';\n  const g=groups.find(x=>x.name===TARGET);\n  let rh='<div style=\"color:#888;font-size:12px;\">No data yet</div>';\n  if(g){ const rows=((g.standings&&g.standings.entries)||[]).map(en=>{let rank=99,pts='0';for(const s of en.stats){if(s.name==='rank')rank=parseInt(s.value);if(s.name==='points')pts=s.displayValue;}return{rank,abbr:en.team.abbreviation,flag:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:''),pts};}).sort((a,b)=>a.rank-b.rank);\n    rh=rows.map(r=>{const adv=r.rank<=2;return `<div style=\"display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:3px solid ${adv?'#22c55e':'transparent'};background:${adv?'rgba(34,197,94,.12)':'transparent'};border-radius:4px;\"><span style=\"width:12px;color:${adv?'#22c55e':'#888'};font-weight:700;font-size:12px;\">${r.rank}</span>${flag(r.flag)}<span style=\"flex:1;color:#fff;font-size:13px;font-weight:${adv?'700':'500'};\">${esc(r.abbr)}</span><span style=\"color:#cbd5e1;font-weight:700;font-size:13px;\">${esc(r.pts)}</span></div>`;}).join(''); }\n  return `<div style=\"text-align:left;\"><div style=\"font-weight:800;color:#fff;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.13);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;\">${TARGET}<span style=\"font-size:10px;opacity:.5;font-weight:500;\">tap ⓘ</span></div>${rh}</div>`;\n]]]"
+                      },
+                      "styles": {
+                        "card": [
+                          {
+                            "background": "rgba(30,30,30,.55)"
+                          },
+                          {
+                            "border": "1px solid rgba(255,255,255,.1)"
+                          },
+                          {
+                            "border-radius": "16px"
+                          },
+                          {
+                            "padding": "12px"
+                          },
+                          {
+                            "backdrop-filter": "blur(12px)"
+                          },
+                          {
+                            "cursor": "pointer"
+                          }
+                        ],
+                        "grid": [
+                          {
+                            "grid-template-areas": "\"content\""
+                          },
+                          {
+                            "grid-template-columns": "1fr"
+                          }
+                        ],
+                        "custom_fields": {
+                          "content": [
+                            {
+                              "justify-self": "stretch"
+                            },
+                            {
+                              "width": "100%"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "entity": "sensor.world_cup_standings",
+                      "triggers_update": [
+                        "sensor.world_cup_standings"
+                      ],
+                      "show_icon": false,
+                      "show_name": false,
+                      "show_state": false,
+                      "show_label": false,
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "Group C",
+                            "content": {
+                              "type": "custom:button-card",
+                              "entity": "sensor.world_cup_schedule",
+                              "triggers_update": [
+                                "sensor.world_cup_schedule",
+                                "sensor.world_cup_scoreboard",
+                                "sensor.world_cup_standings"
+                              ],
+                              "show_icon": false,
+                              "show_name": false,
+                              "show_state": false,
+                              "show_label": false,
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "custom_fields": {
+                                "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const sch=states['sensor.world_cup_schedule'];\n  const sb=states['sensor.world_cup_scoreboard'];\n  const TARGET=\"Group C\";\n  const esc=s=>(s==null?'':String(s));\n  const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return esc(iso);}};\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const g=groups.find(x=>x.name===TARGET);\n  const teams=g?((g.standings&&g.standings.entries)||[]).map(e=>e.team.abbreviation):[];\n  let matches=(sch&&sch.attributes&&sch.attributes.matches)||[];\n  if(!matches.length&&sb){matches=((sb.attributes&&sb.attributes.events)||[]).map(e=>{const c=e.competitions[0],cs=c.competitors;const h=cs.find(x=>x.homeAway==='home'),a=cs.find(x=>x.homeAway==='away');const v=c.venue||{},ad=v.address||{};return{d:e.date,a:a.team.abbreviation,h:h.team.abbreviation,as:a.score,hs:h.score,s:e.status.type.state,det:e.status.type.shortDetail,v:[v.fullName,ad.city,ad.country].filter(Boolean).join(', ')};});}\n  const gm=matches.filter(m=>teams.includes(m.a)||teams.includes(m.h)).sort((x,y)=>(x.d<y.d?-1:(x.d>y.d?1:0)));\n  const body=gm.length?gm.map(m=>{const sl=m.s==='post'?'✅ Concluded (Final)':(m.s==='in'?'🔴 In progress · '+esc(m.det):'🕐 Scheduled');const score=(m.s!=='pre'&&m.as!=null&&m.hs!=null)?` <span style=\"opacity:.85;font-weight:700;\">${esc(m.as)}–${esc(m.hs)}</span>`:'';\n    return `<div style=\"padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.08);\"><div style=\"color:#fff;font-weight:700;font-size:15px;\">${esc(m.a)} v ${esc(m.h)}${score}</div><div style=\"color:#cbd5e1;font-size:13px;margin-top:3px;\">🗓 ${fmt(m.d)}</div><div style=\"color:#cbd5e1;font-size:13px;\">📍 ${esc(m.v)}</div><div style=\"font-size:13px;margin-top:3px;\">${sl}</div></div>`;}).join(''):'<div style=\"color:#888;padding:8px;\">No fixtures found.</div>';\n  return `<div style=\"text-align:left;padding:4px;\">${body}</div>`;\n]]]"
+                              },
+                              "styles": {
+                                "card": [
+                                  {
+                                    "background": "transparent"
+                                  },
+                                  {
+                                    "box-shadow": "none"
+                                  },
+                                  {
+                                    "border": "none"
+                                  },
+                                  {
+                                    "padding": "0"
+                                  }
+                                ],
+                                "grid": [
+                                  {
+                                    "grid-template-areas": "\"content\""
+                                  },
+                                  {
+                                    "grid-template-columns": "1fr"
+                                  }
+                                ],
+                                "custom_fields": {
+                                  "content": [
+                                    {
+                                      "justify-self": "stretch"
+                                    },
+                                    {
+                                      "width": "100%"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "custom_fields": {
+                        "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const TARGET=\"Group C\";\n  const esc=s=>(s==null?'':String(s));\n  const flag=u=>u?`<img src=\"${u}\" style=\"height:20px;vertical-align:middle;border-radius:3px;\">`:'';\n  const g=groups.find(x=>x.name===TARGET);\n  let rh='<div style=\"color:#888;font-size:12px;\">No data yet</div>';\n  if(g){ const rows=((g.standings&&g.standings.entries)||[]).map(en=>{let rank=99,pts='0';for(const s of en.stats){if(s.name==='rank')rank=parseInt(s.value);if(s.name==='points')pts=s.displayValue;}return{rank,abbr:en.team.abbreviation,flag:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:''),pts};}).sort((a,b)=>a.rank-b.rank);\n    rh=rows.map(r=>{const adv=r.rank<=2;return `<div style=\"display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:3px solid ${adv?'#22c55e':'transparent'};background:${adv?'rgba(34,197,94,.12)':'transparent'};border-radius:4px;\"><span style=\"width:12px;color:${adv?'#22c55e':'#888'};font-weight:700;font-size:12px;\">${r.rank}</span>${flag(r.flag)}<span style=\"flex:1;color:#fff;font-size:13px;font-weight:${adv?'700':'500'};\">${esc(r.abbr)}</span><span style=\"color:#cbd5e1;font-weight:700;font-size:13px;\">${esc(r.pts)}</span></div>`;}).join(''); }\n  return `<div style=\"text-align:left;\"><div style=\"font-weight:800;color:#fff;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.13);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;\">${TARGET}<span style=\"font-size:10px;opacity:.5;font-weight:500;\">tap ⓘ</span></div>${rh}</div>`;\n]]]"
+                      },
+                      "styles": {
+                        "card": [
+                          {
+                            "background": "rgba(30,30,30,.55)"
+                          },
+                          {
+                            "border": "1px solid rgba(255,255,255,.1)"
+                          },
+                          {
+                            "border-radius": "16px"
+                          },
+                          {
+                            "padding": "12px"
+                          },
+                          {
+                            "backdrop-filter": "blur(12px)"
+                          },
+                          {
+                            "cursor": "pointer"
+                          }
+                        ],
+                        "grid": [
+                          {
+                            "grid-template-areas": "\"content\""
+                          },
+                          {
+                            "grid-template-columns": "1fr"
+                          }
+                        ],
+                        "custom_fields": {
+                          "content": [
+                            {
+                              "justify-self": "stretch"
+                            },
+                            {
+                              "width": "100%"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "entity": "sensor.world_cup_standings",
+                      "triggers_update": [
+                        "sensor.world_cup_standings"
+                      ],
+                      "show_icon": false,
+                      "show_name": false,
+                      "show_state": false,
+                      "show_label": false,
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "Group D",
+                            "content": {
+                              "type": "custom:button-card",
+                              "entity": "sensor.world_cup_schedule",
+                              "triggers_update": [
+                                "sensor.world_cup_schedule",
+                                "sensor.world_cup_scoreboard",
+                                "sensor.world_cup_standings"
+                              ],
+                              "show_icon": false,
+                              "show_name": false,
+                              "show_state": false,
+                              "show_label": false,
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "custom_fields": {
+                                "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const sch=states['sensor.world_cup_schedule'];\n  const sb=states['sensor.world_cup_scoreboard'];\n  const TARGET=\"Group D\";\n  const esc=s=>(s==null?'':String(s));\n  const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return esc(iso);}};\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const g=groups.find(x=>x.name===TARGET);\n  const teams=g?((g.standings&&g.standings.entries)||[]).map(e=>e.team.abbreviation):[];\n  let matches=(sch&&sch.attributes&&sch.attributes.matches)||[];\n  if(!matches.length&&sb){matches=((sb.attributes&&sb.attributes.events)||[]).map(e=>{const c=e.competitions[0],cs=c.competitors;const h=cs.find(x=>x.homeAway==='home'),a=cs.find(x=>x.homeAway==='away');const v=c.venue||{},ad=v.address||{};return{d:e.date,a:a.team.abbreviation,h:h.team.abbreviation,as:a.score,hs:h.score,s:e.status.type.state,det:e.status.type.shortDetail,v:[v.fullName,ad.city,ad.country].filter(Boolean).join(', ')};});}\n  const gm=matches.filter(m=>teams.includes(m.a)||teams.includes(m.h)).sort((x,y)=>(x.d<y.d?-1:(x.d>y.d?1:0)));\n  const body=gm.length?gm.map(m=>{const sl=m.s==='post'?'✅ Concluded (Final)':(m.s==='in'?'🔴 In progress · '+esc(m.det):'🕐 Scheduled');const score=(m.s!=='pre'&&m.as!=null&&m.hs!=null)?` <span style=\"opacity:.85;font-weight:700;\">${esc(m.as)}–${esc(m.hs)}</span>`:'';\n    return `<div style=\"padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.08);\"><div style=\"color:#fff;font-weight:700;font-size:15px;\">${esc(m.a)} v ${esc(m.h)}${score}</div><div style=\"color:#cbd5e1;font-size:13px;margin-top:3px;\">🗓 ${fmt(m.d)}</div><div style=\"color:#cbd5e1;font-size:13px;\">📍 ${esc(m.v)}</div><div style=\"font-size:13px;margin-top:3px;\">${sl}</div></div>`;}).join(''):'<div style=\"color:#888;padding:8px;\">No fixtures found.</div>';\n  return `<div style=\"text-align:left;padding:4px;\">${body}</div>`;\n]]]"
+                              },
+                              "styles": {
+                                "card": [
+                                  {
+                                    "background": "transparent"
+                                  },
+                                  {
+                                    "box-shadow": "none"
+                                  },
+                                  {
+                                    "border": "none"
+                                  },
+                                  {
+                                    "padding": "0"
+                                  }
+                                ],
+                                "grid": [
+                                  {
+                                    "grid-template-areas": "\"content\""
+                                  },
+                                  {
+                                    "grid-template-columns": "1fr"
+                                  }
+                                ],
+                                "custom_fields": {
+                                  "content": [
+                                    {
+                                      "justify-self": "stretch"
+                                    },
+                                    {
+                                      "width": "100%"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "custom_fields": {
+                        "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const TARGET=\"Group D\";\n  const esc=s=>(s==null?'':String(s));\n  const flag=u=>u?`<img src=\"${u}\" style=\"height:20px;vertical-align:middle;border-radius:3px;\">`:'';\n  const g=groups.find(x=>x.name===TARGET);\n  let rh='<div style=\"color:#888;font-size:12px;\">No data yet</div>';\n  if(g){ const rows=((g.standings&&g.standings.entries)||[]).map(en=>{let rank=99,pts='0';for(const s of en.stats){if(s.name==='rank')rank=parseInt(s.value);if(s.name==='points')pts=s.displayValue;}return{rank,abbr:en.team.abbreviation,flag:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:''),pts};}).sort((a,b)=>a.rank-b.rank);\n    rh=rows.map(r=>{const adv=r.rank<=2;return `<div style=\"display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:3px solid ${adv?'#22c55e':'transparent'};background:${adv?'rgba(34,197,94,.12)':'transparent'};border-radius:4px;\"><span style=\"width:12px;color:${adv?'#22c55e':'#888'};font-weight:700;font-size:12px;\">${r.rank}</span>${flag(r.flag)}<span style=\"flex:1;color:#fff;font-size:13px;font-weight:${adv?'700':'500'};\">${esc(r.abbr)}</span><span style=\"color:#cbd5e1;font-weight:700;font-size:13px;\">${esc(r.pts)}</span></div>`;}).join(''); }\n  return `<div style=\"text-align:left;\"><div style=\"font-weight:800;color:#fff;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.13);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;\">${TARGET}<span style=\"font-size:10px;opacity:.5;font-weight:500;\">tap ⓘ</span></div>${rh}</div>`;\n]]]"
+                      },
+                      "styles": {
+                        "card": [
+                          {
+                            "background": "rgba(30,30,30,.55)"
+                          },
+                          {
+                            "border": "1px solid rgba(255,255,255,.1)"
+                          },
+                          {
+                            "border-radius": "16px"
+                          },
+                          {
+                            "padding": "12px"
+                          },
+                          {
+                            "backdrop-filter": "blur(12px)"
+                          },
+                          {
+                            "cursor": "pointer"
+                          }
+                        ],
+                        "grid": [
+                          {
+                            "grid-template-areas": "\"content\""
+                          },
+                          {
+                            "grid-template-columns": "1fr"
+                          }
+                        ],
+                        "custom_fields": {
+                          "content": [
+                            {
+                              "justify-self": "stretch"
+                            },
+                            {
+                              "width": "100%"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "entity": "sensor.world_cup_standings",
+                      "triggers_update": [
+                        "sensor.world_cup_standings"
+                      ],
+                      "show_icon": false,
+                      "show_name": false,
+                      "show_state": false,
+                      "show_label": false,
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "Group E",
+                            "content": {
+                              "type": "custom:button-card",
+                              "entity": "sensor.world_cup_schedule",
+                              "triggers_update": [
+                                "sensor.world_cup_schedule",
+                                "sensor.world_cup_scoreboard",
+                                "sensor.world_cup_standings"
+                              ],
+                              "show_icon": false,
+                              "show_name": false,
+                              "show_state": false,
+                              "show_label": false,
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "custom_fields": {
+                                "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const sch=states['sensor.world_cup_schedule'];\n  const sb=states['sensor.world_cup_scoreboard'];\n  const TARGET=\"Group E\";\n  const esc=s=>(s==null?'':String(s));\n  const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return esc(iso);}};\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const g=groups.find(x=>x.name===TARGET);\n  const teams=g?((g.standings&&g.standings.entries)||[]).map(e=>e.team.abbreviation):[];\n  let matches=(sch&&sch.attributes&&sch.attributes.matches)||[];\n  if(!matches.length&&sb){matches=((sb.attributes&&sb.attributes.events)||[]).map(e=>{const c=e.competitions[0],cs=c.competitors;const h=cs.find(x=>x.homeAway==='home'),a=cs.find(x=>x.homeAway==='away');const v=c.venue||{},ad=v.address||{};return{d:e.date,a:a.team.abbreviation,h:h.team.abbreviation,as:a.score,hs:h.score,s:e.status.type.state,det:e.status.type.shortDetail,v:[v.fullName,ad.city,ad.country].filter(Boolean).join(', ')};});}\n  const gm=matches.filter(m=>teams.includes(m.a)||teams.includes(m.h)).sort((x,y)=>(x.d<y.d?-1:(x.d>y.d?1:0)));\n  const body=gm.length?gm.map(m=>{const sl=m.s==='post'?'✅ Concluded (Final)':(m.s==='in'?'🔴 In progress · '+esc(m.det):'🕐 Scheduled');const score=(m.s!=='pre'&&m.as!=null&&m.hs!=null)?` <span style=\"opacity:.85;font-weight:700;\">${esc(m.as)}–${esc(m.hs)}</span>`:'';\n    return `<div style=\"padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.08);\"><div style=\"color:#fff;font-weight:700;font-size:15px;\">${esc(m.a)} v ${esc(m.h)}${score}</div><div style=\"color:#cbd5e1;font-size:13px;margin-top:3px;\">🗓 ${fmt(m.d)}</div><div style=\"color:#cbd5e1;font-size:13px;\">📍 ${esc(m.v)}</div><div style=\"font-size:13px;margin-top:3px;\">${sl}</div></div>`;}).join(''):'<div style=\"color:#888;padding:8px;\">No fixtures found.</div>';\n  return `<div style=\"text-align:left;padding:4px;\">${body}</div>`;\n]]]"
+                              },
+                              "styles": {
+                                "card": [
+                                  {
+                                    "background": "transparent"
+                                  },
+                                  {
+                                    "box-shadow": "none"
+                                  },
+                                  {
+                                    "border": "none"
+                                  },
+                                  {
+                                    "padding": "0"
+                                  }
+                                ],
+                                "grid": [
+                                  {
+                                    "grid-template-areas": "\"content\""
+                                  },
+                                  {
+                                    "grid-template-columns": "1fr"
+                                  }
+                                ],
+                                "custom_fields": {
+                                  "content": [
+                                    {
+                                      "justify-self": "stretch"
+                                    },
+                                    {
+                                      "width": "100%"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "custom_fields": {
+                        "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const TARGET=\"Group E\";\n  const esc=s=>(s==null?'':String(s));\n  const flag=u=>u?`<img src=\"${u}\" style=\"height:20px;vertical-align:middle;border-radius:3px;\">`:'';\n  const g=groups.find(x=>x.name===TARGET);\n  let rh='<div style=\"color:#888;font-size:12px;\">No data yet</div>';\n  if(g){ const rows=((g.standings&&g.standings.entries)||[]).map(en=>{let rank=99,pts='0';for(const s of en.stats){if(s.name==='rank')rank=parseInt(s.value);if(s.name==='points')pts=s.displayValue;}return{rank,abbr:en.team.abbreviation,flag:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:''),pts};}).sort((a,b)=>a.rank-b.rank);\n    rh=rows.map(r=>{const adv=r.rank<=2;return `<div style=\"display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:3px solid ${adv?'#22c55e':'transparent'};background:${adv?'rgba(34,197,94,.12)':'transparent'};border-radius:4px;\"><span style=\"width:12px;color:${adv?'#22c55e':'#888'};font-weight:700;font-size:12px;\">${r.rank}</span>${flag(r.flag)}<span style=\"flex:1;color:#fff;font-size:13px;font-weight:${adv?'700':'500'};\">${esc(r.abbr)}</span><span style=\"color:#cbd5e1;font-weight:700;font-size:13px;\">${esc(r.pts)}</span></div>`;}).join(''); }\n  return `<div style=\"text-align:left;\"><div style=\"font-weight:800;color:#fff;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.13);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;\">${TARGET}<span style=\"font-size:10px;opacity:.5;font-weight:500;\">tap ⓘ</span></div>${rh}</div>`;\n]]]"
+                      },
+                      "styles": {
+                        "card": [
+                          {
+                            "background": "rgba(30,30,30,.55)"
+                          },
+                          {
+                            "border": "1px solid rgba(255,255,255,.1)"
+                          },
+                          {
+                            "border-radius": "16px"
+                          },
+                          {
+                            "padding": "12px"
+                          },
+                          {
+                            "backdrop-filter": "blur(12px)"
+                          },
+                          {
+                            "cursor": "pointer"
+                          }
+                        ],
+                        "grid": [
+                          {
+                            "grid-template-areas": "\"content\""
+                          },
+                          {
+                            "grid-template-columns": "1fr"
+                          }
+                        ],
+                        "custom_fields": {
+                          "content": [
+                            {
+                              "justify-self": "stretch"
+                            },
+                            {
+                              "width": "100%"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "entity": "sensor.world_cup_standings",
+                      "triggers_update": [
+                        "sensor.world_cup_standings"
+                      ],
+                      "show_icon": false,
+                      "show_name": false,
+                      "show_state": false,
+                      "show_label": false,
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "Group F",
+                            "content": {
+                              "type": "custom:button-card",
+                              "entity": "sensor.world_cup_schedule",
+                              "triggers_update": [
+                                "sensor.world_cup_schedule",
+                                "sensor.world_cup_scoreboard",
+                                "sensor.world_cup_standings"
+                              ],
+                              "show_icon": false,
+                              "show_name": false,
+                              "show_state": false,
+                              "show_label": false,
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "custom_fields": {
+                                "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const sch=states['sensor.world_cup_schedule'];\n  const sb=states['sensor.world_cup_scoreboard'];\n  const TARGET=\"Group F\";\n  const esc=s=>(s==null?'':String(s));\n  const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return esc(iso);}};\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const g=groups.find(x=>x.name===TARGET);\n  const teams=g?((g.standings&&g.standings.entries)||[]).map(e=>e.team.abbreviation):[];\n  let matches=(sch&&sch.attributes&&sch.attributes.matches)||[];\n  if(!matches.length&&sb){matches=((sb.attributes&&sb.attributes.events)||[]).map(e=>{const c=e.competitions[0],cs=c.competitors;const h=cs.find(x=>x.homeAway==='home'),a=cs.find(x=>x.homeAway==='away');const v=c.venue||{},ad=v.address||{};return{d:e.date,a:a.team.abbreviation,h:h.team.abbreviation,as:a.score,hs:h.score,s:e.status.type.state,det:e.status.type.shortDetail,v:[v.fullName,ad.city,ad.country].filter(Boolean).join(', ')};});}\n  const gm=matches.filter(m=>teams.includes(m.a)||teams.includes(m.h)).sort((x,y)=>(x.d<y.d?-1:(x.d>y.d?1:0)));\n  const body=gm.length?gm.map(m=>{const sl=m.s==='post'?'✅ Concluded (Final)':(m.s==='in'?'🔴 In progress · '+esc(m.det):'🕐 Scheduled');const score=(m.s!=='pre'&&m.as!=null&&m.hs!=null)?` <span style=\"opacity:.85;font-weight:700;\">${esc(m.as)}–${esc(m.hs)}</span>`:'';\n    return `<div style=\"padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.08);\"><div style=\"color:#fff;font-weight:700;font-size:15px;\">${esc(m.a)} v ${esc(m.h)}${score}</div><div style=\"color:#cbd5e1;font-size:13px;margin-top:3px;\">🗓 ${fmt(m.d)}</div><div style=\"color:#cbd5e1;font-size:13px;\">📍 ${esc(m.v)}</div><div style=\"font-size:13px;margin-top:3px;\">${sl}</div></div>`;}).join(''):'<div style=\"color:#888;padding:8px;\">No fixtures found.</div>';\n  return `<div style=\"text-align:left;padding:4px;\">${body}</div>`;\n]]]"
+                              },
+                              "styles": {
+                                "card": [
+                                  {
+                                    "background": "transparent"
+                                  },
+                                  {
+                                    "box-shadow": "none"
+                                  },
+                                  {
+                                    "border": "none"
+                                  },
+                                  {
+                                    "padding": "0"
+                                  }
+                                ],
+                                "grid": [
+                                  {
+                                    "grid-template-areas": "\"content\""
+                                  },
+                                  {
+                                    "grid-template-columns": "1fr"
+                                  }
+                                ],
+                                "custom_fields": {
+                                  "content": [
+                                    {
+                                      "justify-self": "stretch"
+                                    },
+                                    {
+                                      "width": "100%"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "custom_fields": {
+                        "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const TARGET=\"Group F\";\n  const esc=s=>(s==null?'':String(s));\n  const flag=u=>u?`<img src=\"${u}\" style=\"height:20px;vertical-align:middle;border-radius:3px;\">`:'';\n  const g=groups.find(x=>x.name===TARGET);\n  let rh='<div style=\"color:#888;font-size:12px;\">No data yet</div>';\n  if(g){ const rows=((g.standings&&g.standings.entries)||[]).map(en=>{let rank=99,pts='0';for(const s of en.stats){if(s.name==='rank')rank=parseInt(s.value);if(s.name==='points')pts=s.displayValue;}return{rank,abbr:en.team.abbreviation,flag:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:''),pts};}).sort((a,b)=>a.rank-b.rank);\n    rh=rows.map(r=>{const adv=r.rank<=2;return `<div style=\"display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:3px solid ${adv?'#22c55e':'transparent'};background:${adv?'rgba(34,197,94,.12)':'transparent'};border-radius:4px;\"><span style=\"width:12px;color:${adv?'#22c55e':'#888'};font-weight:700;font-size:12px;\">${r.rank}</span>${flag(r.flag)}<span style=\"flex:1;color:#fff;font-size:13px;font-weight:${adv?'700':'500'};\">${esc(r.abbr)}</span><span style=\"color:#cbd5e1;font-weight:700;font-size:13px;\">${esc(r.pts)}</span></div>`;}).join(''); }\n  return `<div style=\"text-align:left;\"><div style=\"font-weight:800;color:#fff;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.13);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;\">${TARGET}<span style=\"font-size:10px;opacity:.5;font-weight:500;\">tap ⓘ</span></div>${rh}</div>`;\n]]]"
+                      },
+                      "styles": {
+                        "card": [
+                          {
+                            "background": "rgba(30,30,30,.55)"
+                          },
+                          {
+                            "border": "1px solid rgba(255,255,255,.1)"
+                          },
+                          {
+                            "border-radius": "16px"
+                          },
+                          {
+                            "padding": "12px"
+                          },
+                          {
+                            "backdrop-filter": "blur(12px)"
+                          },
+                          {
+                            "cursor": "pointer"
+                          }
+                        ],
+                        "grid": [
+                          {
+                            "grid-template-areas": "\"content\""
+                          },
+                          {
+                            "grid-template-columns": "1fr"
+                          }
+                        ],
+                        "custom_fields": {
+                          "content": [
+                            {
+                              "justify-self": "stretch"
+                            },
+                            {
+                              "width": "100%"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "entity": "sensor.world_cup_standings",
+                      "triggers_update": [
+                        "sensor.world_cup_standings"
+                      ],
+                      "show_icon": false,
+                      "show_name": false,
+                      "show_state": false,
+                      "show_label": false,
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "Group G",
+                            "content": {
+                              "type": "custom:button-card",
+                              "entity": "sensor.world_cup_schedule",
+                              "triggers_update": [
+                                "sensor.world_cup_schedule",
+                                "sensor.world_cup_scoreboard",
+                                "sensor.world_cup_standings"
+                              ],
+                              "show_icon": false,
+                              "show_name": false,
+                              "show_state": false,
+                              "show_label": false,
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "custom_fields": {
+                                "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const sch=states['sensor.world_cup_schedule'];\n  const sb=states['sensor.world_cup_scoreboard'];\n  const TARGET=\"Group G\";\n  const esc=s=>(s==null?'':String(s));\n  const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return esc(iso);}};\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const g=groups.find(x=>x.name===TARGET);\n  const teams=g?((g.standings&&g.standings.entries)||[]).map(e=>e.team.abbreviation):[];\n  let matches=(sch&&sch.attributes&&sch.attributes.matches)||[];\n  if(!matches.length&&sb){matches=((sb.attributes&&sb.attributes.events)||[]).map(e=>{const c=e.competitions[0],cs=c.competitors;const h=cs.find(x=>x.homeAway==='home'),a=cs.find(x=>x.homeAway==='away');const v=c.venue||{},ad=v.address||{};return{d:e.date,a:a.team.abbreviation,h:h.team.abbreviation,as:a.score,hs:h.score,s:e.status.type.state,det:e.status.type.shortDetail,v:[v.fullName,ad.city,ad.country].filter(Boolean).join(', ')};});}\n  const gm=matches.filter(m=>teams.includes(m.a)||teams.includes(m.h)).sort((x,y)=>(x.d<y.d?-1:(x.d>y.d?1:0)));\n  const body=gm.length?gm.map(m=>{const sl=m.s==='post'?'✅ Concluded (Final)':(m.s==='in'?'🔴 In progress · '+esc(m.det):'🕐 Scheduled');const score=(m.s!=='pre'&&m.as!=null&&m.hs!=null)?` <span style=\"opacity:.85;font-weight:700;\">${esc(m.as)}–${esc(m.hs)}</span>`:'';\n    return `<div style=\"padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.08);\"><div style=\"color:#fff;font-weight:700;font-size:15px;\">${esc(m.a)} v ${esc(m.h)}${score}</div><div style=\"color:#cbd5e1;font-size:13px;margin-top:3px;\">🗓 ${fmt(m.d)}</div><div style=\"color:#cbd5e1;font-size:13px;\">📍 ${esc(m.v)}</div><div style=\"font-size:13px;margin-top:3px;\">${sl}</div></div>`;}).join(''):'<div style=\"color:#888;padding:8px;\">No fixtures found.</div>';\n  return `<div style=\"text-align:left;padding:4px;\">${body}</div>`;\n]]]"
+                              },
+                              "styles": {
+                                "card": [
+                                  {
+                                    "background": "transparent"
+                                  },
+                                  {
+                                    "box-shadow": "none"
+                                  },
+                                  {
+                                    "border": "none"
+                                  },
+                                  {
+                                    "padding": "0"
+                                  }
+                                ],
+                                "grid": [
+                                  {
+                                    "grid-template-areas": "\"content\""
+                                  },
+                                  {
+                                    "grid-template-columns": "1fr"
+                                  }
+                                ],
+                                "custom_fields": {
+                                  "content": [
+                                    {
+                                      "justify-self": "stretch"
+                                    },
+                                    {
+                                      "width": "100%"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "custom_fields": {
+                        "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const TARGET=\"Group G\";\n  const esc=s=>(s==null?'':String(s));\n  const flag=u=>u?`<img src=\"${u}\" style=\"height:20px;vertical-align:middle;border-radius:3px;\">`:'';\n  const g=groups.find(x=>x.name===TARGET);\n  let rh='<div style=\"color:#888;font-size:12px;\">No data yet</div>';\n  if(g){ const rows=((g.standings&&g.standings.entries)||[]).map(en=>{let rank=99,pts='0';for(const s of en.stats){if(s.name==='rank')rank=parseInt(s.value);if(s.name==='points')pts=s.displayValue;}return{rank,abbr:en.team.abbreviation,flag:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:''),pts};}).sort((a,b)=>a.rank-b.rank);\n    rh=rows.map(r=>{const adv=r.rank<=2;return `<div style=\"display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:3px solid ${adv?'#22c55e':'transparent'};background:${adv?'rgba(34,197,94,.12)':'transparent'};border-radius:4px;\"><span style=\"width:12px;color:${adv?'#22c55e':'#888'};font-weight:700;font-size:12px;\">${r.rank}</span>${flag(r.flag)}<span style=\"flex:1;color:#fff;font-size:13px;font-weight:${adv?'700':'500'};\">${esc(r.abbr)}</span><span style=\"color:#cbd5e1;font-weight:700;font-size:13px;\">${esc(r.pts)}</span></div>`;}).join(''); }\n  return `<div style=\"text-align:left;\"><div style=\"font-weight:800;color:#fff;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.13);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;\">${TARGET}<span style=\"font-size:10px;opacity:.5;font-weight:500;\">tap ⓘ</span></div>${rh}</div>`;\n]]]"
+                      },
+                      "styles": {
+                        "card": [
+                          {
+                            "background": "rgba(30,30,30,.55)"
+                          },
+                          {
+                            "border": "1px solid rgba(255,255,255,.1)"
+                          },
+                          {
+                            "border-radius": "16px"
+                          },
+                          {
+                            "padding": "12px"
+                          },
+                          {
+                            "backdrop-filter": "blur(12px)"
+                          },
+                          {
+                            "cursor": "pointer"
+                          }
+                        ],
+                        "grid": [
+                          {
+                            "grid-template-areas": "\"content\""
+                          },
+                          {
+                            "grid-template-columns": "1fr"
+                          }
+                        ],
+                        "custom_fields": {
+                          "content": [
+                            {
+                              "justify-self": "stretch"
+                            },
+                            {
+                              "width": "100%"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "entity": "sensor.world_cup_standings",
+                      "triggers_update": [
+                        "sensor.world_cup_standings"
+                      ],
+                      "show_icon": false,
+                      "show_name": false,
+                      "show_state": false,
+                      "show_label": false,
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "Group H",
+                            "content": {
+                              "type": "custom:button-card",
+                              "entity": "sensor.world_cup_schedule",
+                              "triggers_update": [
+                                "sensor.world_cup_schedule",
+                                "sensor.world_cup_scoreboard",
+                                "sensor.world_cup_standings"
+                              ],
+                              "show_icon": false,
+                              "show_name": false,
+                              "show_state": false,
+                              "show_label": false,
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "custom_fields": {
+                                "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const sch=states['sensor.world_cup_schedule'];\n  const sb=states['sensor.world_cup_scoreboard'];\n  const TARGET=\"Group H\";\n  const esc=s=>(s==null?'':String(s));\n  const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return esc(iso);}};\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const g=groups.find(x=>x.name===TARGET);\n  const teams=g?((g.standings&&g.standings.entries)||[]).map(e=>e.team.abbreviation):[];\n  let matches=(sch&&sch.attributes&&sch.attributes.matches)||[];\n  if(!matches.length&&sb){matches=((sb.attributes&&sb.attributes.events)||[]).map(e=>{const c=e.competitions[0],cs=c.competitors;const h=cs.find(x=>x.homeAway==='home'),a=cs.find(x=>x.homeAway==='away');const v=c.venue||{},ad=v.address||{};return{d:e.date,a:a.team.abbreviation,h:h.team.abbreviation,as:a.score,hs:h.score,s:e.status.type.state,det:e.status.type.shortDetail,v:[v.fullName,ad.city,ad.country].filter(Boolean).join(', ')};});}\n  const gm=matches.filter(m=>teams.includes(m.a)||teams.includes(m.h)).sort((x,y)=>(x.d<y.d?-1:(x.d>y.d?1:0)));\n  const body=gm.length?gm.map(m=>{const sl=m.s==='post'?'✅ Concluded (Final)':(m.s==='in'?'🔴 In progress · '+esc(m.det):'🕐 Scheduled');const score=(m.s!=='pre'&&m.as!=null&&m.hs!=null)?` <span style=\"opacity:.85;font-weight:700;\">${esc(m.as)}–${esc(m.hs)}</span>`:'';\n    return `<div style=\"padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.08);\"><div style=\"color:#fff;font-weight:700;font-size:15px;\">${esc(m.a)} v ${esc(m.h)}${score}</div><div style=\"color:#cbd5e1;font-size:13px;margin-top:3px;\">🗓 ${fmt(m.d)}</div><div style=\"color:#cbd5e1;font-size:13px;\">📍 ${esc(m.v)}</div><div style=\"font-size:13px;margin-top:3px;\">${sl}</div></div>`;}).join(''):'<div style=\"color:#888;padding:8px;\">No fixtures found.</div>';\n  return `<div style=\"text-align:left;padding:4px;\">${body}</div>`;\n]]]"
+                              },
+                              "styles": {
+                                "card": [
+                                  {
+                                    "background": "transparent"
+                                  },
+                                  {
+                                    "box-shadow": "none"
+                                  },
+                                  {
+                                    "border": "none"
+                                  },
+                                  {
+                                    "padding": "0"
+                                  }
+                                ],
+                                "grid": [
+                                  {
+                                    "grid-template-areas": "\"content\""
+                                  },
+                                  {
+                                    "grid-template-columns": "1fr"
+                                  }
+                                ],
+                                "custom_fields": {
+                                  "content": [
+                                    {
+                                      "justify-self": "stretch"
+                                    },
+                                    {
+                                      "width": "100%"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "custom_fields": {
+                        "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const TARGET=\"Group H\";\n  const esc=s=>(s==null?'':String(s));\n  const flag=u=>u?`<img src=\"${u}\" style=\"height:20px;vertical-align:middle;border-radius:3px;\">`:'';\n  const g=groups.find(x=>x.name===TARGET);\n  let rh='<div style=\"color:#888;font-size:12px;\">No data yet</div>';\n  if(g){ const rows=((g.standings&&g.standings.entries)||[]).map(en=>{let rank=99,pts='0';for(const s of en.stats){if(s.name==='rank')rank=parseInt(s.value);if(s.name==='points')pts=s.displayValue;}return{rank,abbr:en.team.abbreviation,flag:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:''),pts};}).sort((a,b)=>a.rank-b.rank);\n    rh=rows.map(r=>{const adv=r.rank<=2;return `<div style=\"display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:3px solid ${adv?'#22c55e':'transparent'};background:${adv?'rgba(34,197,94,.12)':'transparent'};border-radius:4px;\"><span style=\"width:12px;color:${adv?'#22c55e':'#888'};font-weight:700;font-size:12px;\">${r.rank}</span>${flag(r.flag)}<span style=\"flex:1;color:#fff;font-size:13px;font-weight:${adv?'700':'500'};\">${esc(r.abbr)}</span><span style=\"color:#cbd5e1;font-weight:700;font-size:13px;\">${esc(r.pts)}</span></div>`;}).join(''); }\n  return `<div style=\"text-align:left;\"><div style=\"font-weight:800;color:#fff;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.13);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;\">${TARGET}<span style=\"font-size:10px;opacity:.5;font-weight:500;\">tap ⓘ</span></div>${rh}</div>`;\n]]]"
+                      },
+                      "styles": {
+                        "card": [
+                          {
+                            "background": "rgba(30,30,30,.55)"
+                          },
+                          {
+                            "border": "1px solid rgba(255,255,255,.1)"
+                          },
+                          {
+                            "border-radius": "16px"
+                          },
+                          {
+                            "padding": "12px"
+                          },
+                          {
+                            "backdrop-filter": "blur(12px)"
+                          },
+                          {
+                            "cursor": "pointer"
+                          }
+                        ],
+                        "grid": [
+                          {
+                            "grid-template-areas": "\"content\""
+                          },
+                          {
+                            "grid-template-columns": "1fr"
+                          }
+                        ],
+                        "custom_fields": {
+                          "content": [
+                            {
+                              "justify-self": "stretch"
+                            },
+                            {
+                              "width": "100%"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "entity": "sensor.world_cup_standings",
+                      "triggers_update": [
+                        "sensor.world_cup_standings"
+                      ],
+                      "show_icon": false,
+                      "show_name": false,
+                      "show_state": false,
+                      "show_label": false,
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "Group I",
+                            "content": {
+                              "type": "custom:button-card",
+                              "entity": "sensor.world_cup_schedule",
+                              "triggers_update": [
+                                "sensor.world_cup_schedule",
+                                "sensor.world_cup_scoreboard",
+                                "sensor.world_cup_standings"
+                              ],
+                              "show_icon": false,
+                              "show_name": false,
+                              "show_state": false,
+                              "show_label": false,
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "custom_fields": {
+                                "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const sch=states['sensor.world_cup_schedule'];\n  const sb=states['sensor.world_cup_scoreboard'];\n  const TARGET=\"Group I\";\n  const esc=s=>(s==null?'':String(s));\n  const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return esc(iso);}};\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const g=groups.find(x=>x.name===TARGET);\n  const teams=g?((g.standings&&g.standings.entries)||[]).map(e=>e.team.abbreviation):[];\n  let matches=(sch&&sch.attributes&&sch.attributes.matches)||[];\n  if(!matches.length&&sb){matches=((sb.attributes&&sb.attributes.events)||[]).map(e=>{const c=e.competitions[0],cs=c.competitors;const h=cs.find(x=>x.homeAway==='home'),a=cs.find(x=>x.homeAway==='away');const v=c.venue||{},ad=v.address||{};return{d:e.date,a:a.team.abbreviation,h:h.team.abbreviation,as:a.score,hs:h.score,s:e.status.type.state,det:e.status.type.shortDetail,v:[v.fullName,ad.city,ad.country].filter(Boolean).join(', ')};});}\n  const gm=matches.filter(m=>teams.includes(m.a)||teams.includes(m.h)).sort((x,y)=>(x.d<y.d?-1:(x.d>y.d?1:0)));\n  const body=gm.length?gm.map(m=>{const sl=m.s==='post'?'✅ Concluded (Final)':(m.s==='in'?'🔴 In progress · '+esc(m.det):'🕐 Scheduled');const score=(m.s!=='pre'&&m.as!=null&&m.hs!=null)?` <span style=\"opacity:.85;font-weight:700;\">${esc(m.as)}–${esc(m.hs)}</span>`:'';\n    return `<div style=\"padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.08);\"><div style=\"color:#fff;font-weight:700;font-size:15px;\">${esc(m.a)} v ${esc(m.h)}${score}</div><div style=\"color:#cbd5e1;font-size:13px;margin-top:3px;\">🗓 ${fmt(m.d)}</div><div style=\"color:#cbd5e1;font-size:13px;\">📍 ${esc(m.v)}</div><div style=\"font-size:13px;margin-top:3px;\">${sl}</div></div>`;}).join(''):'<div style=\"color:#888;padding:8px;\">No fixtures found.</div>';\n  return `<div style=\"text-align:left;padding:4px;\">${body}</div>`;\n]]]"
+                              },
+                              "styles": {
+                                "card": [
+                                  {
+                                    "background": "transparent"
+                                  },
+                                  {
+                                    "box-shadow": "none"
+                                  },
+                                  {
+                                    "border": "none"
+                                  },
+                                  {
+                                    "padding": "0"
+                                  }
+                                ],
+                                "grid": [
+                                  {
+                                    "grid-template-areas": "\"content\""
+                                  },
+                                  {
+                                    "grid-template-columns": "1fr"
+                                  }
+                                ],
+                                "custom_fields": {
+                                  "content": [
+                                    {
+                                      "justify-self": "stretch"
+                                    },
+                                    {
+                                      "width": "100%"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "custom_fields": {
+                        "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const TARGET=\"Group I\";\n  const esc=s=>(s==null?'':String(s));\n  const flag=u=>u?`<img src=\"${u}\" style=\"height:20px;vertical-align:middle;border-radius:3px;\">`:'';\n  const g=groups.find(x=>x.name===TARGET);\n  let rh='<div style=\"color:#888;font-size:12px;\">No data yet</div>';\n  if(g){ const rows=((g.standings&&g.standings.entries)||[]).map(en=>{let rank=99,pts='0';for(const s of en.stats){if(s.name==='rank')rank=parseInt(s.value);if(s.name==='points')pts=s.displayValue;}return{rank,abbr:en.team.abbreviation,flag:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:''),pts};}).sort((a,b)=>a.rank-b.rank);\n    rh=rows.map(r=>{const adv=r.rank<=2;return `<div style=\"display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:3px solid ${adv?'#22c55e':'transparent'};background:${adv?'rgba(34,197,94,.12)':'transparent'};border-radius:4px;\"><span style=\"width:12px;color:${adv?'#22c55e':'#888'};font-weight:700;font-size:12px;\">${r.rank}</span>${flag(r.flag)}<span style=\"flex:1;color:#fff;font-size:13px;font-weight:${adv?'700':'500'};\">${esc(r.abbr)}</span><span style=\"color:#cbd5e1;font-weight:700;font-size:13px;\">${esc(r.pts)}</span></div>`;}).join(''); }\n  return `<div style=\"text-align:left;\"><div style=\"font-weight:800;color:#fff;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.13);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;\">${TARGET}<span style=\"font-size:10px;opacity:.5;font-weight:500;\">tap ⓘ</span></div>${rh}</div>`;\n]]]"
+                      },
+                      "styles": {
+                        "card": [
+                          {
+                            "background": "rgba(30,30,30,.55)"
+                          },
+                          {
+                            "border": "1px solid rgba(255,255,255,.1)"
+                          },
+                          {
+                            "border-radius": "16px"
+                          },
+                          {
+                            "padding": "12px"
+                          },
+                          {
+                            "backdrop-filter": "blur(12px)"
+                          },
+                          {
+                            "cursor": "pointer"
+                          }
+                        ],
+                        "grid": [
+                          {
+                            "grid-template-areas": "\"content\""
+                          },
+                          {
+                            "grid-template-columns": "1fr"
+                          }
+                        ],
+                        "custom_fields": {
+                          "content": [
+                            {
+                              "justify-self": "stretch"
+                            },
+                            {
+                              "width": "100%"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "entity": "sensor.world_cup_standings",
+                      "triggers_update": [
+                        "sensor.world_cup_standings"
+                      ],
+                      "show_icon": false,
+                      "show_name": false,
+                      "show_state": false,
+                      "show_label": false,
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "Group J",
+                            "content": {
+                              "type": "custom:button-card",
+                              "entity": "sensor.world_cup_schedule",
+                              "triggers_update": [
+                                "sensor.world_cup_schedule",
+                                "sensor.world_cup_scoreboard",
+                                "sensor.world_cup_standings"
+                              ],
+                              "show_icon": false,
+                              "show_name": false,
+                              "show_state": false,
+                              "show_label": false,
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "custom_fields": {
+                                "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const sch=states['sensor.world_cup_schedule'];\n  const sb=states['sensor.world_cup_scoreboard'];\n  const TARGET=\"Group J\";\n  const esc=s=>(s==null?'':String(s));\n  const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return esc(iso);}};\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const g=groups.find(x=>x.name===TARGET);\n  const teams=g?((g.standings&&g.standings.entries)||[]).map(e=>e.team.abbreviation):[];\n  let matches=(sch&&sch.attributes&&sch.attributes.matches)||[];\n  if(!matches.length&&sb){matches=((sb.attributes&&sb.attributes.events)||[]).map(e=>{const c=e.competitions[0],cs=c.competitors;const h=cs.find(x=>x.homeAway==='home'),a=cs.find(x=>x.homeAway==='away');const v=c.venue||{},ad=v.address||{};return{d:e.date,a:a.team.abbreviation,h:h.team.abbreviation,as:a.score,hs:h.score,s:e.status.type.state,det:e.status.type.shortDetail,v:[v.fullName,ad.city,ad.country].filter(Boolean).join(', ')};});}\n  const gm=matches.filter(m=>teams.includes(m.a)||teams.includes(m.h)).sort((x,y)=>(x.d<y.d?-1:(x.d>y.d?1:0)));\n  const body=gm.length?gm.map(m=>{const sl=m.s==='post'?'✅ Concluded (Final)':(m.s==='in'?'🔴 In progress · '+esc(m.det):'🕐 Scheduled');const score=(m.s!=='pre'&&m.as!=null&&m.hs!=null)?` <span style=\"opacity:.85;font-weight:700;\">${esc(m.as)}–${esc(m.hs)}</span>`:'';\n    return `<div style=\"padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.08);\"><div style=\"color:#fff;font-weight:700;font-size:15px;\">${esc(m.a)} v ${esc(m.h)}${score}</div><div style=\"color:#cbd5e1;font-size:13px;margin-top:3px;\">🗓 ${fmt(m.d)}</div><div style=\"color:#cbd5e1;font-size:13px;\">📍 ${esc(m.v)}</div><div style=\"font-size:13px;margin-top:3px;\">${sl}</div></div>`;}).join(''):'<div style=\"color:#888;padding:8px;\">No fixtures found.</div>';\n  return `<div style=\"text-align:left;padding:4px;\">${body}</div>`;\n]]]"
+                              },
+                              "styles": {
+                                "card": [
+                                  {
+                                    "background": "transparent"
+                                  },
+                                  {
+                                    "box-shadow": "none"
+                                  },
+                                  {
+                                    "border": "none"
+                                  },
+                                  {
+                                    "padding": "0"
+                                  }
+                                ],
+                                "grid": [
+                                  {
+                                    "grid-template-areas": "\"content\""
+                                  },
+                                  {
+                                    "grid-template-columns": "1fr"
+                                  }
+                                ],
+                                "custom_fields": {
+                                  "content": [
+                                    {
+                                      "justify-self": "stretch"
+                                    },
+                                    {
+                                      "width": "100%"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "custom_fields": {
+                        "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const TARGET=\"Group J\";\n  const esc=s=>(s==null?'':String(s));\n  const flag=u=>u?`<img src=\"${u}\" style=\"height:20px;vertical-align:middle;border-radius:3px;\">`:'';\n  const g=groups.find(x=>x.name===TARGET);\n  let rh='<div style=\"color:#888;font-size:12px;\">No data yet</div>';\n  if(g){ const rows=((g.standings&&g.standings.entries)||[]).map(en=>{let rank=99,pts='0';for(const s of en.stats){if(s.name==='rank')rank=parseInt(s.value);if(s.name==='points')pts=s.displayValue;}return{rank,abbr:en.team.abbreviation,flag:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:''),pts};}).sort((a,b)=>a.rank-b.rank);\n    rh=rows.map(r=>{const adv=r.rank<=2;return `<div style=\"display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:3px solid ${adv?'#22c55e':'transparent'};background:${adv?'rgba(34,197,94,.12)':'transparent'};border-radius:4px;\"><span style=\"width:12px;color:${adv?'#22c55e':'#888'};font-weight:700;font-size:12px;\">${r.rank}</span>${flag(r.flag)}<span style=\"flex:1;color:#fff;font-size:13px;font-weight:${adv?'700':'500'};\">${esc(r.abbr)}</span><span style=\"color:#cbd5e1;font-weight:700;font-size:13px;\">${esc(r.pts)}</span></div>`;}).join(''); }\n  return `<div style=\"text-align:left;\"><div style=\"font-weight:800;color:#fff;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.13);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;\">${TARGET}<span style=\"font-size:10px;opacity:.5;font-weight:500;\">tap ⓘ</span></div>${rh}</div>`;\n]]]"
+                      },
+                      "styles": {
+                        "card": [
+                          {
+                            "background": "rgba(30,30,30,.55)"
+                          },
+                          {
+                            "border": "1px solid rgba(255,255,255,.1)"
+                          },
+                          {
+                            "border-radius": "16px"
+                          },
+                          {
+                            "padding": "12px"
+                          },
+                          {
+                            "backdrop-filter": "blur(12px)"
+                          },
+                          {
+                            "cursor": "pointer"
+                          }
+                        ],
+                        "grid": [
+                          {
+                            "grid-template-areas": "\"content\""
+                          },
+                          {
+                            "grid-template-columns": "1fr"
+                          }
+                        ],
+                        "custom_fields": {
+                          "content": [
+                            {
+                              "justify-self": "stretch"
+                            },
+                            {
+                              "width": "100%"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "entity": "sensor.world_cup_standings",
+                      "triggers_update": [
+                        "sensor.world_cup_standings"
+                      ],
+                      "show_icon": false,
+                      "show_name": false,
+                      "show_state": false,
+                      "show_label": false,
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "Group K",
+                            "content": {
+                              "type": "custom:button-card",
+                              "entity": "sensor.world_cup_schedule",
+                              "triggers_update": [
+                                "sensor.world_cup_schedule",
+                                "sensor.world_cup_scoreboard",
+                                "sensor.world_cup_standings"
+                              ],
+                              "show_icon": false,
+                              "show_name": false,
+                              "show_state": false,
+                              "show_label": false,
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "custom_fields": {
+                                "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const sch=states['sensor.world_cup_schedule'];\n  const sb=states['sensor.world_cup_scoreboard'];\n  const TARGET=\"Group K\";\n  const esc=s=>(s==null?'':String(s));\n  const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return esc(iso);}};\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const g=groups.find(x=>x.name===TARGET);\n  const teams=g?((g.standings&&g.standings.entries)||[]).map(e=>e.team.abbreviation):[];\n  let matches=(sch&&sch.attributes&&sch.attributes.matches)||[];\n  if(!matches.length&&sb){matches=((sb.attributes&&sb.attributes.events)||[]).map(e=>{const c=e.competitions[0],cs=c.competitors;const h=cs.find(x=>x.homeAway==='home'),a=cs.find(x=>x.homeAway==='away');const v=c.venue||{},ad=v.address||{};return{d:e.date,a:a.team.abbreviation,h:h.team.abbreviation,as:a.score,hs:h.score,s:e.status.type.state,det:e.status.type.shortDetail,v:[v.fullName,ad.city,ad.country].filter(Boolean).join(', ')};});}\n  const gm=matches.filter(m=>teams.includes(m.a)||teams.includes(m.h)).sort((x,y)=>(x.d<y.d?-1:(x.d>y.d?1:0)));\n  const body=gm.length?gm.map(m=>{const sl=m.s==='post'?'✅ Concluded (Final)':(m.s==='in'?'🔴 In progress · '+esc(m.det):'🕐 Scheduled');const score=(m.s!=='pre'&&m.as!=null&&m.hs!=null)?` <span style=\"opacity:.85;font-weight:700;\">${esc(m.as)}–${esc(m.hs)}</span>`:'';\n    return `<div style=\"padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.08);\"><div style=\"color:#fff;font-weight:700;font-size:15px;\">${esc(m.a)} v ${esc(m.h)}${score}</div><div style=\"color:#cbd5e1;font-size:13px;margin-top:3px;\">🗓 ${fmt(m.d)}</div><div style=\"color:#cbd5e1;font-size:13px;\">📍 ${esc(m.v)}</div><div style=\"font-size:13px;margin-top:3px;\">${sl}</div></div>`;}).join(''):'<div style=\"color:#888;padding:8px;\">No fixtures found.</div>';\n  return `<div style=\"text-align:left;padding:4px;\">${body}</div>`;\n]]]"
+                              },
+                              "styles": {
+                                "card": [
+                                  {
+                                    "background": "transparent"
+                                  },
+                                  {
+                                    "box-shadow": "none"
+                                  },
+                                  {
+                                    "border": "none"
+                                  },
+                                  {
+                                    "padding": "0"
+                                  }
+                                ],
+                                "grid": [
+                                  {
+                                    "grid-template-areas": "\"content\""
+                                  },
+                                  {
+                                    "grid-template-columns": "1fr"
+                                  }
+                                ],
+                                "custom_fields": {
+                                  "content": [
+                                    {
+                                      "justify-self": "stretch"
+                                    },
+                                    {
+                                      "width": "100%"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "custom_fields": {
+                        "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const TARGET=\"Group K\";\n  const esc=s=>(s==null?'':String(s));\n  const flag=u=>u?`<img src=\"${u}\" style=\"height:20px;vertical-align:middle;border-radius:3px;\">`:'';\n  const g=groups.find(x=>x.name===TARGET);\n  let rh='<div style=\"color:#888;font-size:12px;\">No data yet</div>';\n  if(g){ const rows=((g.standings&&g.standings.entries)||[]).map(en=>{let rank=99,pts='0';for(const s of en.stats){if(s.name==='rank')rank=parseInt(s.value);if(s.name==='points')pts=s.displayValue;}return{rank,abbr:en.team.abbreviation,flag:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:''),pts};}).sort((a,b)=>a.rank-b.rank);\n    rh=rows.map(r=>{const adv=r.rank<=2;return `<div style=\"display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:3px solid ${adv?'#22c55e':'transparent'};background:${adv?'rgba(34,197,94,.12)':'transparent'};border-radius:4px;\"><span style=\"width:12px;color:${adv?'#22c55e':'#888'};font-weight:700;font-size:12px;\">${r.rank}</span>${flag(r.flag)}<span style=\"flex:1;color:#fff;font-size:13px;font-weight:${adv?'700':'500'};\">${esc(r.abbr)}</span><span style=\"color:#cbd5e1;font-weight:700;font-size:13px;\">${esc(r.pts)}</span></div>`;}).join(''); }\n  return `<div style=\"text-align:left;\"><div style=\"font-weight:800;color:#fff;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.13);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;\">${TARGET}<span style=\"font-size:10px;opacity:.5;font-weight:500;\">tap ⓘ</span></div>${rh}</div>`;\n]]]"
+                      },
+                      "styles": {
+                        "card": [
+                          {
+                            "background": "rgba(30,30,30,.55)"
+                          },
+                          {
+                            "border": "1px solid rgba(255,255,255,.1)"
+                          },
+                          {
+                            "border-radius": "16px"
+                          },
+                          {
+                            "padding": "12px"
+                          },
+                          {
+                            "backdrop-filter": "blur(12px)"
+                          },
+                          {
+                            "cursor": "pointer"
+                          }
+                        ],
+                        "grid": [
+                          {
+                            "grid-template-areas": "\"content\""
+                          },
+                          {
+                            "grid-template-columns": "1fr"
+                          }
+                        ],
+                        "custom_fields": {
+                          "content": [
+                            {
+                              "justify-self": "stretch"
+                            },
+                            {
+                              "width": "100%"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "entity": "sensor.world_cup_standings",
+                      "triggers_update": [
+                        "sensor.world_cup_standings"
+                      ],
+                      "show_icon": false,
+                      "show_name": false,
+                      "show_state": false,
+                      "show_label": false,
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "Group L",
+                            "content": {
+                              "type": "custom:button-card",
+                              "entity": "sensor.world_cup_schedule",
+                              "triggers_update": [
+                                "sensor.world_cup_schedule",
+                                "sensor.world_cup_scoreboard",
+                                "sensor.world_cup_standings"
+                              ],
+                              "show_icon": false,
+                              "show_name": false,
+                              "show_state": false,
+                              "show_label": false,
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "custom_fields": {
+                                "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const sch=states['sensor.world_cup_schedule'];\n  const sb=states['sensor.world_cup_scoreboard'];\n  const TARGET=\"Group L\";\n  const esc=s=>(s==null?'':String(s));\n  const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return esc(iso);}};\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const g=groups.find(x=>x.name===TARGET);\n  const teams=g?((g.standings&&g.standings.entries)||[]).map(e=>e.team.abbreviation):[];\n  let matches=(sch&&sch.attributes&&sch.attributes.matches)||[];\n  if(!matches.length&&sb){matches=((sb.attributes&&sb.attributes.events)||[]).map(e=>{const c=e.competitions[0],cs=c.competitors;const h=cs.find(x=>x.homeAway==='home'),a=cs.find(x=>x.homeAway==='away');const v=c.venue||{},ad=v.address||{};return{d:e.date,a:a.team.abbreviation,h:h.team.abbreviation,as:a.score,hs:h.score,s:e.status.type.state,det:e.status.type.shortDetail,v:[v.fullName,ad.city,ad.country].filter(Boolean).join(', ')};});}\n  const gm=matches.filter(m=>teams.includes(m.a)||teams.includes(m.h)).sort((x,y)=>(x.d<y.d?-1:(x.d>y.d?1:0)));\n  const body=gm.length?gm.map(m=>{const sl=m.s==='post'?'✅ Concluded (Final)':(m.s==='in'?'🔴 In progress · '+esc(m.det):'🕐 Scheduled');const score=(m.s!=='pre'&&m.as!=null&&m.hs!=null)?` <span style=\"opacity:.85;font-weight:700;\">${esc(m.as)}–${esc(m.hs)}</span>`:'';\n    return `<div style=\"padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.08);\"><div style=\"color:#fff;font-weight:700;font-size:15px;\">${esc(m.a)} v ${esc(m.h)}${score}</div><div style=\"color:#cbd5e1;font-size:13px;margin-top:3px;\">🗓 ${fmt(m.d)}</div><div style=\"color:#cbd5e1;font-size:13px;\">📍 ${esc(m.v)}</div><div style=\"font-size:13px;margin-top:3px;\">${sl}</div></div>`;}).join(''):'<div style=\"color:#888;padding:8px;\">No fixtures found.</div>';\n  return `<div style=\"text-align:left;padding:4px;\">${body}</div>`;\n]]]"
+                              },
+                              "styles": {
+                                "card": [
+                                  {
+                                    "background": "transparent"
+                                  },
+                                  {
+                                    "box-shadow": "none"
+                                  },
+                                  {
+                                    "border": "none"
+                                  },
+                                  {
+                                    "padding": "0"
+                                  }
+                                ],
+                                "grid": [
+                                  {
+                                    "grid-template-areas": "\"content\""
+                                  },
+                                  {
+                                    "grid-template-columns": "1fr"
+                                  }
+                                ],
+                                "custom_fields": {
+                                  "content": [
+                                    {
+                                      "justify-self": "stretch"
+                                    },
+                                    {
+                                      "width": "100%"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "custom_fields": {
+                        "content": "[[[\n  const st=states['sensor.world_cup_standings'];\n  const groups=(st&&st.attributes&&st.attributes.children)||[];\n  const TARGET=\"Group L\";\n  const esc=s=>(s==null?'':String(s));\n  const flag=u=>u?`<img src=\"${u}\" style=\"height:20px;vertical-align:middle;border-radius:3px;\">`:'';\n  const g=groups.find(x=>x.name===TARGET);\n  let rh='<div style=\"color:#888;font-size:12px;\">No data yet</div>';\n  if(g){ const rows=((g.standings&&g.standings.entries)||[]).map(en=>{let rank=99,pts='0';for(const s of en.stats){if(s.name==='rank')rank=parseInt(s.value);if(s.name==='points')pts=s.displayValue;}return{rank,abbr:en.team.abbreviation,flag:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:''),pts};}).sort((a,b)=>a.rank-b.rank);\n    rh=rows.map(r=>{const adv=r.rank<=2;return `<div style=\"display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:3px solid ${adv?'#22c55e':'transparent'};background:${adv?'rgba(34,197,94,.12)':'transparent'};border-radius:4px;\"><span style=\"width:12px;color:${adv?'#22c55e':'#888'};font-weight:700;font-size:12px;\">${r.rank}</span>${flag(r.flag)}<span style=\"flex:1;color:#fff;font-size:13px;font-weight:${adv?'700':'500'};\">${esc(r.abbr)}</span><span style=\"color:#cbd5e1;font-weight:700;font-size:13px;\">${esc(r.pts)}</span></div>`;}).join(''); }\n  return `<div style=\"text-align:left;\"><div style=\"font-weight:800;color:#fff;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.13);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;\">${TARGET}<span style=\"font-size:10px;opacity:.5;font-weight:500;\">tap ⓘ</span></div>${rh}</div>`;\n]]]"
+                      },
+                      "styles": {
+                        "card": [
+                          {
+                            "background": "rgba(30,30,30,.55)"
+                          },
+                          {
+                            "border": "1px solid rgba(255,255,255,.1)"
+                          },
+                          {
+                            "border-radius": "16px"
+                          },
+                          {
+                            "padding": "12px"
+                          },
+                          {
+                            "backdrop-filter": "blur(12px)"
+                          },
+                          {
+                            "cursor": "pointer"
+                          }
+                        ],
+                        "grid": [
+                          {
+                            "grid-template-areas": "\"content\""
+                          },
+                          {
+                            "grid-template-columns": "1fr"
+                          }
+                        ],
+                        "custom_fields": {
+                          "content": [
+                            {
+                              "justify-self": "stretch"
+                            },
+                            {
+                              "width": "100%"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "markdown",
+                  "content": "## 🏆 Knockout Bracket\n_Auto-updates and redraws as teams qualify and games finish._"
+                },
+                {
+                  "type": "custom:button-card",
+                  "entity": "sensor.world_cup_schedule",
+                  "triggers_update": [
+                    "sensor.world_cup_schedule",
+                    "sensor.world_cup_standings",
+                    "sensor.world_cup_scoreboard"
+                  ],
+                  "show_icon": false,
+                  "show_name": false,
+                  "show_state": false,
+                  "show_label": false,
+                  "tap_action": {
+                    "action": "none"
+                  },
+                  "custom_fields": {
+                    "content": "[[[\n  const sch = states['sensor.world_cup_schedule'];\n  const stn = states['sensor.world_cup_standings'];\n  const all = (sch && sch.attributes && sch.attributes.matches) || [];\n  const groups = (stn && stn.attributes && stn.attributes.children) || [];\n  const esc = s => (s==null?'':String(s));\n  const flag = u => u ? `<img src=\"${u}\" style=\"height:20px;width:auto;border-radius:2px;margin-right:6px;vertical-align:middle;\">` : '<span style=\"display:inline-block;width:20px;margin-right:6px;\"></span>';\n\n  // current standings: group letter -> rank -> {ab, fl}\n  const gp={};\n  groups.forEach(g=>{ const L=(g.name||'').trim().slice(-1); gp[L]={};\n    ((g.standings&&g.standings.entries)||[]).forEach(en=>{ let rk=99; for(const s of en.stats){ if(s.name==='rank') rk=parseInt(s.value); }\n      gp[L][rk]={ab:en.team.abbreviation, fl:(en.team.logos&&en.team.logos[0]?en.team.logos[0].href:'')}; }); });\n  function project(ab){ const m=(ab||'').match(/^([12])([A-L])$/); if(m){ const t=gp[m[2]]&&gp[m[2]][+m[1]]; if(t&&t.ab) return t; } return null; }\n  function slot(ab,nm){\n    if(/^([12])([A-L])$/.test(ab||'')) return ab;\n    if(ab==='3RD') return '3rd place';\n    let m=(nm||'').match(/Round of (\\d+) (\\d+) Winner/); if(m) return 'R'+m[1]+'·W'+m[2];\n    return ab||nm||'TBD';\n  }\n\n  const byR={};\n  all.forEach(m=>{ if(m.rnd && m.rnd!=='group-stage'){ (byR[m.rnd]=byR[m.rnd]||[]).push(m); }});\n  Object.values(byR).forEach(a=>a.sort((x,y)=> x.d<y.d?-1:(x.d>y.d?1:0)));\n\n  function teamRow(m, side){\n    if(!m) return `<div style=\"display:flex;align-items:center;color:#7a8699;font-size:12px;padding:3px 7px;\">${flag('')}TBD</div>`;\n    const ab=side==='a'?m.a:m.h, nm=side==='a'?m.an:m.hn, fl=side==='a'?m.af:m.hf;\n    const sc=side==='a'?m.as:m.hs, osc=side==='a'?m.hs:m.as;\n    const win=m.s==='post' && sc!=null && osc!=null && parseInt(sc)>parseInt(osc);\n    const showScore=m.s!=='pre' && sc!=null;\n    let fh, label, style='';\n    if(fl){ fh=flag(fl); label=ab; }\n    else { const pr=project(ab);\n      if(pr){ fh=flag(pr.fl); label=pr.ab; style='opacity:.78;font-style:italic;'; }\n      else { fh=flag(''); label=slot(ab,nm); style='color:#9aa7bd;'; } }\n    return `<div style=\"display:flex;align-items:center;justify-content:space-between;padding:3px 7px;${win?'background:rgba(34,197,94,.16);':''}\">\n      <span style=\"display:flex;align-items:center;color:#fff;font-size:12px;font-weight:${win?'800':'500'};white-space:nowrap;${style}\">${fh}${esc(label)}</span>\n      <span style=\"color:#cbd5e1;font-size:12px;font-weight:700;margin-left:6px;\">${showScore?esc(sc):''}</span></div>`;\n  }\n  function box(m){\n    const live=m && m.s==='in';\n    const css=live?'border:1px solid #ef4444;box-shadow:0 0 10px rgba(239,68,68,.4);':'border:1px solid rgba(255,255,255,.12);';\n    let dl='';\n    if(m && m.d){ let dt; try{ dt=new Date(m.d).toLocaleString([], {month:'short', day:'numeric', hour:'numeric', minute:'2-digit'}); }catch(e){ dt=m.d; }\n      dl=`<div style=\"text-align:center;color:#9aa7bd;font-size:10px;padding:2px 0;border-top:1px solid rgba(255,255,255,.08);\">🗓 ${dt}</div>`; }\n    return `<div style=\"background:rgba(18,20,30,.75);${css}border-radius:8px;width:154px;overflow:hidden;\">\n      ${teamRow(m,'a')}<div style=\"height:1px;background:rgba(255,255,255,.08);\"></div>${teamRow(m,'h')}${dl}</div>`;\n  }\n  function col(round, side, per){\n    const data=byR[round]||[]; const half=Math.ceil(data.length/2);\n    let slots = side==='c'? data.slice(0,per) : (side==='l'? data.slice(0,half) : data.slice(half));\n    let b=''; for(let i=0;i<per;i++) b+=box(slots[i]);\n    return `<div style=\"display:flex;flex:1;flex-direction:column;justify-content:space-around;\">${b}</div>`;\n  }\n  const hdr=t=>`<div style=\"text-align:center;color:#e2e8f0;font-weight:800;font-size:13px;letter-spacing:1px;margin-bottom:8px;\">${t}</div>`;\n  const cw=(l,i)=>`<div style=\"display:flex;flex-direction:column;min-width:162px;\">${hdr(l)}${i}</div>`;\n\n  const finalM=(byR['final']||[])[0];\n  let champ='<div style=\"font-size:42px;\">🏆</div>';\n  if(finalM && finalM.s==='post'){ const aw=parseInt(finalM.as),hw=parseInt(finalM.hs);\n    const w=aw>hw?{f:finalM.af,n:finalM.a}:(hw>aw?{f:finalM.hf,n:finalM.h}:null);\n    if(w&&w.f) champ=`<img src=\"${w.f}\" style=\"height:48px;border-radius:3px;\"><div style=\"color:#fff;font-weight:800;margin-top:4px;\">${esc(w.n)}</div>`; }\n\n  const left = cw('R32',col('round-of-32','l',8))+cw('R16',col('round-of-16','l',4))+cw('QF',col('quarterfinals','l',2))+cw('SF',col('semifinals','l',1));\n  const right = cw('SF',col('semifinals','r',1))+cw('QF',col('quarterfinals','r',2))+cw('R16',col('round-of-16','r',4))+cw('R32',col('round-of-32','r',8));\n  const center = `<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:172px;\">${hdr('FINAL')}${box(finalM)}<div style=\"margin-top:16px;text-align:center;\">${champ}</div><div style=\"color:#94a3b8;font-size:11px;font-weight:700;letter-spacing:1px;margin-top:6px;\">CHAMPION</div></div>`;\n\n  return `<div style=\"overflow-x:auto;padding:6px;\">\n    <div style=\"color:#94a3b8;font-size:11px;margin:0 0 6px 4px;\">📅 Group stage in progress — <i>italic = projected from current standings</i>; solid = clinched. Updates as games finish.</div>\n    <div style=\"display:flex;gap:14px;align-items:stretch;min-width:1620px;height:720px;\">${left}${center}${right}</div>\n  </div>`;\n]]]"
+                  },
+                  "styles": {
+                    "card": [
+                      {
+                        "padding": "6px"
+                      },
+                      {
+                        "background": "transparent"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "border": "none"
+                      }
+                    ],
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"content\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      }
+                    ],
+                    "custom_fields": {
+                      "content": [
+                        {
+                          "justify-self": "stretch"
+                        },
+                        {
+                          "width": "100%"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "type": "panel"
+        }
+      ]
+    }
+  }
+}
