@@ -165,166 +165,304 @@
         }
       },
       "button_card_templates": {
-        "chore_card": {
+        "wc_group_card": {
+          "entity": "sensor.world_cup_standings",
+          "triggers_update": [
+            "sensor.world_cup_standings"
+          ],
+          "show_icon": false,
+          "show_name": false,
+          "show_state": false,
+          "show_label": false,
           "variables": {
-            "now": "[[[ return new Date() ]]]",
-            "last_done": "[[[ return new Date(entity.state) ]]]",
-            "diff": "[[[ return Math.round((new Date() - new Date(entity.state)) / 1000 / 60 / 60 / 24 ) ]]]",
-            "due": "[[[ return states[entity.entity_id.replace(\"input_button\", \"input_text\")].state ]]]"
+            "group": "A",
+            "favorite_team": "NED"
           },
-          "triggers_update": "all",
-          "show_label": true,
-          "layout": "icon_name_state2nd",
-          "size": "24px",
-          "label": "[[[\n  var doneStr\n  if (variables.diff < 2) {\n    if (variables.last_done.getDay() == variables.now.getDay()) { doneStr = 'today' } else { doneStr = 'yesterday' }\n  } else if (isNaN(variables.diff)) {\n    doneStr = 'unknown'\n  } else {\n    doneStr = variables.diff + ' days ago'\n  }\n  if (variables.due > 0) {\n    return 'Every ' + variables.due + ' days &bull; Last done ' + doneStr\n  } else { return 'As needed &bull; Last done ' + doneStr }\n]]]\n",
+          "tap_action": {
+            "action": "fire-dom-event",
+            "browser_mod": {
+              "service": "browser_mod.popup",
+              "data": {
+                "title": "[[[ return \"Group \" + String(variables.group || \"A\").replace(/^Group\\s*/i, \"\").trim().toUpperCase(); ]]]",
+                "content": {
+                  "type": "custom:button-card",
+                  "template": "wc_group_popup",
+                  "variables": {
+                    "group": "[[[ return variables.group; ]]]",
+                    "favorite_team": "[[[ return variables.favorite_team || 'NED'; ]]]"
+                  }
+                }
+              }
+            }
+          },
+          "hold_action": {
+            "action": "none"
+          },
+          "double_tap_action": {
+            "action": "none"
+          },
           "custom_fields": {
-            "badge": "[[[\n  if ((variables.diff < 2) && (variables.last_done.getDay() == variables.now.getDay())) { return 'Done' }\n  if (variables.due > 0) {\n    if (variables.due < variables.diff) { return 'Overdue' }\n    if (variables.due < variables.diff + (variables.due / 4)) { return 'To do soon' }\n  }\n]]]\n"
+            "content": "[[[\n  const st = states['sensor.world_cup_standings'];\n  const groups = (st && st.attributes && st.attributes.children) || [];\n\n  const GROUP = String(variables.group || 'A').replace(/^Group\\s*/i, '').trim().toUpperCase();\n  const TARGET = `Group ${GROUP}`;\n  const FAV = String(variables.favorite_team || 'NED').toUpperCase();\n\n  const esc = s => (s == null ? '' : String(s));\n\n  const flag = u => u\n    ? `<img src=\"${u}\" class=\"wc-group-flag-img\">`\n    : '';\n\n  function statValue(entry, names, fallback = '') {\n    const wanted = names.map(x => String(x).toLowerCase());\n\n    for (const s of (entry.stats || [])) {\n      const keys = [\n        s.name,\n        s.displayName,\n        s.shortDisplayName,\n        s.abbreviation\n      ].filter(Boolean).map(x => String(x).toLowerCase());\n\n      if (keys.some(k => wanted.includes(k))) {\n        return s.displayValue ?? s.value ?? fallback;\n      }\n    }\n\n    return fallback;\n  }\n\n  function statNumber(entry, names, fallback = 0) {\n    const raw = statValue(entry, names, fallback);\n    const n = Number(raw);\n\n    return Number.isFinite(n) ? n : fallback;\n  }\n\n  const group = groups.find(x => x.name === TARGET);\n\n  let rowsHtml = `\n    <div class=\"wc-group-empty\">\n      No data yet\n    </div>\n  `;\n\n  if (group) {\n    const rows = ((group.standings && group.standings.entries) || []).map(entry => {\n      const team = entry.team || {};\n      const rank = statNumber(entry, ['rank', 'position'], 99);\n      const pts = statValue(entry, ['points', 'pts', 'p'], '0');\n      const played = statValue(entry, ['gamesplayed', 'played', 'gp', 'pld'], '');\n      const gd = statValue(entry, ['pointdifferential', 'goaldifference', 'goal difference', 'gd'], '');\n\n      return {\n        rank,\n        abbr: team.abbreviation || '',\n        name: team.shortDisplayName || team.displayName || team.name || team.abbreviation || '',\n        flag: team.logos && team.logos[0] ? team.logos[0].href : '',\n        pts,\n        played,\n        gd\n      };\n    }).sort((a, b) => a.rank - b.rank);\n\n    rowsHtml = rows.map(r => {\n      const advance = r.rank <= 2;\n      const chance = r.rank === 3;\n      const dim = r.rank >= 4;\n      const fav = String(r.abbr || '').toUpperCase() === FAV;\n\n      const classes = [\n        'wc-group-row',\n        advance ? 'wc-group-row-advance' : '',\n        chance ? 'wc-group-row-chance' : '',\n        dim ? 'wc-group-row-dim' : ''\n      ].filter(Boolean).join(' ');\n      \n      const favStar = fav\n        ? `<span class=\"wc-fav-star\" title=\"Favorite team\">★</span>`\n        : '';\n\n      const gdText = r.gd !== '' ? `<span class=\"wc-group-gd\">${esc(r.gd)}</span>` : '';\n      const playedText = r.played !== '' ? `<span class=\"wc-group-played\">${esc(r.played)}</span>` : '';\n\n      return `\n        <div class=\"${classes}\">\n          <span class=\"wc-group-rank\">${esc(r.rank)}</span>\n\n          <span class=\"wc-group-flag\">\n            ${flag(r.flag)}\n          </span>\n\n          <span class=\"wc-group-team\" title=\"${esc(r.name)}\">\n            ${esc(r.abbr || r.name)}\n            ${favStar}\n          </span>\n\n          <span class=\"wc-group-extra\">\n            ${playedText}\n            ${gdText}\n          </span>\n\n          <span class=\"wc-group-points\">\n            ${esc(r.pts)}\n          </span>\n        </div>\n      `;\n    }).join('');\n  }\n\n  return `\n    <style>\n      .wc-group-wrap {\n        width: 100%;\n        max-width: 100%;\n        min-width: 0;\n        overflow: hidden;\n        box-sizing: border-box;\n        text-align: left;\n      }\n\n      .wc-group-head {\n        display: flex;\n        align-items: center;\n        justify-content: space-between;\n        gap: 8px;\n        padding-bottom: 8px;\n        margin-bottom: 4px;\n        border-bottom: 1px solid rgba(255,255,255,.10);\n        min-width: 0;\n      }\n\n      .wc-group-title-wrap {\n        display: flex;\n        align-items: center;\n        gap: 8px;\n        min-width: 0;\n        flex: 1 1 auto;\n      }\n\n      .wc-group-accent {\n        width: 7px;\n        height: 24px;\n        border-radius: 999px;\n        background: linear-gradient(180deg, rgba(34,197,94,.95), rgba(34,197,94,.18));\n        box-shadow: 0 0 14px rgba(34,197,94,.20);\n        flex: 0 0 7px;\n      }\n\n      .wc-group-title-text {\n        min-width: 0;\n      }\n\n      .wc-group-title {\n        color: #f8fafc;\n        font-weight: 900;\n        font-size: 15px;\n        letter-spacing: .2px;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-group-subtitle {\n        color: #94a3b8;\n        font-size: 10px;\n        font-weight: 750;\n        margin-top: 1px;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-info-icon {\n        width: 22px;\n        height: 22px;\n        display: inline-flex;\n        align-items: center;\n        justify-content: center;\n        border-radius: 999px;\n        color: #94a3b8;\n        background: rgba(148,163,184,.10);\n        border: 1px solid rgba(148,163,184,.16);\n        font-size: 13px;\n        font-weight: 900;\n        flex: 0 0 22px;\n      }\n\n      .wc-group-row {\n        display: flex;\n        align-items: center;\n        gap: 6px;\n        padding: 7px 7px;\n        margin-top: 5px;\n        border-radius: 10px;\n        box-sizing: border-box;\n        min-width: 0;\n        overflow: hidden;\n        background: rgba(17,19,33,.34);\n        border: 1px solid rgba(255,255,255,.06);\n        border-left: 3px solid rgba(148,163,184,.22);\n        transition:\n          background .2s ease,\n          border-color .2s ease,\n          opacity .2s ease,\n          filter .2s ease;\n      }\n\n      .wc-group-row-advance {\n        background: linear-gradient(90deg, rgba(34,197,94,.13), rgba(34,197,94,.035));\n        border-color: rgba(34,197,94,.18);\n        border-left-color: rgba(34,197,94,.78);\n      }\n\n      .wc-group-row-chance {\n        background: linear-gradient(90deg, rgba(245,158,11,.11), rgba(245,158,11,.025));\n        border-color: rgba(245,158,11,.16);\n        border-left-color: rgba(245,158,11,.72);\n      }\n\n      .wc-group-row-dim {\n        opacity: .82;\n      }\n\n      .wc-group-row-fav {\n        border-color: rgba(249,115,22,.28);\n        border-left-color: rgba(249,115,22,.85);\n        box-shadow: inset 0 0 14px rgba(249,115,22,.06);\n      }\n\n      .wc-group-rank {\n        width: 18px;\n        height: 18px;\n        display: inline-flex;\n        align-items: center;\n        justify-content: center;\n        border-radius: 999px;\n        color: #94a3b8;\n        background: rgba(148,163,184,.10);\n        font-weight: 900;\n        font-size: 11px;\n        flex: 0 0 18px;\n      }\n\n      .wc-group-row-advance .wc-group-rank {\n        color: #86efac;\n        background: rgba(34,197,94,.15);\n      }\n\n      .wc-group-row-chance .wc-group-rank {\n        color: #fde68a;\n        background: rgba(245,158,11,.13);\n      }\n\n      .wc-group-row-fav .wc-group-rank {\n        color: #fed7aa;\n        background: rgba(249,115,22,.14);\n      }\n\n      .wc-group-flag {\n        flex: 0 0 auto;\n        display: inline-flex;\n        align-items: center;\n      }\n\n      .wc-group-flag-img {\n        height: 18px;\n        width: auto;\n        vertical-align: middle;\n        border-radius: 3px;\n      }\n\n      .wc-group-team {\n        flex: 1 1 auto;\n        min-width: 0;\n        color: #f8fafc;\n        font-size: 13px;\n        font-weight: 800;\n        font-style: italic;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-group-row-advance .wc-group-team {\n        font-weight: 900;\n      }\n\n      .wc-group-row-fav .wc-group-team {\n        color: #fed7aa;\n        font-weight: 950;\n      }\n\n      .wc-group-extra {\n        display: flex;\n        align-items: center;\n        gap: 4px;\n        flex: 0 0 auto;\n        min-width: 0;\n      }\n\n      .wc-group-played,\n      .wc-group-gd {\n        color: #94a3b8;\n        background: rgba(255,255,255,.055);\n        border: 1px solid rgba(255,255,255,.07);\n        border-radius: 999px;\n        padding: 2px 6px;\n        font-size: 10px;\n        font-weight: 850;\n        line-height: 1;\n        white-space: nowrap;\n      }\n\n      .wc-group-gd {\n        display: none;\n      }\n\n      .wc-group-points {\n        color: #e2e8f0;\n        background: rgba(255,255,255,.08);\n        border: 1px solid rgba(255,255,255,.08);\n        border-radius: 999px;\n        padding: 2px 7px;\n        font-weight: 900;\n        font-size: 12px;\n        flex: 0 0 auto;\n        min-width: 22px;\n        text-align: center;\n        white-space: nowrap;\n      }\n\n      .wc-group-row-advance .wc-group-points {\n        color: #bbf7d0;\n        background: rgba(34,197,94,.12);\n        border-color: rgba(34,197,94,.18);\n      }\n\n      .wc-group-row-chance .wc-group-points {\n        color: #fde68a;\n        background: rgba(245,158,11,.11);\n        border-color: rgba(245,158,11,.16);\n      }\n\n      .wc-group-row-fav .wc-group-points {\n        color: #fed7aa;\n        background: rgba(249,115,22,.12);\n        border-color: rgba(249,115,22,.18);\n      }\n\n      .wc-group-empty {\n        color: #94a3b8;\n        font-size: 12px;\n        padding: 8px;\n        background: rgba(17,19,33,.34);\n        border: 1px solid rgba(255,255,255,.06);\n        border-radius: 10px;\n      }\n\n      .wc-fav-star {\n        display: inline-flex;\n        align-items: center;\n        justify-content: center;\n        margin-left: 5px;\n        color: #fde047;\n        font-size: 12px;\n        font-style: normal;\n        font-weight: 950;\n        line-height: 1;\n        text-shadow: 0 0 8px rgba(250,204,21,.45);\n        flex: 0 0 auto;\n      }\n\n      @media (max-width: 520px) {\n        .wc-info-icon {\n          width: 20px;\n          height: 20px;\n          flex-basis: 20px;\n          font-size: 12px;\n        }\n\n        .wc-group-row {\n          gap: 5px;\n          padding: 6px 6px;\n        }\n\n        .wc-group-points {\n          padding: 2px 6px;\n          font-size: 11px;\n          min-width: 20px;\n        }\n\n        .wc-group-rank {\n          width: 17px;\n          height: 17px;\n          flex-basis: 17px;\n        }\n\n        .wc-group-played,\n        .wc-group-gd {\n          display: none;\n        }\n      }\n\n      @media (max-width: 380px) {\n        .wc-group-flag-img {\n          height: 16px;\n        }\n\n        .wc-group-title {\n          font-size: 14px;\n        }\n\n        .wc-group-accent {\n          height: 20px;\n        }\n\n        .wc-group-row {\n          gap: 4px;\n          padding: 6px 5px;\n        }\n      }\n    </style>\n\n    <div class=\"wc-group-wrap\">\n      <div class=\"wc-group-head\">\n        <div class=\"wc-group-title-wrap\">\n          <span class=\"wc-group-accent\"></span>\n\n          <div class=\"wc-group-title-text\">\n            <div class=\"wc-group-title\">${TARGET}</div>\n            <div class=\"wc-group-subtitle\">Top 2 advance</div>\n          </div>\n        </div>\n\n        <div class=\"wc-info-icon\">ⓘ</div>\n      </div>\n\n      ${rowsHtml}\n    </div>\n  `;\n]]]"
           },
           "styles": {
             "card": [
               {
-                "margin": "4px 0"
+                "background": "linear-gradient(145deg, rgba(30,32,46,.68), rgba(17,19,33,.58))"
               },
               {
-                "padding": "4px 12px"
+                "border": "1px solid rgba(255,255,255,.10)"
               },
               {
-                "background-color": "[[[\n  if ((variables.diff < 2) && (variables.last_done.getDay() == variables.now.getDay())) { return 'rgba(var(--rgb-success-color), .33)' }\n  if ((variables.due > 0) && (variables.due < variables.diff)) { return 'rgba(var(--rgb-error-color), .33)' } else {return 'transparent'}\n]]]\n"
+                "border-radius": "18px"
+              },
+              {
+                "padding": "10px"
+              },
+              {
+                "backdrop-filter": "blur(12px)"
+              },
+              {
+                "box-shadow": "0 10px 28px rgba(0,0,0,.22)"
+              },
+              {
+                "cursor": "pointer"
+              },
+              {
+                "transition": "transform .15s ease, border-color .15s ease, box-shadow .15s ease"
+              },
+              {
+                "min-width": 0
+              },
+              {
+                "overflow": "hidden"
               }
             ],
             "grid": [
               {
-                "grid-template-columns": "min-content 1fr min-content"
+                "grid-template-areas": "\"content\""
               },
               {
-                "grid-template-areas": "\"i n badge\" \"i s badge\" \"i l badge\""
-              }
-            ],
-            "img_cell": [
-              {
-                "align-self": "middle"
+                "grid-template-columns": "1fr"
               },
               {
-                "text-align": "start"
-              },
-              {
-                "padding": "8px 24px 8px 4px"
-              }
-            ],
-            "icon": [
-              {
-                "color": "[[[\n  if ((variables.diff < 2) && (variables.last_done.getDay() == variables.now.getDay())) { return 'var(--success-color)' }\n  if (variables.due > 0) {\n    if (variables.due < variables.diff) { return 'var(--error-color)' }\n    if (variables.due < variables.diff + (variables.due / 4)) { return 'var(--warning-color)' }\n  } else { return 'var(--primary-text-color)' }\n]]]\n"
-              }
-            ],
-            "name": [
-              {
-                "align-self": "middle"
-              },
-              {
-                "justify-self": "start"
-              },
-              {
-                "font-size": "var(--body-font-size)"
-              }
-            ],
-            "label": [
-              {
-                "align-self": "middle"
-              },
-              {
-                "justify-self": "start"
-              },
-              {
-                "font-size": "var(--body-font-size)"
-              },
-              {
-                "opacity": 0.66
+                "min-width": 0
               }
             ],
             "custom_fields": {
-              "badge": [
+              "content": [
                 {
-                  "background": "[[[\n  if ((variables.diff < 2) && (variables.last_done.getDay() == variables.now.getDay())) { return 'var(--success-color)' }\n  if (variables.due < variables.diff) { return 'var(--error-color)' } else { return 'var(--warning-color)' }\n]]]\n"
+                  "justify-self": "stretch"
                 },
                 {
-                  "padding": "2px"
+                  "width": "100%"
                 },
                 {
-                  "line-height": 1
+                  "min-width": 0
                 },
                 {
-                  "font-size": "var(--h6-font-size)"
-                },
-                {
-                  "font-weight": 900
-                },
-                {
-                  "text-transform": "uppercase"
-                },
-                {
-                  "border-radius": "2px"
-                },
-                {
-                  "color": "var(--accent-text-color)"
+                  "overflow": "hidden"
                 }
               ]
             }
-          },
-          "tap_action": {
-            "action": "call-service",
-            "service": "input_button.press",
-            "service_data": {
-              "entity_id": "entity"
-            }
-          },
-          "hold_action": {
-            "action": "more-info",
-            "entity": "[[[ return entity.entity_id.replace(\"input_button\", \"input_text\") ]]]"
           }
         },
-        "chore_tile": {
-          "template": [
-            "chore_card",
-            "live_tile_card",
-            "live_tile_with_long_state"
+        "wc_group_popup": {
+          "entity": "sensor.world_cup_schedule",
+          "triggers_update": [
+            "sensor.world_cup_schedule",
+            "sensor.world_cup_scoreboard",
+            "sensor.world_cup_standings"
           ],
+          "show_icon": false,
+          "show_name": false,
+          "show_state": false,
+          "show_label": false,
+          "variables": {
+            "group": "A",
+            "favorite_team": "NED"
+          },
+          "tap_action": {
+            "action": "none"
+          },
+          "hold_action": {
+            "action": "none"
+          },
+          "double_tap_action": {
+            "action": "none"
+          },
+          "custom_fields": {
+            "content": "[[[\n  const st = states['sensor.world_cup_standings'];\n  const sch = states['sensor.world_cup_schedule'];\n  const sb = states['sensor.world_cup_scoreboard'];\n\n  const GROUP = String(variables.group || 'A').replace(/^Group\\s*/i, '').trim().toUpperCase();\n  const TARGET = `Group ${GROUP}`;\n  const FAV = String(variables.favorite_team || 'NED').toUpperCase();\n\n  const esc = s => (s == null ? '' : String(s));\n\n  const calendarIcon = `\n    <svg class=\"wc-popup-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\">\n      <path d=\"M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1.5A2.5 2.5 0 0 1 22 6.5v12A2.5 2.5 0 0 1 19.5 21h-15A2.5 2.5 0 0 1 2 18.5v-12A2.5 2.5 0 0 1 4.5 4H6V3a1 1 0 0 1 1-1Zm12.5 8h-15v8.5a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5V10ZM5 6a.5.5 0 0 0-.5.5V8h15V6.5A.5.5 0 0 0 19 6H5Z\"/>\n    </svg>\n  `;\n\n  const locationIcon = `\n    <svg class=\"wc-popup-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\">\n      <path d=\"M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z\"/>\n    </svg>\n  `;\n\n  const fmt = iso => {\n    try {\n      return new Date(iso).toLocaleString([], {\n        weekday: 'short',\n        month: 'short',\n        day: 'numeric',\n        hour: '2-digit',\n        minute: '2-digit'\n      });\n    } catch(e) {\n      return esc(iso);\n    }\n  };\n\n  const flag = u => u\n    ? `<img src=\"${u}\" class=\"wc-popup-flag\">`\n    : '';\n\n  function scoreValue(raw) {\n    if (raw == null || raw === '') return '';\n\n    if (typeof raw === 'object') {\n      return raw.displayValue ?? raw.value ?? raw.score ?? '';\n    }\n\n    return raw;\n  }\n\n  function scoreNumber(raw) {\n    const val = scoreValue(raw);\n\n    if (val === '') return null;\n\n    const n = Number(val);\n\n    return Number.isFinite(n) ? n : null;\n  }\n\n  function venueText(m) {\n    if (!m) return '';\n\n    if (m.v) return String(m.v);\n\n    const rawVenue = m.venue || m.location || {};\n\n    if (typeof rawVenue === 'string') return rawVenue;\n\n    if (rawVenue && typeof rawVenue === 'object') {\n      const address = rawVenue.address || {};\n\n      return [\n        rawVenue.fullName || rawVenue.name || rawVenue.displayName || rawVenue.shortName,\n        address.city || rawVenue.city || rawVenue.venueCity,\n        address.country || rawVenue.country || rawVenue.venueCountry\n      ].filter(x => x && String(x).trim()).join(', ');\n    }\n\n    return [\n      m.venueName,\n      m.venue_name,\n      m.stadium,\n      m.stadiumName,\n      m.city,\n      m.country\n    ].filter(x => x && String(x).trim()).join(', ');\n  }\n\n  function resultInfo(m) {\n    if (!m || m.s !== 'post') {\n      return {\n        result: 'none',\n        awayClass: '',\n        homeClass: '',\n        scoreClass: ''\n      };\n    }\n\n    const away = scoreNumber(m.as);\n    const home = scoreNumber(m.hs);\n\n    if (away === null || home === null) {\n      return {\n        result: 'none',\n        awayClass: '',\n        homeClass: '',\n        scoreClass: ''\n      };\n    }\n\n    if (away === home) {\n      return {\n        result: 'draw',\n        awayClass: 'wc-popup-team-draw',\n        homeClass: 'wc-popup-team-draw',\n        scoreClass: 'wc-popup-score-draw'\n      };\n    }\n\n    if (away > home) {\n      return {\n        result: 'away-win',\n        awayClass: 'wc-popup-team-win',\n        homeClass: 'wc-popup-team-loss',\n        scoreClass: 'wc-popup-score-finished'\n      };\n    }\n\n    return {\n      result: 'home-win',\n      awayClass: 'wc-popup-team-loss',\n      homeClass: 'wc-popup-team-win',\n      scoreClass: 'wc-popup-score-finished'\n    };\n  }\n\n  function statusBadge(m, result) {\n    if (m.s === 'in') return `<span class=\"wc-status wc-live\">LIVE</span>`;\n    if (m.s === 'post' && result === 'draw') return `<span class=\"wc-status wc-draw\">DRAW</span>`;\n    if (m.s === 'post') return `<span class=\"wc-status wc-finished\">FINISHED</span>`;\n    return `<span class=\"wc-status wc-scheduled\">SCHEDULED</span>`;\n  }\n\n  function teamLine(flagUrl, abbr, score, showScore, resultClass, scoreClass) {\n    const fav = String(abbr || '').toUpperCase() === FAV;\n    \n    const favStar = fav\n      ? `<span class=\"wc-fav-star wc-fav-star-popup\" title=\"Favorite team\">★</span>`\n      : '';\n    \n    return `\n      <div class=\"wc-popup-team ${resultClass}\">\n        <div class=\"wc-popup-team-name\">\n          ${flag(flagUrl)}${esc(abbr)}${favStar}\n        </div>\n\n        <div class=\"wc-popup-score ${scoreClass}\">\n          ${showScore ? esc(scoreValue(score)) : ''}\n        </div>\n      </div>\n    `;\n  }\n\n  const groups = (st && st.attributes && st.attributes.children) || [];\n  const group = groups.find(x => x.name === TARGET);\n\n  const teams = group\n    ? ((group.standings && group.standings.entries) || []).map(e => e.team.abbreviation)\n    : [];\n\n  let matches = (sch && sch.attributes && sch.attributes.matches) || [];\n\n  if (!matches.length && sb) {\n    matches = ((sb.attributes && sb.attributes.events) || []).map(e => {\n      const c = e.competitions && e.competitions[0];\n      const cs = (c && c.competitors) || [];\n      const h = cs.find(x => x.homeAway === 'home') || {};\n      const a = cs.find(x => x.homeAway === 'away') || {};\n      const v = (c && c.venue) || {};\n      const ad = v.address || {};\n\n      return {\n        d: e.date,\n        a: a.team && a.team.abbreviation,\n        h: h.team && h.team.abbreviation,\n        af: (a.team && a.team.logo) || '',\n        hf: (h.team && h.team.logo) || '',\n        as: scoreValue(a.score),\n        hs: scoreValue(h.score),\n        s: e.status && e.status.type && e.status.type.state,\n        det: e.status && e.status.type && e.status.type.shortDetail,\n        v: [v.fullName, ad.city, ad.country].filter(Boolean).join(', ')\n      };\n    });\n  }\n\n  const groupMatches = matches\n    .filter(m => teams.includes(m.a) || teams.includes(m.h))\n    .sort((x, y) => x.d < y.d ? -1 : (x.d > y.d ? 1 : 0));\n\n  function matchdayNumber(m, index) {\n    const raw = m.matchday || m.matchDay || m.md || m.roundNumber || '';\n\n    const n = parseInt(String(raw).replace(/\\D/g, ''));\n\n    if (Number.isFinite(n) && n > 0) return n;\n\n    return Math.floor(index / 2) + 1;\n  }\n\n  const matchdays = {};\n\n  groupMatches.forEach((m, index) => {\n    const md = matchdayNumber(m, index);\n    matchdays[md] = matchdays[md] || [];\n    matchdays[md].push(m);\n  });\n\n  const body = groupMatches.length\n    ? Object.keys(matchdays)\n        .map(x => Number(x))\n        .sort((a, b) => a - b)\n        .map(md => {\n          const fixtures = matchdays[md].map(m => {\n            const showScore = m.s !== 'pre' && m.as != null && m.hs != null;\n            const live = m.s === 'in';\n            const result = resultInfo(m);\n            const venue = venueText(m);\n\n            return `\n              <div class=\"wc-popup-match ${live ? 'wc-popup-match-live' : ''}\">\n                <div class=\"wc-popup-meta\">\n                  <div class=\"wc-popup-date\">\n                    ${calendarIcon}\n                    <span>${fmt(m.d)}</span>\n                  </div>\n\n                  ${statusBadge(m, result.result)}\n                </div>\n\n                <div class=\"wc-popup-scorebox\">\n                  ${teamLine(m.af, m.a, m.as, showScore, result.awayClass, result.scoreClass)}\n                  <div class=\"wc-divider\"></div>\n                  ${teamLine(m.hf, m.h, m.hs, showScore, result.homeClass, result.scoreClass)}\n                </div>\n\n                <div class=\"wc-popup-venue\">\n                  ${locationIcon}\n                  <span>${esc(venue || 'Venue TBD')}</span>\n                </div>\n              </div>\n            `;\n          }).join('');\n\n          return `\n            <div class=\"wc-matchday-block\">\n              <div class=\"wc-matchday-title\">Matchday ${md}</div>\n              ${fixtures}\n            </div>\n          `;\n        }).join('')\n    : `\n      <div class=\"wc-popup-empty\">\n        No fixtures found.\n      </div>\n    `;\n\n  return `\n    <style>\n      .wc-popup-shell {\n        pointer-events: auto !important;\n        text-align: left;\n        width: 100%;\n        max-width: 720px;\n        margin: 0 auto;\n        padding: 2px 4px 2px 2px;\n        box-sizing: border-box;\n        overflow: visible;\n        position: relative;\n        z-index: 10;\n      }\n\n      .wc-popup-scroll {\n        pointer-events: auto !important;\n        width: 100%;\n        max-width: 100%;\n        box-sizing: border-box;\n        overflow: visible;\n        touch-action: auto;\n      }\n\n      .wc-popup-title {\n        color: #f8fafc;\n        font-weight: 900;\n        font-size: 15px;\n        margin-bottom: 8px;\n        letter-spacing: .2px;\n      }\n\n      .wc-matchday-title {\n        color: #cbd5e1;\n        font-size: 12px;\n        font-weight: 950;\n        letter-spacing: .4px;\n        text-transform: uppercase;\n        margin: 10px 0 6px 2px;\n        padding-left: 8px;\n        border-left: 3px solid rgba(148,163,184,.45);\n      }\n\n      .wc-matchday-block:first-of-type .wc-matchday-title {\n        margin-top: 0;\n      }\n\n      .wc-popup-match {\n        background: rgba(24,26,36,.72);\n        border: 1px solid rgba(255,255,255,.08);\n        border-radius: 12px;\n        padding: 6px;\n        margin-bottom: 8px;\n        box-sizing: border-box;\n        min-width: 0;\n        overflow: hidden;\n      }\n\n      .wc-popup-match-live {\n        border-color: rgba(239,68,68,.42);\n        box-shadow: 0 0 12px rgba(239,68,68,.16);\n      }\n\n      .wc-popup-meta {\n        display: flex;\n        align-items: center;\n        justify-content: space-between;\n        gap: 8px;\n        margin-bottom: 5px;\n        padding: 0 2px;\n        min-width: 0;\n      }\n\n      .wc-popup-date {\n        display: flex;\n        align-items: center;\n        gap: 5px;\n        color: #cbd5e1;\n        font-size: 11px;\n        font-weight: 650;\n        min-width: 0;\n        overflow: hidden;\n        text-overflow: ellipsis;\n        white-space: nowrap;\n      }\n\n      .wc-popup-icon {\n        width: 12px;\n        height: 12px;\n        fill: currentColor;\n        flex: 0 0 auto;\n        opacity: .78;\n      }\n\n      .wc-status {\n        border-radius: 999px;\n        padding: 2px 6px;\n        font-size: 10px;\n        font-weight: 850;\n        letter-spacing: .2px;\n        white-space: nowrap;\n        flex: 0 0 auto;\n      }\n\n      .wc-finished {\n        background: rgba(34,197,94,.12);\n        color: #86efac;\n        border: 1px solid rgba(34,197,94,.22);\n      }\n\n      .wc-live {\n        background: rgba(239,68,68,.12);\n        color: #fca5a5;\n        border: 1px solid rgba(239,68,68,.28);\n      }\n\n      .wc-draw {\n        background: rgba(245,158,11,.12);\n        color: #fde68a;\n        border: 1px solid rgba(245,158,11,.24);\n      }\n\n      .wc-scheduled {\n        background: rgba(148,163,184,.10);\n        color: #cbd5e1;\n        border: 1px solid rgba(148,163,184,.16);\n      }\n\n      .wc-popup-scorebox {\n        background: rgba(17,19,33,.62);\n        border: 1px solid rgba(255,255,255,.06);\n        border-radius: 9px;\n        overflow: hidden;\n      }\n\n      .wc-popup-team {\n        display: flex;\n        align-items: center;\n        justify-content: space-between;\n        gap: 8px;\n        padding: 6px 8px;\n        min-width: 0;\n        border-radius: 0;\n        border: 1px solid transparent;\n        box-sizing: border-box;\n      }\n\n      .wc-popup-team-name {\n        display: flex;\n        align-items: center;\n        min-width: 0;\n        color: #f8fafc;\n        font-size: 13px;\n        font-weight: 750;\n        font-style: italic;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-popup-team-win {\n        background: rgba(34,197,94,.14);\n        border-color: rgba(34,197,94,.22);\n        box-shadow: inset 0 0 12px rgba(34,197,94,.07);\n      }\n\n      .wc-popup-team-win .wc-popup-team-name {\n        color: #bbf7d0;\n        font-weight: 900;\n      }\n\n      .wc-popup-team-loss {\n        background: rgba(127,29,29,.16);\n        border-color: rgba(239,68,68,.15);\n        opacity: .68;\n        filter: saturate(.78) brightness(.88);\n      }\n\n      .wc-popup-team-loss .wc-popup-team-name {\n        color: #fecaca;\n      }\n\n      .wc-popup-team-draw {\n        background: rgba(245,158,11,.11);\n        border-color: rgba(245,158,11,.20);\n      }\n\n      .wc-popup-team-draw .wc-popup-team-name {\n        color: #fde68a;\n        font-weight: 850;\n      }\n\n      .wc-popup-team-fav {\n        box-shadow: inset 4px 0 0 rgba(249,115,22,.48);\n      }\n\n      .wc-popup-team-fav .wc-popup-team-name {\n        color: #fed7aa;\n      }\n\n      .wc-popup-flag {\n        height: 16px;\n        width: auto;\n        border-radius: 2px;\n        margin-right: 6px;\n        vertical-align: middle;\n        flex: 0 0 auto;\n      }\n\n      .wc-popup-score {\n        color: #e2e8f0;\n        font-size: 13px;\n        font-weight: 850;\n        min-width: 20px;\n        text-align: right;\n      }\n\n      .wc-popup-score-finished {\n        color: #f8fafc;\n        font-weight: 950;\n      }\n\n      .wc-popup-score-draw {\n        color: #fde68a;\n        font-weight: 950;\n      }\n\n      .wc-divider {\n        height: 1px;\n        background: rgba(255,255,255,.06);\n      }\n\n      .wc-popup-venue {\n        display: flex;\n        align-items: center;\n        gap: 5px;\n        color: #94a3b8;\n        font-size: 11px;\n        margin-top: 5px;\n        padding: 0 2px;\n        min-width: 0;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-popup-venue span {\n        min-width: 0;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-popup-empty {\n        color: #94a3b8;\n        background: rgba(24,26,36,.55);\n        border: 1px solid rgba(255,255,255,.08);\n        border-radius: 12px;\n        padding: 10px;\n        font-size: 12px;\n      }\n\n      .wc-fav-star {\n        display: inline-flex;\n        align-items: center;\n        justify-content: center;\n        margin-left: 5px;\n        color: #fde047;\n        font-size: 12px;\n        font-style: normal;\n        font-weight: 950;\n        line-height: 1;\n        text-shadow: 0 0 8px rgba(250,204,21,.45);\n        flex: 0 0 auto;\n      }\n      \n      .wc-fav-star-popup {\n        font-size: 11px;\n      }\n\n      @media (max-width: 520px), (max-height: 760px) {\n        .wc-popup-shell {\n          padding: 0;\n        }\n\n        .wc-popup-scroll {\n          max-height: calc(100dvh - 180px);\n          overflow-y: scroll !important;\n          overflow-x: hidden !important;\n          padding-right: 10px;\n          box-sizing: border-box;\n          scrollbar-width: auto;\n          scrollbar-gutter: stable;\n          -webkit-overflow-scrolling: touch;\n          overscroll-behavior: contain;\n          touch-action: pan-y !important;\n          position: relative;\n          z-index: 20;\n        }\n\n        .wc-popup-scroll::-webkit-scrollbar {\n          width: 14px;\n        }\n\n        .wc-popup-scroll::-webkit-scrollbar-thumb {\n          background: rgba(148,163,184,.55);\n          border-radius: 999px;\n          border: 3px solid rgba(17,19,33,.95);\n        }\n\n        .wc-popup-scroll::-webkit-scrollbar-track {\n          background: rgba(255,255,255,.06);\n          border-radius: 999px;\n        }\n      }\n\n      @media (max-width: 420px) {\n        .wc-popup-scroll {\n          max-height: calc(100dvh - 150px);\n          padding-right: 8px;\n        }\n\n        .wc-popup-title {\n          font-size: 14px;\n        }\n\n        .wc-popup-date {\n          font-size: 10px;\n        }\n\n        .wc-status {\n          font-size: 9px;\n          padding: 2px 5px;\n        }\n\n        .wc-popup-team-name,\n        .wc-popup-score {\n          font-size: 12px;\n        }\n\n        .wc-popup-venue {\n          font-size: 10px;\n        }\n      }\n    </style>\n\n    <div class=\"wc-popup-shell\">\n      <div class=\"wc-popup-scroll\">\n        <div class=\"wc-popup-title\">${TARGET} fixtures</div>\n        ${body}\n      </div>\n    </div>\n  `;\n]]]"
+          },
           "styles": {
             "card": [
+              {
+                "background": "transparent"
+              },
+              {
+                "box-shadow": "none"
+              },
+              {
+                "border": "none"
+              },
+              {
+                "padding": 0
+              },
+              {
+                "overflow": "visible"
+              },
+              {
+                "pointer-events": "none"
+              }
+            ],
+            "grid": [
+              {
+                "grid-template-areas": "\"content\""
+              },
+              {
+                "grid-template-columns": "1fr"
+              },
+              {
+                "overflow": "visible"
+              },
+              {
+                "pointer-events": "none"
+              }
+            ],
+            "custom_fields": {
+              "content": [
+                {
+                  "justify-self": "stretch"
+                },
+                {
+                  "width": "100%"
+                },
+                {
+                  "min-width": 0
+                },
+                {
+                  "overflow": "visible"
+                },
+                {
+                  "pointer-events": "auto"
+                }
+              ]
+            }
+          }
+        },
+        "wc_match_strip": {
+          "entity": "sensor.world_cup_schedule",
+          "triggers_update": [
+            "sensor.world_cup_schedule",
+            "sensor.world_cup_scoreboard"
+          ],
+          "show_icon": false,
+          "show_name": false,
+          "show_state": false,
+          "show_label": false,
+          "variables": {
+            "mode": "today",
+            "limit": 8,
+            "hide_if_empty": false,
+            "match_timezone": "America/New_York",
+            "show_today": false,
+            "row_max_width": 2000,
+            "card_min_width": 280,
+            "card_max_width": 450
+          },
+          "tap_action": {
+            "action": "none"
+          },
+          "hold_action": {
+            "action": "none"
+          },
+          "double_tap_action": {
+            "action": "none"
+          },
+          "custom_fields": {
+            "content": "[[[\n  const sch = states['sensor.world_cup_schedule'];\n  const sb = states['sensor.world_cup_scoreboard'];\n\n  const scheduleRaw = (sch && sch.attributes && sch.attributes.matches) || [];\n  const events = (sb && sb.attributes && sb.attributes.events) || [];\n\n  const MODE = String(variables.mode || 'today').toLowerCase();\n  const LIMIT = Number(variables.limit || 8);\n\n  const MATCH_TZ = String(variables.match_timezone || 'America/New_York');\n  const SHOW_TODAY = variables.show_today === true || variables.show_today === 'true';\n\n  const CARD_WIDTH = Math.max(220, Number(variables.card_width || 360));\n\n  const esc = s => (s == null ? '' : String(s));\n\n  const locationIcon = `\n    <svg class=\"wc-score-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\">\n      <path d=\"M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z\"/>\n    </svg>\n  `;\n\n  const flag = u => u\n    ? `<img src=\"${u}\" class=\"wc-score-flag\">`\n    : '';\n\n  function scoreValue(raw) {\n    if (raw == null || raw === '') return '';\n\n    if (typeof raw === 'object') {\n      return raw.displayValue ?? raw.value ?? raw.score ?? '';\n    }\n\n    return raw;\n  }\n\n  function scoreNumber(raw) {\n    const val = scoreValue(raw);\n\n    if (val === '') return null;\n\n    const n = Number(val);\n\n    return Number.isFinite(n) ? n : null;\n  }\n\n  function penaltyValue(raw) {\n    const val = scoreValue(raw);\n\n    if (val === '') return '';\n\n    return val;\n  }\n\n  function hasPens(m) {\n    return penaltyValue(m.aps) !== '' || penaltyValue(m.hps) !== '';\n  }\n\n  function teamName(team) {\n    if (!team) return '';\n    return team.displayName || team.shortDisplayName || team.name || team.abbreviation || '';\n  }\n\n  function teamShort(team) {\n    if (!team) return '';\n    return team.shortDisplayName || team.abbreviation || team.name || '';\n  }\n\n  function tzDateKey(dateLike, offsetDays = 0) {\n    const d = new Date(dateLike);\n\n    if (isNaN(d.getTime())) return '';\n\n    const shifted = new Date(d.getTime() + offsetDays * 24 * 60 * 60 * 1000);\n\n    try {\n      const parts = new Intl.DateTimeFormat('en-US', {\n        timeZone: MATCH_TZ,\n        year: 'numeric',\n        month: '2-digit',\n        day: '2-digit'\n      }).formatToParts(shifted);\n\n      const y = parts.find(p => p.type === 'year')?.value;\n      const m = parts.find(p => p.type === 'month')?.value;\n      const day = parts.find(p => p.type === 'day')?.value;\n\n      return `${y}-${m}-${day}`;\n    } catch(e) {\n      return '';\n    }\n  }\n\n  function sameMatchDay(dateLike, offsetDays) {\n    const targetKey = tzDateKey(new Date(), offsetDays);\n    const matchKey = tzDateKey(dateLike, 0);\n\n    return targetKey && matchKey && targetKey === matchKey;\n  }\n\n  function fmtTime(iso) {\n    try {\n      return new Date(iso).toLocaleTimeString([], {\n        hour: '2-digit',\n        minute: '2-digit'\n      });\n    } catch(e) {\n      return esc(iso);\n    }\n  }\n\n  function fmtDateTime(iso) {\n    try {\n      return new Date(iso).toLocaleString([], {\n        weekday: 'short',\n        month: 'short',\n        day: 'numeric',\n        hour: '2-digit',\n        minute: '2-digit'\n      });\n    } catch(e) {\n      return esc(iso);\n    }\n  }\n\n  function roundLabel(raw) {\n    const r = String(raw || '').toLowerCase();\n\n    if (!r) return '';\n\n    const map = {\n      'group-stage': 'Group Stage',\n      'round-of-32': 'Round of 32',\n      'round-of-16': 'Round of 16',\n      'quarterfinals': 'Quarterfinals',\n      'semi-finals': 'Semifinals',\n      'semifinals': 'Semifinals',\n      'third-place': 'Third Place',\n      'final': 'Final'\n    };\n\n    return map[r] || String(raw).replace(/-/g, ' ').replace(/\\b\\w/g, x => x.toUpperCase());\n  }\n\n  function contextLabel(m) {\n    const group = m.group || m.grp || m.g || '';\n\n    if (group) {\n      const g = String(group).replace(/^Group\\s*/i, '').trim().toUpperCase();\n      return `Group ${g}`;\n    }\n\n    if (m.rnd) return roundLabel(m.rnd);\n\n    return '';\n  }\n\n  function venueText(m) {\n    if (!m) return '';\n\n    if (m.v) return String(m.v);\n\n    const rawVenue = m.venue || m.location || {};\n\n    if (typeof rawVenue === 'string') return rawVenue;\n\n    if (rawVenue && typeof rawVenue === 'object') {\n      const address = rawVenue.address || {};\n\n      return [\n        rawVenue.fullName || rawVenue.name || rawVenue.displayName || rawVenue.shortName,\n        address.city || rawVenue.city || rawVenue.venueCity,\n        address.country || rawVenue.country || rawVenue.venueCountry\n      ].filter(x => x && String(x).trim()).join(', ');\n    }\n\n    return [\n      m.venueName,\n      m.venue_name,\n      m.stadium,\n      m.stadiumName,\n      m.city,\n      m.country\n    ].filter(x => x && String(x).trim()).join(', ');\n  }\n\n  function normalizeSchedule(m) {\n    return {\n      d: m.d || m.date || m.startDate,\n      a: m.a || m.away || m.awayTeam || '',\n      h: m.h || m.home || m.homeTeam || '',\n      an: m.an || m.awayName || m.aName || m.a || '',\n      hn: m.hn || m.homeName || m.hName || m.h || '',\n      asn: m.asn || m.awayShortName || m.a || '',\n      hsn: m.hsn || m.homeShortName || m.h || '',\n      af: m.af || m.awayFlag || m.awayLogo || '',\n      hf: m.hf || m.homeFlag || m.homeLogo || '',\n      as: scoreValue(m.as ?? m.awayScore),\n      hs: scoreValue(m.hs ?? m.homeScore),\n      aps: penaltyValue(m.aps ?? m.awayPenaltyScore ?? m.awayPenalties ?? m.awayShootoutScore),\n      hps: penaltyValue(m.hps ?? m.homePenaltyScore ?? m.homePenalties ?? m.homeShootoutScore),\n      s: m.s || m.state || m.status || 'pre',\n      det: m.det || m.detail || m.shortDetail || '',\n      rnd: m.rnd || m.round || m.stage || '',\n      group: m.group || m.grp || m.g || '',\n      v: venueText(m)\n    };\n  }\n\n  function normalizeScoreboard(e) {\n    const comp = e.competitions && e.competitions[0];\n    const cps = (comp && comp.competitors) || [];\n    const home = cps.find(x => x.homeAway === 'home') || {};\n    const away = cps.find(x => x.homeAway === 'away') || {};\n    const t = (e.status && e.status.type) || {};\n    const v = (comp && comp.venue) || {};\n    const ad = v.address || {};\n\n    return {\n      d: e.date,\n      a: away.team && away.team.abbreviation,\n      h: home.team && home.team.abbreviation,\n      an: teamName(away.team),\n      hn: teamName(home.team),\n      asn: teamShort(away.team),\n      hsn: teamShort(home.team),\n      af: away.team && away.team.logo,\n      hf: home.team && home.team.logo,\n      as: scoreValue(away.score),\n      hs: scoreValue(home.score),\n      aps: penaltyValue(away.penaltyScore ?? away.shootoutScore ?? away.penalties),\n      hps: penaltyValue(home.penaltyScore ?? home.shootoutScore ?? home.penalties),\n      s: t.state || 'pre',\n      det: t.shortDetail || '',\n      displayClock: e.status && e.status.displayClock,\n      period: e.status && e.status.period,\n      rnd: e.rnd || e.round || '',\n      group: e.group || e.grp || '',\n      v: [v.fullName, ad.city, ad.country].filter(Boolean).join(', ')\n    };\n  }\n\n  function teamKey(m) {\n    return [String(m.a || '').toUpperCase(), String(m.h || '').toUpperCase()].sort().join('|');\n  }\n\n  function matchKey(m) {\n    return `${tzDateKey(m.d, 0)}|${teamKey(m)}`;\n  }\n\n  function mergeWithScoreboard(scheduleMatch, scoreboardMap) {\n    const sbMatch = scoreboardMap.get(matchKey(scheduleMatch));\n\n    if (!sbMatch) return scheduleMatch;\n\n    return {\n      ...scheduleMatch,\n      ...sbMatch,\n      rnd: sbMatch.rnd || scheduleMatch.rnd,\n      group: sbMatch.group || scheduleMatch.group,\n      v: sbMatch.v || scheduleMatch.v\n    };\n  }\n\n  const normalizedSchedule = scheduleRaw.map(normalizeSchedule);\n  const scoreboardMatches = events.map(normalizeScoreboard);\n\n  const scoreboardMap = new Map();\n\n  scoreboardMatches.forEach(m => {\n    const key = matchKey(m);\n\n    if (key && !key.startsWith('|')) {\n      scoreboardMap.set(key, m);\n    }\n  });\n\n  let matches = [];\n\n  if (MODE === 'today') {\n    const todaySchedule = normalizedSchedule.filter(m => sameMatchDay(m.d, 0));\n\n    matches = todaySchedule.map(m => mergeWithScoreboard(m, scoreboardMap));\n\n    if (!matches.length) {\n      matches = scoreboardMatches.filter(m => sameMatchDay(m.d, 0));\n    }\n  } else if (MODE === 'yesterday') {\n    const yesterdaySchedule = normalizedSchedule.filter(m => sameMatchDay(m.d, -1));\n\n    matches = yesterdaySchedule.map(m => mergeWithScoreboard(m, scoreboardMap));\n  } else {\n    const now = new Date();\n    const todayKey = tzDateKey(now, 0);\n\n    matches = normalizedSchedule\n      .filter(m => {\n        const d = new Date(m.d);\n\n        if (isNaN(d.getTime())) return false;\n        if (d < now) return false;\n\n        const matchDayKey = tzDateKey(m.d, 0);\n\n        if (!SHOW_TODAY && matchDayKey === todayKey) return false;\n\n        return true;\n      })\n      .sort((x, y) => new Date(x.d) - new Date(y.d))\n      .slice(0, LIMIT)\n      .map(m => mergeWithScoreboard(m, scoreboardMap));\n  }\n\n  matches = matches.sort((x, y) => {\n    const xd = x.d || '';\n    const yd = y.d || '';\n    return xd < yd ? -1 : (xd > yd ? 1 : 0);\n  });\n\n  function resultInfo(m) {\n    if (m.s !== 'post') {\n      return {\n        result: 'none',\n        awayClass: '',\n        homeClass: '',\n        scoreClass: ''\n      };\n    }\n\n    const a = scoreNumber(m.as);\n    const h = scoreNumber(m.hs);\n    const ap = scoreNumber(m.aps);\n    const hp = scoreNumber(m.hps);\n\n    if (ap !== null && hp !== null && ap !== hp) {\n      return ap > hp\n        ? {\n            result: 'away-win',\n            awayClass: 'wc-score-team-win',\n            homeClass: 'wc-score-team-loss',\n            scoreClass: 'wc-score-main-finished'\n          }\n        : {\n            result: 'home-win',\n            awayClass: 'wc-score-team-loss',\n            homeClass: 'wc-score-team-win',\n            scoreClass: 'wc-score-main-finished'\n          };\n    }\n\n    if (a === null || h === null) {\n      return {\n        result: 'none',\n        awayClass: '',\n        homeClass: '',\n        scoreClass: ''\n      };\n    }\n\n    if (a === h) {\n      return {\n        result: 'draw',\n        awayClass: 'wc-score-team-draw',\n        homeClass: 'wc-score-team-draw',\n        scoreClass: 'wc-score-main-draw'\n      };\n    }\n\n    return a > h\n      ? {\n          result: 'away-win',\n          awayClass: 'wc-score-team-win',\n          homeClass: 'wc-score-team-loss',\n          scoreClass: 'wc-score-main-finished'\n        }\n      : {\n          result: 'home-win',\n          awayClass: 'wc-score-team-loss',\n          homeClass: 'wc-score-team-win',\n          scoreClass: 'wc-score-main-finished'\n        };\n  }\n\n  function statusBadge(m, result) {\n    if (m.s === 'in') return `<span class=\"wc-score-status wc-score-live\">LIVE</span>`;\n    if (m.s === 'post' && hasPens(m)) return `<span class=\"wc-score-status wc-score-finished\">PENS</span>`;\n    if (m.s === 'post' && result === 'draw') return `<span class=\"wc-score-status wc-score-draw\">DRAW</span>`;\n    if (m.s === 'post') return `<span class=\"wc-score-status wc-score-finished\">FINISHED</span>`;\n    return `<span class=\"wc-score-status wc-score-scheduled\">SCHEDULED</span>`;\n  }\n\n  function detailText(m) {\n    if (m.s === 'pre') {\n      return MODE === 'upcoming' ? fmtDateTime(m.d) : fmtTime(m.d);\n    }\n\n    if (m.s === 'post') {\n      if (hasPens(m)) return 'Pens';\n      if (String(m.det || '').toUpperCase().includes('AET')) return 'AET';\n      return m.det || 'FT';\n    }\n\n    return m.displayClock || m.det || 'Live';\n  }\n\n  function scoreHtml(m) {\n    const awayScore = scoreValue(m.as);\n    const homeScore = scoreValue(m.hs);\n\n    if (m.s === 'pre' && awayScore === '' && homeScore === '') {\n      return 'vs';\n    }\n\n    const main = `${esc(awayScore || '0')}–${esc(homeScore || '0')}`;\n\n    if (!hasPens(m)) return main;\n\n    return `\n      <div class=\"wc-score-main-stack\">\n        <div>${main}</div>\n        <div class=\"wc-score-pens\">${esc(m.aps || '0')}–${esc(m.hps || '0')} pens</div>\n      </div>\n    `;\n  }\n\n  function displayNames(m) {\n    const awayFull = m.an || m.a || 'TBD';\n    const homeFull = m.hn || m.h || 'TBD';\n    const awayShort = m.asn || m.a || awayFull;\n    const homeShort = m.hsn || m.h || homeFull;\n\n    const useShort = String(awayFull).length + String(homeFull).length > 31;\n\n    return {\n      away: useShort ? awayShort : awayFull,\n      home: useShort ? homeShort : homeFull\n    };\n  }\n\n  const cards = matches.map(m => {\n    const live = m.s === 'in';\n    const result = resultInfo(m);\n    const venue = venueText(m);\n    const context = contextLabel(m);\n    const names = displayNames(m);\n\n    const venueLine = venue\n      ? `<div class=\"wc-score-venue\">${locationIcon}<span>${esc(venue)}</span></div>`\n      : '';\n\n    const contextLine = context\n      ? `<span class=\"wc-score-context\">${esc(context)}</span>`\n      : '';\n\n    return `\n      <div class=\"wc-score-card ${live ? 'wc-score-card-live' : ''}\">\n        <div class=\"wc-score-top\">\n          <div class=\"wc-score-top-left\">\n            ${statusBadge(m, result.result)}\n            ${contextLine}\n          </div>\n\n          <span class=\"wc-score-detail\">${detailText(m)}</span>\n        </div>\n\n        <div class=\"wc-score-teams\">\n          <div class=\"wc-score-team wc-score-team-away ${result.awayClass}\">\n            ${flag(m.af)}\n            <span>${esc(names.away)}</span>\n          </div>\n\n          <div class=\"wc-score-main ${result.scoreClass}\">\n            ${scoreHtml(m)}\n          </div>\n\n          <div class=\"wc-score-team wc-score-team-home ${result.homeClass}\">\n            <span>${esc(names.home)}</span>\n            ${flag(m.hf)}\n          </div>\n        </div>\n\n        ${venueLine}\n      </div>\n    `;\n  }).join('');\n\n  const emptyText = MODE === 'yesterday'\n    ? 'No matches yesterday'\n    : MODE === 'upcoming'\n      ? 'No upcoming matches'\n      : 'No matches today';\n\n  const body = cards || `\n    <div class=\"wc-score-empty\">\n      <div class=\"wc-score-empty-title\">${emptyText}</div>\n      <div class=\"wc-score-empty-sub\">Matches will appear here when available.</div>\n    </div>\n  `;\n\n  return `\n    <style>\n      @keyframes wcScoreLivePulse {\n        0% {\n          box-shadow: 0 0 8px rgba(239,68,68,.12);\n        }\n\n        50% {\n          box-shadow: 0 0 16px rgba(239,68,68,.28);\n        }\n\n        100% {\n          box-shadow: 0 0 8px rgba(239,68,68,.12);\n        }\n      }\n\n      .wc-score-section {\n        width: 100%;\n        max-width: 100%;\n        min-width: 0;\n        box-sizing: border-box;\n        overflow: hidden;\n        position: static;\n        left: auto;\n        transform: none;\n      }\n\n    .wc-score-wrap {\n        width: 100%;\n        max-width: 100%;\n        min-width: 0;\n        margin: 0;\n        box-sizing: border-box;\n        display: flex;\n        flex-wrap: wrap;\n        gap: 10px;\n        align-items: stretch;\n        justify-content: flex-start;\n        overflow: hidden;\n      }\n\n      .wc-score-card {\n        flex: 0 0 ${CARD_WIDTH}px;\n        width: ${CARD_WIDTH}px;\n        min-width: 0;\n        max-width: ${CARD_WIDTH}px;\n        background: rgba(24,26,36,.70);\n        border: 1px solid rgba(255,255,255,.08);\n        border-radius: 15px;\n        padding: 10px;\n        box-sizing: border-box;\n        overflow: hidden;\n      }\n\n      .wc-score-card-live {\n        border-color: rgba(239,68,68,.50);\n        animation: wcScoreLivePulse 2s ease-in-out infinite;\n      }\n\n      .wc-score-top {\n        display: flex;\n        align-items: center;\n        justify-content: space-between;\n        gap: 10px;\n        margin-bottom: 8px;\n        min-width: 0;\n      }\n\n      .wc-score-top-left {\n        display: flex;\n        align-items: center;\n        gap: 5px;\n        min-width: 0;\n        overflow: hidden;\n      }\n\n      .wc-score-status,\n      .wc-score-context {\n        border-radius: 999px;\n        padding: 3px 8px;\n        font-size: 11px;\n        font-weight: 850;\n        letter-spacing: .2px;\n        white-space: nowrap;\n        flex: 0 0 auto;\n      }\n\n      .wc-score-context {\n        background: rgba(255,255,255,.07);\n        color: #cbd5e1;\n        border: 1px solid rgba(255,255,255,.10);\n        max-width: 120px;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-score-live {\n        background: rgba(239,68,68,.16);\n        color: #fca5a5;\n        border: 1px solid rgba(239,68,68,.36);\n      }\n\n      .wc-score-finished {\n        background: rgba(34,197,94,.12);\n        color: #86efac;\n        border: 1px solid rgba(34,197,94,.22);\n      }\n\n      .wc-score-draw {\n        background: rgba(245,158,11,.12);\n        color: #fde68a;\n        border: 1px solid rgba(245,158,11,.24);\n      }\n\n      .wc-score-scheduled {\n        background: rgba(148,163,184,.10);\n        color: #cbd5e1;\n        border: 1px solid rgba(148,163,184,.16);\n      }\n\n      .wc-score-detail {\n        color: #94a3b8;\n        font-size: 12px;\n        font-weight: 750;\n        min-width: 0;\n        overflow: hidden;\n        text-overflow: ellipsis;\n        white-space: nowrap;\n        text-align: right;\n      }\n\n      .wc-score-teams {\n        display: grid;\n        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);\n        align-items: center;\n        gap: 8px;\n        background: rgba(17,19,33,.52);\n        border: 1px solid rgba(255,255,255,.06);\n        border-radius: 11px;\n        padding: 8px;\n        min-width: 0;\n        box-sizing: border-box;\n      }\n\n      .wc-score-team {\n        display: flex;\n        align-items: center;\n        gap: 7px;\n        min-width: 0;\n        color: #f8fafc;\n        font-size: 14px;\n        font-weight: 850;\n        font-style: italic;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n        border-radius: 9px;\n        padding: 5px 7px;\n        box-sizing: border-box;\n        border: 1px solid transparent;\n        transition:\n          background .2s ease,\n          border-color .2s ease,\n          color .2s ease,\n          opacity .2s ease,\n          filter .2s ease;\n      }\n\n      .wc-score-team span {\n        min-width: 0;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-score-team-away {\n        justify-content: flex-start;\n      }\n\n      .wc-score-team-home {\n        justify-content: flex-end;\n        text-align: right;\n      }\n\n      .wc-score-team-win {\n        color: #bbf7d0;\n        background: rgba(34,197,94,.14);\n        border-color: rgba(34,197,94,.28);\n        box-shadow: inset 0 0 12px rgba(34,197,94,.08);\n      }\n\n      .wc-score-team-loss {\n        color: #fecaca;\n        background: rgba(127,29,29,.16);\n        border-color: rgba(239,68,68,.18);\n        opacity: .68;\n        filter: saturate(.78) brightness(.88);\n      }\n\n      .wc-score-team-draw {\n        color: #fde68a;\n        background: rgba(245,158,11,.11);\n        border-color: rgba(245,158,11,.23);\n      }\n\n      .wc-score-main {\n        color: #e2e8f0;\n        font-size: 15px;\n        font-weight: 900;\n        white-space: nowrap;\n        text-align: center;\n        min-width: 42px;\n      }\n\n      .wc-score-main-finished {\n        color: #f8fafc;\n      }\n\n      .wc-score-main-draw {\n        color: #fde68a;\n      }\n\n      .wc-score-main-stack {\n        line-height: 1.05;\n      }\n\n      .wc-score-pens {\n        color: #cbd5e1;\n        font-size: 9px;\n        font-weight: 850;\n        margin-top: 2px;\n        opacity: .92;\n      }\n\n      .wc-score-venue {\n        display: flex;\n        align-items: center;\n        gap: 5px;\n        color: #94a3b8;\n        font-size: 12px;\n        margin-top: 8px;\n        min-width: 0;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-score-venue span {\n        min-width: 0;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-score-icon {\n        width: 13px;\n        height: 13px;\n        fill: currentColor;\n        flex: 0 0 auto;\n        opacity: .78;\n      }\n\n      .wc-score-flag {\n        height: 22px;\n        width: auto;\n        vertical-align: middle;\n        border-radius: 3px;\n        flex: 0 0 auto;\n      }\n\n      .wc-score-empty {\n        color: #94a3b8;\n        width: 100%;\n        min-width: 0;\n        padding: 12px;\n        box-sizing: border-box;\n        background: rgba(24,26,36,.50);\n        border: 1px solid rgba(255,255,255,.08);\n        border-radius: 14px;\n      }\n\n      .wc-score-empty-title {\n        color: #cbd5e1;\n        font-size: 13px;\n        font-weight: 800;\n      }\n\n      .wc-score-empty-sub {\n        color: #94a3b8;\n        font-size: 11px;\n        margin-top: 2px;\n      }\n\n      @media (max-width: ${CARD_WIDTH + 20}px) {\n        .wc-score-wrap {\n          justify-content: stretch;\n        }\n      \n        .wc-score-card {\n          flex: 1 1 100%;\n          width: 100%;\n          max-width: 100%;\n          padding: 9px;\n        }\n      \n        .wc-score-teams {\n          gap: 7px;\n          padding: 7px;\n        }\n      \n        .wc-score-team {\n          gap: 6px;\n          font-size: 13px;\n          padding: 5px 6px;\n        }\n      \n        .wc-score-flag {\n          height: 20px;\n        }\n      \n        .wc-score-main {\n          font-size: 14px;\n          min-width: 36px;\n        }\n      \n        .wc-score-detail,\n        .wc-score-venue {\n          font-size: 11px;\n        }\n      \n        .wc-score-icon {\n          width: 12px;\n          height: 12px;\n        }\n      } \n    </style>\n\n    <div class=\"wc-score-section\">\n      <div class=\"wc-score-wrap\">\n        ${body}\n      </div>\n    </div>\n  `;\n]]]"
+          },
+          "styles": {
+            "card": [
+              {
+                "display": "[[[\n  const hide = variables.hide_if_empty === true || variables.hide_if_empty === 'true';\n  if (!hide) return 'block';\n\n  const sch = states['sensor.world_cup_schedule'];\n  const matches = (sch && sch.attributes && sch.attributes.matches) || [];\n  const mode = String(variables.mode || 'today').toLowerCase();\n\n  const MATCH_TZ = String(variables.match_timezone || 'America/New_York');\n  const SHOW_TODAY = variables.show_today === true || variables.show_today === 'true';\n\n  function tzDateKey(dateLike, offsetDays = 0) {\n    const d = new Date(dateLike);\n\n    if (isNaN(d.getTime())) return '';\n\n    const shifted = new Date(d.getTime() + offsetDays * 24 * 60 * 60 * 1000);\n\n    try {\n      const parts = new Intl.DateTimeFormat('en-US', {\n        timeZone: MATCH_TZ,\n        year: 'numeric',\n        month: '2-digit',\n        day: '2-digit'\n      }).formatToParts(shifted);\n\n      const y = parts.find(p => p.type === 'year')?.value;\n      const m = parts.find(p => p.type === 'month')?.value;\n      const day = parts.find(p => p.type === 'day')?.value;\n\n      return `${y}-${m}-${day}`;\n    } catch(e) {\n      return '';\n    }\n  }\n\n  function sameMatchDay(dateLike, offsetDays) {\n    const targetKey = tzDateKey(new Date(), offsetDays);\n    const matchKey = tzDateKey(dateLike, 0);\n\n    return targetKey && matchKey && targetKey === matchKey;\n  }\n\n  const now = new Date();\n  const todayKey = tzDateKey(now, 0);\n\n  let found = false;\n\n  if (mode === 'yesterday') {\n    found = matches.some(m => sameMatchDay(m.d || m.date || m.startDate, -1));\n  } else if (mode === 'upcoming') {\n    found = matches.some(m => {\n      const dateRaw = m.d || m.date || m.startDate;\n      const d = new Date(dateRaw);\n\n      if (isNaN(d.getTime())) return false;\n      if (d < now) return false;\n\n      const matchKey = tzDateKey(dateRaw, 0);\n\n      if (!SHOW_TODAY && matchKey === todayKey) return false;\n\n      return true;\n    });\n  } else {\n    found = matches.some(m => sameMatchDay(m.d || m.date || m.startDate, 0));\n  }\n\n  return found ? 'block' : 'none';\n]]]"
+              },
+              {
+                "background": "transparent"
+              },
+              {
+                "box-shadow": "none"
+              },
+              {
+                "border": "none"
+              },
+              {
+                "padding": 0
+              },
               {
                 "margin": 0
               },
               {
-                "background-color": "[[[\n  if ((variables.diff < 2) && (variables.last_done.getDay() == variables.now.getDay())) { return 'var(--success-color)' }\n  if (variables.due > 0) {\n    if (variables.due < variables.diff) { return 'var(--error-color)' }\n    if (variables.due < variables.diff + (variables.due / 4)) { return 'var(--primary-color)' }\n  } else { return 'var(--ha-card-background)'}\n]]]\n"
+                "width": "100%"
               },
               {
-                "color": "[[[\n  if ((variables.diff < 2) && (variables.last_done.getDay() == variables.now.getDay())) { return 'white' }\n  if ((variables.due > 0) && (variables.due < variables.diff)) { return 'white' } else {return 'var(--disabled-text-color'}\n]]]\n"
+                "max-width": "100%"
+              },
+              {
+                "min-width": 0
+              },
+              {
+                "overflow": "hidden"
               }
             ],
-            "name": [
+            "grid": [
               {
-                "color": "white"
-              }
-            ],
-            "icon": [
+                "grid-template-areas": "\"content\""
+              },
               {
-                "color": "white"
-              }
-            ],
-            "state": [
+                "grid-template-columns": "1fr"
+              },
               {
-                "white-space": "nowrap"
+                "justify-items": "stretch"
+              },
+              {
+                "align-items": "stretch"
+              },
+              {
+                "min-width": 0
+              },
+              {
+                "width": "100%"
+              },
+              {
+                "overflow": "hidden"
               }
             ],
             "custom_fields": {
-              "badge": [
+              "content": [
                 {
-                  "display": "none"
+                  "width": "100%"
+                },
+                {
+                  "max-width": "100%"
+                },
+                {
+                  "min-width": 0
+                },
+                {
+                  "justify-self": "stretch"
+                },
+                {
+                  "display": "block"
+                },
+                {
+                  "overflow": "hidden"
                 }
               ]
             }
           },
-          "state_display": "[[[\n  if ((variables.diff < 2) && (variables.last_done.getDay() == variables.now.getDay())) { return 'Done' }\n  if (variables.due > 0) {\n    if (variables.due < variables.diff) { return 'Overdue' }\n    if (variables.due < variables.diff + (variables.due / 4)) { return 'To do soon' }\n  }\n  return ' '\n]]]\n",
-          "label": "[[[\n  var doneStr\n  if (variables.diff < 2) {\n    if (variables.last_done.getDay() == variables.now.getDay()) { doneStr = 'today' } else { doneStr = 'yesterday' }\n  } else if (isNaN(variables.diff)) {\n    doneStr = 'unknown'\n  } else {\n    doneStr = variables.diff + 'd ago'\n  }\n  if (variables.due > 0) {\n    return 'Done ' + doneStr\n  } else { return 'Done ' + doneStr }\n]]]\n"
+          "grid_options": {
+            "columns": "full"
+          }
         }
       },
       "title": "LBL_16",
@@ -450,31 +588,58 @@
                 {
                   "cards": [
                     {
+                      "graph": "none",
                       "hours_to_show": 24,
-                      "graph": "line",
                       "detail": 2,
-                      "name": "Living room",
+                      "name": "Indoor",
                       "type": "sensor",
-                      "entity": "sensor.living_room_fan_temperature"
+                      "entity": "sensor.living_room_fan_temperature",
+                      "icon": "none"
                     },
                     {
+                      "graph": "none",
                       "hours_to_show": 24,
-                      "graph": "line",
-                      "entity": "sensor.study_fan_temperature",
-                      "name": "Study",
+                      "entity": "sensor.irosma27_temperature",
+                      "name": "Outdoor",
                       "type": "sensor",
-                      "detail": 1
+                      "detail": 2,
+                      "icon": "none"
                     },
                     {
+                      "graph": "none",
                       "hours_to_show": 24,
-                      "graph": "line",
-                      "entity": "sensor.server_room_sensor_temperature",
-                      "name": "Server room",
+                      "entity": "sensor.temperature_indoor_outdoor_difference",
+                      "name": "Difference",
                       "type": "sensor",
-                      "detail": 1
+                      "detail": 2
                     }
                   ],
                   "type": "horizontal-stack"
+                },
+                {
+                  "type": "statistics-graph",
+                  "entities": [
+                    {
+                      "entity": "sensor.br_temperature",
+                      "name": {
+                        "type": "area"
+                      }
+                    },
+                    {
+                      "entity": "sensor.avg_temp_downstairs",
+                      "name": {
+                        "type": "area"
+                      }
+                    }
+                  ],
+                  "days_to_show": 7,
+                  "period": "day",
+                  "chart_type": "line",
+                  "stat_types": [
+                    "mean",
+                    "min",
+                    "max"
+                  ]
                 },
                 {
                   "low_battery_threshold": 10,
@@ -486,23 +651,12 @@
                   "show_temperature_control": true,
                   "collapsible_controls": true,
                   "grid_options": {
-                    "columns": 8,
-                    "rows": 2
+                    "columns": 12
                   },
                   "tap_action": {
                     "action": "more-info"
-                  }
-                },
-                {
-                  "type": "custom:mushroom-entity-card",
-                  "entity": "sensor.irosma27_wind_chill",
-                  "grid_options": {
-                    "columns": 4,
-                    "rows": 2
                   },
-                  "fill_container": true,
-                  "name": "Perceived outside",
-                  "layout": "vertical"
+                  "disable_buttons": false
                 },
                 {
                   "type": "custom:config-template-card",
@@ -583,6 +737,35 @@
                     "action": "more-info"
                   },
                   "name": "Bedroom fan"
+                },
+                {
+                  "type": "statistics-graph",
+                  "entities": [
+                    {
+                      "entity": "sensor.humidity_2",
+                      "name": {
+                        "type": "area"
+                      }
+                    },
+                    {
+                      "entity": "sensor.living_room_humidity",
+                      "name": {
+                        "type": "area"
+                      }
+                    }
+                  ],
+                  "days_to_show": 7,
+                  "period": "day",
+                  "chart_type": "line",
+                  "stat_types": [
+                    "mean",
+                    "min",
+                    "max"
+                  ],
+                  "hide_legend": false,
+                  "expand_legend": false,
+                  "logarithmic_scale": false,
+                  "energy_date_selection": false
                 },
                 {
                   "type": "custom:mushroom-humidifier-card",
@@ -787,35 +970,6 @@
                   "icon_color": "accent",
                   "name": "Attic",
                   "fill_container": false
-                },
-                {
-                  "entity": "media_player.spotify_weaseladhd",
-                  "hide": {
-                    "power_state": true,
-                    "source": false,
-                    "volume": false
-                  },
-                  "icon": "mdi:spotify",
-                  "name": "Spotify",
-                  "type": "custom:mini-media-player",
-                  "group": false,
-                  "replace_mute": "play_pause",
-                  "info": "short",
-                  "volume_stateless": false,
-                  "source": "full",
-                  "sound_mode": "icon",
-                  "artwork": "cover"
-                },
-                {
-                  "entities": [
-                    "sensor.wv_plex"
-                  ],
-                  "font_size": 60,
-                  "height": 62,
-                  "hours_to_show": 168,
-                  "name": "Plex",
-                  "points_per_hour": 0.25,
-                  "type": "custom:mini-graph-card"
                 },
                 {
                   "icon": "mdi:apple",
@@ -1057,6 +1211,841 @@
             "badges_wrap": "wrap"
           },
           "max_columns": 4
+        },
+        {
+          "type": "sections",
+          "max_columns": 4,
+          "title": "World-Cup",
+          "path": "world-cup",
+          "icon": "mdi:soccer",
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "entity": "sensor.world_cup_scoreboard",
+                  "triggers_update": [
+                    "sensor.world_cup_scoreboard"
+                  ],
+                  "show_icon": false,
+                  "show_name": false,
+                  "show_state": false,
+                  "show_label": false,
+                  "variables": {
+                    "team_abbr": "NED",
+                    "team_name": "Netherlands"
+                  },
+                  "tap_action": {
+                    "action": "none"
+                  },
+                  "custom_fields": {
+                    "content": "[[[\n  const sb = states['sensor.world_cup_scoreboard'];\n  const events = (sb && sb.attributes && sb.attributes.events) || [];\n\n  const TEAM_ABBR = String(variables.team_abbr || 'NED').toUpperCase();\n  const TEAM_NAME = String(variables.team_name || 'Netherlands');\n\n  const esc = s => (s == null ? '' : String(s));\n\n  const teamName = team => {\n    if (!team) return '';\n    return team.displayName || team.shortDisplayName || team.name || team.abbreviation || '';\n  };\n\n  const teamAbbr = team => {\n    if (!team) return '';\n    return team.abbreviation || team.shortDisplayName || team.name || '';\n  };\n\n  const logo = team => {\n    if (!team) return '';\n    return team.logo || (team.logos && team.logos[0] && team.logos[0].href) || '';\n  };\n\n  const venueStr = comp => {\n    const v = (comp && comp.venue) || {};\n    const a = v.address || {};\n\n    return [\n      v.fullName,\n      a.city,\n      a.country\n    ].filter(x => x && String(x).trim()).join(', ');\n  };\n\n  const fmtDateTime = iso => {\n    try {\n      return new Date(iso).toLocaleString([], {\n        weekday: 'short',\n        month: 'short',\n        day: 'numeric',\n        hour: '2-digit',\n        minute: '2-digit'\n      });\n    } catch(e) {\n      return esc(iso);\n    }\n  };\n\n  const getScore = competitor => {\n    if (!competitor) return '';\n\n    const raw = competitor.score;\n\n    if (raw == null || raw === '') return '';\n\n    if (typeof raw === 'object') {\n      return raw.displayValue ?? raw.value ?? raw.score ?? '';\n    }\n\n    return raw;\n  };\n\n  const getNumericScore = competitor => {\n    const score = getScore(competitor);\n    const n = parseInt(score, 10);\n    return isNaN(n) ? null : n;\n  };\n\n  const isTargetTeam = competitor => {\n    const t = competitor && competitor.team;\n    if (!t) return false;\n\n    const abbr = String(t.abbreviation || '').toUpperCase();\n    const name = String(t.displayName || t.shortDisplayName || t.name || '').toLowerCase();\n\n    return abbr === TEAM_ABBR || name === TEAM_NAME.toLowerCase();\n  };\n\n  let team = null;\n  let opponent = null;\n  let statusType = null;\n  let match = null;\n  let comp = null;\n\n  for (const e of events) {\n    const c = e.competitions && e.competitions[0];\n    const competitors = (c && c.competitors) || [];\n\n    const found = competitors.find(isTargetTeam);\n\n    if (found) {\n      team = found;\n      opponent = competitors.find(x => x !== found) || null;\n      statusType = (e.status && e.status.type) || {};\n      match = e;\n      comp = c;\n      break;\n    }\n  }\n\n  if (!team || !opponent || !match || !comp) {\n    return '';\n  }\n\n  const state = statusType.state || 'pre';\n  const live = state === 'in';\n  const finished = state === 'post';\n  const scheduled = state === 'pre';\n\n  const teamScore = getScore(team);\n  const opponentScore = getScore(opponent);\n\n  const scoreText = scheduled && teamScore === '' && opponentScore === ''\n    ? 'vs'\n    : `${esc(teamScore || '0')} – ${esc(opponentScore || '0')}`;\n\n  const currentScore = getNumericScore(team);\n  const scoreKey = `__wcScore_${TEAM_ABBR}`;\n  const flashKey = `__wcFlashUntil_${TEAM_ABBR}`;\n\n  if (currentScore !== null) {\n    const previousScore = window[scoreKey];\n\n    if (typeof previousScore === 'number' && currentScore > previousScore) {\n      window[flashKey] = Date.now() + 10000;\n    }\n\n    window[scoreKey] = currentScore;\n  }\n\n  const flash = !!(window[flashKey] && Date.now() < window[flashKey]);\n\n  const badgeClass = live\n    ? 'wc-ned-live'\n    : finished\n      ? 'wc-ned-finished'\n      : 'wc-ned-scheduled';\n\n  const badgeText = live\n    ? 'LIVE'\n    : finished\n      ? 'FINISHED'\n      : 'SCHEDULED';\n\n  const detailText = () => {\n    if (scheduled) return fmtDateTime(match.date);\n    if (finished) return statusType.shortDetail || 'FT';\n    return statusType.shortDetail || 'Live';\n  };\n\n  const liveTicker = () => {\n    if (!live) return '';\n\n    const s = match.status || {};\n    const shortDetail = String(statusType.shortDetail || '').toUpperCase();\n    const description = String(statusType.description || '').toLowerCase();\n\n    if (shortDetail === 'HT' || description.includes('halftime')) {\n      return '⏸ Halftime';\n    }\n\n    const displayClock = s.displayClock || statusType.shortDetail || '';\n    const period = Number(s.period || 0);\n\n    let half = 'In play';\n\n    if (period === 1) half = '1st half';\n    if (period >= 2) half = '2nd half';\n\n    let timeLeft = '';\n\n    if (typeof s.clock === 'number' && period > 0) {\n      const mins = Math.floor(s.clock / 60);\n      const endAt = period === 1 ? 45 : 90;\n      const rem = endAt - mins;\n\n      timeLeft = rem > 0\n        ? ` · ~${rem} min left${period === 1 ? ' in half' : ''}`\n        : ' · stoppage time';\n    }\n\n    return `⏱ ${half}${displayClock ? ' · ' + esc(displayClock) : ''}${timeLeft}`;\n  };\n\n  const ticker = liveTicker();\n  const venue = venueStr(comp);\n\n  const teamLogo = logo(team.team);\n  const opponentLogo = logo(opponent.team);\n\n  const teamFullName = teamName(team.team) || TEAM_NAME;\n  const opponentFullName = teamName(opponent.team) || teamAbbr(opponent.team);\n\n  const teamShort = teamAbbr(team.team) || TEAM_ABBR;\n  const opponentShort = teamAbbr(opponent.team);\n\n  return `\n    <style>\n      .wc-ned-wrap {\n        width: 100%;\n        max-width: 100%;\n        min-width: 0;\n        display: flex;\n        justify-content: center;\n        align-items: center;\n        box-sizing: border-box;\n      }\n\n      .wc-ned-card {\n        width: 100%;\n        max-width: 920px;\n        min-width: 0;\n        border-radius: 18px;\n        padding: 18px;\n        display: grid;\n        grid-template-columns: 140px minmax(0, 1fr) 140px;\n        align-items: center;\n        gap: 22px;\n        border: 1px solid rgba(255,255,255,.14);\n        box-sizing: border-box;\n        background: linear-gradient(120deg, rgba(249,115,22,.92), rgba(234,88,12,.92));\n        box-shadow: 0 0 22px rgba(249,115,22,.32);\n        overflow: hidden;\n        ${flash ? 'animation: wcNedGoal 1s ease-in-out 10;' : ''}\n      }\n\n      .wc-ned-team {\n        text-align: center;\n        min-width: 0;\n      }\n\n      .wc-ned-logo {\n        height: 88px;\n        max-width: 105px;\n        object-fit: contain;\n      }\n\n      .wc-ned-team-name {\n        color: #fff;\n        font-weight: 800;\n        font-size: 13px;\n        margin-top: 6px;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-ned-center {\n        text-align: center;\n        color: #fff;\n        min-width: 0;\n      }\n\n      .wc-ned-goal {\n        font-size: 13px;\n        font-weight: 900;\n        letter-spacing: 1px;\n        color: #bbf7d0;\n        margin-bottom: 6px;\n      }\n\n      .wc-ned-score {\n        font-size: 48px;\n        font-weight: 900;\n        line-height: 1;\n        white-space: nowrap;\n      }\n\n      .wc-ned-badge-row {\n        margin-top: 9px;\n        display: flex;\n        justify-content: center;\n        align-items: center;\n        gap: 8px;\n        flex-wrap: wrap;\n      }\n\n      .wc-ned-badge {\n        border-radius: 999px;\n        padding: 4px 10px;\n        font-size: 11px;\n        font-weight: 900;\n        letter-spacing: .3px;\n        white-space: nowrap;\n      }\n\n      .wc-ned-live {\n        color: #fff;\n        background: rgba(239,68,68,.30);\n        border: 1px solid rgba(255,255,255,.30);\n        box-shadow: 0 0 12px rgba(239,68,68,.35);\n      }\n\n      .wc-ned-finished {\n        color: #dcfce7;\n        background: rgba(34,197,94,.18);\n        border: 1px solid rgba(220,252,231,.26);\n      }\n\n      .wc-ned-scheduled {\n        color: #fff7ed;\n        background: rgba(255,255,255,.14);\n        border: 1px solid rgba(255,255,255,.22);\n      }\n\n      .wc-ned-detail {\n        font-size: 13px;\n        font-weight: 750;\n        opacity: .96;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n        max-width: 100%;\n      }\n\n      .wc-ned-ticker {\n        margin-top: 8px;\n        display: inline-block;\n        background: rgba(255,255,255,.14);\n        border: 1px solid rgba(255,255,255,.24);\n        border-radius: 999px;\n        padding: 4px 12px;\n        font-size: 13px;\n        font-weight: 800;\n        color: #fff;\n        max-width: 100%;\n        box-sizing: border-box;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-ned-match-title {\n        font-size: 12px;\n        opacity: .80;\n        margin-top: 8px;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-ned-meta {\n        font-size: 12px;\n        opacity: .88;\n        margin-top: 4px;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      @media (max-width: 720px) {\n        .wc-ned-card {\n          grid-template-columns: 90px minmax(0, 1fr) 90px;\n          gap: 12px;\n          padding: 14px;\n          border-radius: 16px;\n        }\n\n        .wc-ned-logo {\n          height: 62px;\n          max-width: 78px;\n        }\n\n        .wc-ned-team-name {\n          font-size: 11px;\n        }\n\n        .wc-ned-score {\n          font-size: 36px;\n        }\n\n        .wc-ned-detail,\n        .wc-ned-ticker,\n        .wc-ned-match-title,\n        .wc-ned-meta {\n          font-size: 11px;\n        }\n      }\n\n      @media (max-width: 460px) {\n        .wc-ned-card {\n          grid-template-columns: 1fr;\n          gap: 10px;\n          padding: 13px;\n        }\n\n        .wc-ned-team {\n          display: flex;\n          align-items: center;\n          justify-content: center;\n          gap: 8px;\n        }\n\n        .wc-ned-logo {\n          height: 42px;\n          max-width: 58px;\n        }\n\n        .wc-ned-team-name {\n          margin-top: 0;\n          font-size: 12px;\n          max-width: 170px;\n        }\n\n        .wc-ned-center {\n          order: -1;\n        }\n\n        .wc-ned-score {\n          font-size: 34px;\n        }\n\n        .wc-ned-badge-row {\n          gap: 6px;\n        }\n\n        .wc-ned-badge {\n          font-size: 10px;\n          padding: 3px 8px;\n        }\n      }\n    </style>\n\n    <div class=\"wc-ned-wrap\">\n      <div class=\"wc-ned-card\">\n        <div class=\"wc-ned-team\">\n          ${teamLogo ? `<img src=\"${teamLogo}\" class=\"wc-ned-logo\">` : ''}\n          <div class=\"wc-ned-team-name\">${esc(teamFullName || teamShort)}</div>\n        </div>\n\n        <div class=\"wc-ned-center\">\n          ${flash ? `<div class=\"wc-ned-goal\">⚽ GOAL! ${esc(TEAM_NAME.toUpperCase())}! ⚽</div>` : ''}\n\n          <div class=\"wc-ned-score\">${scoreText}</div>\n\n          <div class=\"wc-ned-badge-row\">\n            <span class=\"wc-ned-badge ${badgeClass}\">${badgeText}</span>\n            <span class=\"wc-ned-detail\">${esc(detailText())}</span>\n          </div>\n\n          ${ticker ? `<div class=\"wc-ned-ticker\">${ticker}</div>` : ''}\n\n          <div class=\"wc-ned-match-title\">${esc(teamFullName)} vs ${esc(opponentFullName)}</div>\n          <div class=\"wc-ned-meta\">🕒 ${fmtDateTime(match.date)}${venue ? ` · 📍 ${esc(venue)}` : ''}</div>\n        </div>\n\n        <div class=\"wc-ned-team\">\n          ${opponentLogo ? `<img src=\"${opponentLogo}\" class=\"wc-ned-logo\">` : ''}\n          <div class=\"wc-ned-team-name\">${esc(opponentFullName || opponentShort)}</div>\n        </div>\n      </div>\n    </div>\n  `;\n]]]"
+                  },
+                  "styles": {
+                    "card": [
+                      {
+                        "display": "[[[\n  const sb = states['sensor.world_cup_scoreboard'];\n  const events = (sb && sb.attributes && sb.attributes.events) || [];\n\n  const TEAM_ABBR = String(variables.team_abbr || 'NED').toUpperCase();\n  const TEAM_NAME = String(variables.team_name || 'Netherlands').toLowerCase();\n\n  const found = events.some(e => {\n    const c = e.competitions && e.competitions[0];\n    const competitors = (c && c.competitors) || [];\n\n    return competitors.some(comp => {\n      const t = comp && comp.team;\n      if (!t) return false;\n\n      const abbr = String(t.abbreviation || '').toUpperCase();\n      const name = String(t.displayName || t.shortDisplayName || t.name || '').toLowerCase();\n\n      return abbr === TEAM_ABBR || name === TEAM_NAME;\n    });\n  });\n\n  return found ? 'block' : 'none';\n]]]"
+                      },
+                      {
+                        "background": "transparent"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "border": "none"
+                      },
+                      {
+                        "padding": 0
+                      },
+                      {
+                        "width": "100%"
+                      },
+                      {
+                        "max-width": "100%"
+                      },
+                      {
+                        "min-width": 0
+                      },
+                      {
+                        "overflow": "visible"
+                      }
+                    ],
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"content\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "justify-items": "stretch"
+                      },
+                      {
+                        "align-items": "stretch"
+                      },
+                      {
+                        "min-width": 0
+                      }
+                    ],
+                    "custom_fields": {
+                      "content": [
+                        {
+                          "justify-self": "stretch"
+                        },
+                        {
+                          "width": "100%"
+                        },
+                        {
+                          "max-width": "100%"
+                        },
+                        {
+                          "min-width": 0
+                        },
+                        {
+                          "display": "block"
+                        },
+                        {
+                          "overflow": "visible"
+                        }
+                      ]
+                    }
+                  },
+                  "grid_options": {
+                    "columns": "full"
+                  },
+                  "extra_styles": "@keyframes wcNedGoal {\n  0% {\n    background: linear-gradient(120deg,#16a34a,#22c55e);\n    box-shadow: 0 0 42px rgba(34,197,94,.75);\n  }\n\n  50% {\n    background: linear-gradient(120deg,#f97316,#ea580c);\n    box-shadow: 0 0 14px rgba(249,115,22,.35);\n  }\n\n  100% {\n    background: linear-gradient(120deg,#16a34a,#22c55e);\n    box-shadow: 0 0 42px rgba(34,197,94,.75);\n  }\n}\n"
+                },
+                {
+                  "type": "custom:button-card",
+                  "entity": "sensor.world_cup_scoreboard",
+                  "triggers_update": [
+                    "sensor.world_cup_scoreboard",
+                    "sensor.world_cup_schedule",
+                    "sensor.world_cup_standings"
+                  ],
+                  "show_icon": false,
+                  "show_name": false,
+                  "show_state": false,
+                  "show_label": false,
+                  "variables": {
+                    "team_abbr": "NED",
+                    "team_name": "Netherlands",
+                    "card_max_width": 2000,
+                    "align": "center"
+                  },
+                  "tap_action": {
+                    "action": "none"
+                  },
+                  "custom_fields": {
+                    "content": "[[[\n  const sb = states['sensor.world_cup_scoreboard'];\n  const sch = states['sensor.world_cup_schedule'];\n  const st = states['sensor.world_cup_standings'];\n\n  const events = (sb && sb.attributes && sb.attributes.events) || [];\n  const scheduleMatches = (sch && sch.attributes && sch.attributes.matches) || [];\n  const groups = (st && st.attributes && st.attributes.children) || [];\n\n  const TEAM_ABBR = String(variables.team_abbr || 'NED').toUpperCase();\n  const TEAM_NAME = String(variables.team_name || 'Netherlands');\n\n  const CARD_MAX_WIDTH = Math.max(320, Number(variables.card_max_width || 2000));\n  const ALIGN = String(variables.align || 'center').toLowerCase();\n\n  const justify = ALIGN === 'left' || ALIGN === 'start'\n    ? 'flex-start'\n    : ALIGN === 'right' || ALIGN === 'end'\n      ? 'flex-end'\n      : 'center';\n\n  const esc = s => (s == null ? '' : String(s));\n\n  const calendarIcon = `\n    <svg class=\"wc-ned-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\">\n      <path d=\"M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1.5A2.5 2.5 0 0 1 22 6.5v12A2.5 2.5 0 0 1 19.5 21h-15A2.5 2.5 0 0 1 2 18.5v-12A2.5 2.5 0 0 1 4.5 4H6V3a1 1 0 0 1 1-1Zm12.5 8h-15v8.5a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5V10ZM5 6a.5.5 0 0 0-.5.5V8h15V6.5A.5.5 0 0 0 19 6H5Z\"/>\n    </svg>\n  `;\n\n  const locationIcon = `\n    <svg class=\"wc-ned-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\">\n      <path d=\"M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z\"/>\n    </svg>\n  `;\n\n  function scoreValue(raw) {\n    if (raw == null || raw === '') return '';\n\n    if (typeof raw === 'object') {\n      return raw.displayValue ?? raw.value ?? raw.score ?? '';\n    }\n\n    return raw;\n  }\n\n  function teamName(team) {\n    if (!team) return '';\n    return team.displayName || team.shortDisplayName || team.name || team.abbreviation || '';\n  }\n\n  function teamAbbr(team) {\n    if (!team) return '';\n    return team.abbreviation || team.shortDisplayName || team.name || '';\n  }\n\n  function logo(team) {\n    if (!team) return '';\n    return team.logo || (team.logos && team.logos[0] && team.logos[0].href) || '';\n  }\n\n  function isTargetTeamFromTeam(team) {\n    if (!team) return false;\n\n    const abbr = String(team.abbreviation || '').toUpperCase();\n    const name = String(team.displayName || team.shortDisplayName || team.name || '').toLowerCase();\n\n    return abbr === TEAM_ABBR || name === TEAM_NAME.toLowerCase();\n  }\n\n  function isTargetAbbr(abbr, name) {\n    return String(abbr || '').toUpperCase() === TEAM_ABBR ||\n      String(name || '').toLowerCase() === TEAM_NAME.toLowerCase();\n  }\n\n  function fmtDateTime(iso) {\n    try {\n      return new Date(iso).toLocaleString([], {\n        weekday: 'short',\n        month: 'short',\n        day: 'numeric',\n        hour: '2-digit',\n        minute: '2-digit'\n      });\n    } catch(e) {\n      return esc(iso);\n    }\n  }\n\n  function roundLabel(raw) {\n    const r = String(raw || '').toLowerCase();\n\n    if (!r) return '';\n\n    const map = {\n      'group-stage': 'Group Stage',\n      'round-of-32': 'Round of 32',\n      'round-of-16': 'Round of 16',\n      'quarterfinals': 'Quarterfinals',\n      'semi-finals': 'Semifinals',\n      'semifinals': 'Semifinals',\n      'third-place': 'Third Place',\n      'final': 'Final'\n    };\n\n    return map[r] || String(raw).replace(/-/g, ' ').replace(/\\b\\w/g, x => x.toUpperCase());\n  }\n\n  function groupLabel(raw) {\n    if (!raw) return '';\n\n    const g = String(raw).replace(/^Group\\s*/i, '').trim().toUpperCase();\n\n    return g ? `Group ${g}` : '';\n  }\n\n  function matchContext(selected) {\n    if (!selected) return '';\n\n    if (selected.group) return groupLabel(selected.group);\n    if (selected.rnd) return roundLabel(selected.rnd);\n\n    return '';\n  }\n\n  function venueTextFromComp(comp) {\n    const v = (comp && comp.venue) || {};\n    const a = v.address || {};\n\n    return [\n      v.fullName,\n      a.city,\n      a.country\n    ].filter(x => x && String(x).trim()).join(', ');\n  }\n\n  function venueTextFromMatch(m) {\n    if (!m) return '';\n\n    if (m.v) return String(m.v);\n\n    const rawVenue = m.venue || m.location || {};\n\n    if (typeof rawVenue === 'string') return rawVenue;\n\n    if (rawVenue && typeof rawVenue === 'object') {\n      const address = rawVenue.address || {};\n\n      return [\n        rawVenue.fullName || rawVenue.name || rawVenue.displayName || rawVenue.shortName,\n        address.city || rawVenue.city || rawVenue.venueCity,\n        address.country || rawVenue.country || rawVenue.venueCountry\n      ].filter(x => x && String(x).trim()).join(', ');\n    }\n\n    return [\n      m.venueName,\n      m.venue_name,\n      m.stadium,\n      m.stadiumName,\n      m.city,\n      m.country\n    ].filter(x => x && String(x).trim()).join(', ');\n  }\n\n  function normalizeScheduleMatch(m) {\n    return {\n      d: m.d || m.date || m.startDate,\n      a: m.a || m.away || m.awayTeam || '',\n      h: m.h || m.home || m.homeTeam || '',\n      an: m.an || m.awayName || m.aName || m.a || '',\n      hn: m.hn || m.homeName || m.hName || m.h || '',\n      af: m.af || m.awayFlag || m.awayLogo || '',\n      hf: m.hf || m.homeFlag || m.homeLogo || '',\n      as: scoreValue(m.as ?? m.awayScore),\n      hs: scoreValue(m.hs ?? m.homeScore),\n      aps: scoreValue(m.aps ?? m.awayPenaltyScore ?? m.awayPenalties),\n      hps: scoreValue(m.hps ?? m.homePenaltyScore ?? m.homePenalties),\n      s: m.s || m.state || m.status || 'pre',\n      det: m.det || m.detail || m.shortDetail || '',\n      rnd: m.rnd || m.round || m.stage || '',\n      group: m.group || m.grp || m.g || '',\n      v: venueTextFromMatch(m)\n    };\n  }\n\n  function findLiveNetherlandsMatch() {\n    for (const e of events) {\n      const comp = e.competitions && e.competitions[0];\n      const competitors = (comp && comp.competitors) || [];\n      const statusType = (e.status && e.status.type) || {};\n\n      if (statusType.state !== 'in') continue;\n\n      const found = competitors.find(c => isTargetTeamFromTeam(c.team));\n\n      if (!found) continue;\n\n      const opponent = competitors.find(c => c !== found);\n\n      if (!opponent) continue;\n\n      return {\n        mode: 'live',\n        d: e.date,\n        teamName: teamName(found.team) || TEAM_NAME,\n        teamAbbr: teamAbbr(found.team) || TEAM_ABBR,\n        teamLogo: logo(found.team),\n        opponentName: teamName(opponent.team) || teamAbbr(opponent.team),\n        opponentAbbr: teamAbbr(opponent.team),\n        opponentLogo: logo(opponent.team),\n        teamScore: scoreValue(found.score),\n        opponentScore: scoreValue(opponent.score),\n        status: e.status || {},\n        statusType: statusType,\n        venue: venueTextFromComp(comp),\n        rnd: e.rnd || e.round || '',\n        group: e.group || e.grp || ''\n      };\n    }\n\n    return null;\n  }\n\n  function findNextNetherlandsMatch() {\n    const now = new Date();\n\n    const matches = scheduleMatches\n      .map(normalizeScheduleMatch)\n      .filter(m => {\n        const d = new Date(m.d);\n        if (isNaN(d.getTime())) return false;\n        if (d < now) return false;\n\n        return isTargetAbbr(m.a, m.an) || isTargetAbbr(m.h, m.hn);\n      })\n      .sort((x, y) => new Date(x.d) - new Date(y.d));\n\n    if (!matches.length) return null;\n\n    const m = matches[0];\n    const isAway = isTargetAbbr(m.a, m.an);\n\n    return {\n      mode: 'next',\n      d: m.d,\n      teamName: isAway ? (m.an || TEAM_NAME) : (m.hn || TEAM_NAME),\n      teamAbbr: isAway ? (m.a || TEAM_ABBR) : (m.h || TEAM_ABBR),\n      teamLogo: isAway ? m.af : m.hf,\n      opponentName: isAway ? (m.hn || m.h) : (m.an || m.a),\n      opponentAbbr: isAway ? m.h : m.a,\n      opponentLogo: isAway ? m.hf : m.af,\n      teamScore: '',\n      opponentScore: '',\n      status: {},\n      statusType: { state: 'pre' },\n      venue: m.v,\n      rnd: m.rnd,\n      group: m.group\n    };\n  }\n\n  function getStat(entry, candidates) {\n    const stats = entry.stats || [];\n\n    for (const s of stats) {\n      const keys = [\n        s.name,\n        s.displayName,\n        s.shortDisplayName,\n        s.abbreviation\n      ].filter(Boolean).map(x => String(x).toLowerCase());\n\n      if (keys.some(k => candidates.includes(k))) {\n        return s.displayValue ?? s.value;\n      }\n    }\n\n    return null;\n  }\n\n  function getGroupPosition() {\n    for (const g of groups) {\n      const entries = (g.standings && g.standings.entries) || [];\n\n      for (const entry of entries) {\n        const team = entry.team || {};\n        const abbr = String(team.abbreviation || '').toUpperCase();\n\n        if (abbr !== TEAM_ABBR) continue;\n\n        const rankRaw = getStat(entry, ['rank', 'position']);\n        const points = getStat(entry, ['points', 'pts', 'p']);\n        const played = getStat(entry, ['gamesplayed', 'played', 'gp', 'pld']);\n\n        return {\n          group: g.name || '',\n          rank: rankRaw == null ? null : parseInt(rankRaw),\n          points,\n          played\n        };\n      }\n    }\n\n    return null;\n  }\n\n  function suffixRank(n) {\n    if (!n) return '';\n    if (n === 1) return '1st';\n    if (n === 2) return '2nd';\n    if (n === 3) return '3rd';\n    return `${n}th`;\n  }\n\n  function liveTicker(match) {\n    if (!match || match.mode !== 'live') return '';\n\n    const s = match.status || {};\n    const t = match.statusType || {};\n\n    const shortDetail = String(t.shortDetail || '').toUpperCase();\n    const description = String(t.description || '').toLowerCase();\n\n    if (shortDetail === 'HT' || description.includes('halftime')) {\n      return 'Halftime';\n    }\n\n    return s.displayClock || t.shortDetail || 'Live';\n  }\n\n  function groupInfoLine(groupPos) {\n    if (!groupPos) return '';\n\n    const parts = [];\n\n    if (groupPos.group) parts.push(esc(groupPos.group));\n    if (groupPos.rank) parts.push(esc(suffixRank(groupPos.rank)));\n    if (groupPos.points != null) parts.push(`${esc(groupPos.points)} pts`);\n    if (groupPos.played != null) parts.push(`${esc(groupPos.played)} played`);\n\n    return parts.join(' · ');\n  }\n\n  const selected = findLiveNetherlandsMatch() || findNextNetherlandsMatch();\n\n  if (!selected) return '';\n\n  const groupPos = getGroupPosition();\n\n  const scoreText = selected.mode === 'live'\n    ? `${esc(selected.teamScore || '0')} – ${esc(selected.opponentScore || '0')}`\n    : 'vs';\n\n  const badgeText = selected.mode === 'live' ? 'LIVE' : 'NEXT MATCH';\n  const ticker = liveTicker(selected);\n  const context = matchContext(selected);\n  const standingsLine = groupInfoLine(groupPos);\n\n  return `\n    <style>\n      .wc-ned-wrap {\n        width: 100%;\n        max-width: 100%;\n        min-width: 0;\n        display: flex;\n        justify-content: ${justify};\n        box-sizing: border-box;\n        overflow: hidden;\n      }\n\n      .wc-ned-card {\n        width: 100%;\n        max-width: ${CARD_MAX_WIDTH}px;\n        min-width: 0;\n        border-radius: 18px;\n        padding: clamp(14px, 1.3vw, 22px);\n        display: grid;\n        grid-template-columns:\n          minmax(52px, .85fr)\n          minmax(0, 3.4fr)\n          minmax(52px, .85fr);\n        align-items: center;\n        gap: clamp(8px, 2vw, 34px);\n        border: 1px solid rgba(249,115,22,.24);\n        box-sizing: border-box;\n        background:\n          radial-gradient(circle at top left, rgba(249,115,22,.20), transparent 38%),\n          radial-gradient(circle at bottom right, rgba(249,115,22,.10), transparent 34%),\n          linear-gradient(135deg, rgba(31,34,48,.92), rgba(17,19,33,.88));\n        box-shadow:\n          0 10px 28px rgba(0,0,0,.18),\n          inset 0 1px 0 rgba(255,255,255,.07);\n        overflow: hidden;\n        position: relative;\n      }\n\n      .wc-ned-card::before {\n        content: \"\";\n        position: absolute;\n        inset: 0;\n        pointer-events: none;\n        border-radius: inherit;\n        border-left: 5px solid rgba(249,115,22,.58);\n        opacity: .95;\n      }\n\n      .wc-ned-team {\n        text-align: center;\n        min-width: 0;\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        justify-content: center;\n        position: relative;\n        z-index: 1;\n      }\n\n      .wc-ned-logo {\n        height: clamp(34px, 6vw, 118px);\n        max-width: clamp(42px, 8vw, 140px);\n        object-fit: contain;\n        filter: drop-shadow(0 6px 12px rgba(0,0,0,.22));\n      }\n\n      .wc-ned-team-name {\n        color: #f8fafc;\n        font-weight: 850;\n        font-size: clamp(10px, .9vw, 15px);\n        line-height: 1.15;\n        margin-top: 7px;\n        max-width: 100%;\n        white-space: normal;\n        overflow-wrap: anywhere;\n      }\n\n      .wc-ned-center {\n        text-align: center;\n        color: #fff;\n        min-width: 0;\n        width: 100%;\n        position: relative;\n        z-index: 1;\n      }\n\n      .wc-ned-score {\n        color: #fff7ed;\n        font-size: clamp(30px, 5.6vw, 82px);\n        font-weight: 950;\n        line-height: .95;\n        white-space: nowrap;\n        text-shadow: 0 4px 18px rgba(0,0,0,.22);\n      }\n\n      .wc-ned-badge-row {\n        margin-top: clamp(7px, 1vw, 12px);\n        display: flex;\n        justify-content: center;\n        align-items: center;\n        gap: 7px;\n        flex-wrap: wrap;\n        min-width: 0;\n      }\n\n      .wc-ned-badge {\n        border-radius: 999px;\n        padding: 5px 11px;\n        font-size: clamp(10px, .75vw, 11px);\n        font-weight: 950;\n        letter-spacing: .3px;\n        white-space: nowrap;\n        color: #fed7aa;\n        background: rgba(249,115,22,.13);\n        border: 1px solid rgba(249,115,22,.28);\n        flex: 0 0 auto;\n      }\n\n      .wc-ned-badge-live {\n        color: #fecaca;\n        background: rgba(239,68,68,.18);\n        border-color: rgba(239,68,68,.34);\n        box-shadow: 0 0 12px rgba(239,68,68,.22);\n      }\n\n      .wc-ned-context {\n        border-radius: 999px;\n        padding: 5px 11px;\n        font-size: clamp(10px, .75vw, 11px);\n        font-weight: 850;\n        color: #cbd5e1;\n        background: rgba(255,255,255,.08);\n        border: 1px solid rgba(255,255,255,.12);\n        white-space: nowrap;\n      }\n\n      .wc-ned-live-detail {\n        color: #e2e8f0;\n        font-size: clamp(11px, .95vw, 15px);\n        font-weight: 850;\n        opacity: .96;\n        min-width: 0;\n        max-width: 100%;\n        white-space: normal;\n        line-height: 1.2;\n      }\n\n      .wc-ned-standings-line {\n        margin-top: 8px;\n        color: #fed7aa;\n        font-size: clamp(10px, .85vw, 13px);\n        font-weight: 850;\n        line-height: 1.25;\n        opacity: .92;\n        white-space: normal;\n      }\n\n      .wc-ned-meta-grid {\n        margin-top: 10px;\n        display: flex;\n        justify-content: center;\n        align-items: center;\n        gap: 7px;\n        flex-wrap: wrap;\n        min-width: 0;\n      }\n\n      .wc-ned-meta {\n        min-width: 0;\n        max-width: 100%;\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        gap: 6px;\n        color: #cbd5e1;\n        font-size: clamp(10px, .85vw, 13px);\n        font-weight: 750;\n        line-height: 1.2;\n        opacity: .94;\n        background: rgba(255,255,255,.06);\n        border: 1px solid rgba(255,255,255,.10);\n        border-radius: 999px;\n        padding: 6px 10px;\n        box-sizing: border-box;\n      }\n\n      .wc-ned-meta span {\n        min-width: 0;\n        overflow: hidden;\n        text-overflow: ellipsis;\n        white-space: nowrap;\n      }\n\n      .wc-ned-icon {\n        width: 13px;\n        height: 13px;\n        fill: currentColor;\n        flex: 0 0 auto;\n        opacity: .86;\n      }\n    </style>\n\n    <div class=\"wc-ned-wrap\">\n      <div class=\"wc-ned-card\">\n        <div class=\"wc-ned-team\">\n          ${selected.teamLogo ? `<img src=\"${selected.teamLogo}\" class=\"wc-ned-logo\">` : ''}\n          <div class=\"wc-ned-team-name\">${esc(selected.teamName || selected.teamAbbr || TEAM_NAME)}</div>\n        </div>\n\n        <div class=\"wc-ned-center\">\n          <div class=\"wc-ned-score\">${scoreText}</div>\n\n          <div class=\"wc-ned-badge-row\">\n            <span class=\"wc-ned-badge ${selected.mode === 'live' ? 'wc-ned-badge-live' : ''}\">${badgeText}</span>\n            ${context ? `<span class=\"wc-ned-context\">${esc(context)}</span>` : ''}\n            ${selected.mode === 'live' && ticker ? `<span class=\"wc-ned-live-detail\">${esc(ticker)}</span>` : ''}\n          </div>\n\n          ${standingsLine ? `\n            <div class=\"wc-ned-standings-line\">${standingsLine}</div>\n          ` : ''}\n\n          <div class=\"wc-ned-meta-grid\">\n            <div class=\"wc-ned-meta\">\n              ${calendarIcon}\n              <span>${fmtDateTime(selected.d)}</span>\n            </div>\n\n            ${selected.venue ? `\n              <div class=\"wc-ned-meta\">\n                ${locationIcon}\n                <span>${esc(selected.venue)}</span>\n              </div>\n            ` : ''}\n          </div>\n        </div>\n\n        <div class=\"wc-ned-team\">\n          ${selected.opponentLogo ? `<img src=\"${selected.opponentLogo}\" class=\"wc-ned-logo\">` : ''}\n          <div class=\"wc-ned-team-name\">${esc(selected.opponentName || selected.opponentAbbr || 'TBD')}</div>\n        </div>\n      </div>\n    </div>\n  `;\n]]]"
+                  },
+                  "styles": {
+                    "card": [
+                      {
+                        "display": "[[[\n  const sb = states['sensor.world_cup_scoreboard'];\n  const sch = states['sensor.world_cup_schedule'];\n\n  const events = (sb && sb.attributes && sb.attributes.events) || [];\n  const matches = (sch && sch.attributes && sch.attributes.matches) || [];\n\n  const TEAM_ABBR = String(variables.team_abbr || 'NED').toUpperCase();\n  const now = new Date();\n\n  const live = events.some(e => {\n    const comp = e.competitions && e.competitions[0];\n    const competitors = (comp && comp.competitors) || [];\n    const state = e.status && e.status.type && e.status.type.state;\n\n    if (state !== 'in') return false;\n\n    return competitors.some(c => {\n      const t = c && c.team;\n      return String(t && t.abbreviation || '').toUpperCase() === TEAM_ABBR;\n    });\n  });\n\n  const next = matches.some(m => {\n    const d = new Date(m.d || m.date || m.startDate);\n    if (isNaN(d.getTime()) || d < now) return false;\n\n    return String(m.a || m.away || '').toUpperCase() === TEAM_ABBR ||\n      String(m.h || m.home || '').toUpperCase() === TEAM_ABBR;\n  });\n\n  return live || next ? 'block' : 'none';\n]]]"
+                      },
+                      {
+                        "background": "transparent"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "border": "none"
+                      },
+                      {
+                        "padding": 0
+                      },
+                      {
+                        "margin": 0
+                      },
+                      {
+                        "width": "100%"
+                      },
+                      {
+                        "max-width": "100%"
+                      },
+                      {
+                        "min-width": 0
+                      },
+                      {
+                        "overflow": "hidden"
+                      }
+                    ],
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"content\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "justify-items": "stretch"
+                      },
+                      {
+                        "align-items": "stretch"
+                      },
+                      {
+                        "min-width": 0
+                      },
+                      {
+                        "width": "100%"
+                      }
+                    ],
+                    "custom_fields": {
+                      "content": [
+                        {
+                          "justify-self": "stretch"
+                        },
+                        {
+                          "width": "100%"
+                        },
+                        {
+                          "max-width": "100%"
+                        },
+                        {
+                          "min-width": 0
+                        },
+                        {
+                          "display": "block"
+                        },
+                        {
+                          "overflow": "hidden"
+                        }
+                      ]
+                    }
+                  },
+                  "grid_options": {
+                    "columns": "full"
+                  },
+                  "view_layout": {
+                    "grid-column": "1 / -1"
+                  }
+                }
+              ],
+              "column_span": 4,
+              "visibility": [
+                {
+                  "condition": "state",
+                  "entity": "input_boolean.wc_show_focus",
+                  "state": "on"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "icon": "mdi:soccer",
+                  "heading": "Today's Matches",
+                  "heading_style": "title"
+                },
+                {
+                  "type": "custom:button-card",
+                  "template": "wc_match_strip",
+                  "variables": {
+                    "mode": "today",
+                    "limit": 8,
+                    "hide_if_empty": false,
+                    "match_timezone": "America/New_York",
+                    "show_today": false,
+                    "card_width": 400
+                  },
+                  "grid_options": {
+                    "columns": "full"
+                  },
+                  "view_layout": {
+                    "grid-column": "1 / -1"
+                  }
+                }
+              ],
+              "column_span": 4,
+              "visibility": [
+                {
+                  "condition": "state",
+                  "entity": "input_boolean.wc_show_matches",
+                  "state": "on"
+                },
+                {
+                  "condition": "state",
+                  "entity": "input_boolean.wc_today_matches",
+                  "state": "on"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "icon": "mdi:calendar-check-outline",
+                  "heading": "Yesterday's Matches",
+                  "heading_style": "title"
+                },
+                {
+                  "type": "custom:button-card",
+                  "template": "wc_match_strip",
+                  "variables": {
+                    "mode": "yesterday",
+                    "limit": 8,
+                    "hide_if_empty": true,
+                    "match_timezone": "America/New_York",
+                    "show_today": false,
+                    "card_width": 400
+                  },
+                  "grid_options": {
+                    "columns": "full"
+                  },
+                  "view_layout": {
+                    "grid-column": "1 / -1"
+                  }
+                }
+              ],
+              "column_span": 4,
+              "visibility": [
+                {
+                  "condition": "state",
+                  "entity": "input_boolean.wc_show_matches",
+                  "state": "on"
+                },
+                {
+                  "condition": "state",
+                  "entity": "input_boolean.wc_yesterday_matches",
+                  "state": "on"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Upcoming Matches",
+                  "heading_style": "title",
+                  "icon": "mdi:calendar-clock-outline"
+                },
+                {
+                  "type": "custom:button-card",
+                  "template": "wc_match_strip",
+                  "variables": {
+                    "mode": "upcoming",
+                    "limit": 8,
+                    "hide_if_empty": false,
+                    "match_timezone": "America/New_York",
+                    "show_today": false,
+                    "card_width": 400
+                  },
+                  "grid_options": {
+                    "columns": "full"
+                  },
+                  "view_layout": {
+                    "grid-column": "1 / -1"
+                  }
+                }
+              ],
+              "column_span": 4,
+              "visibility": [
+                {
+                  "condition": "state",
+                  "entity": "input_boolean.wc_show_matches",
+                  "state": "on"
+                },
+                {
+                  "condition": "state",
+                  "entity": "input_boolean.wc_upcoming_matches",
+                  "state": "on"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "icon": "mdi:format-list-numbered",
+                  "heading": "Group Stage",
+                  "heading_style": "title"
+                },
+                {
+                  "type": "custom:layout-card",
+                  "layout_type": "custom:grid-layout",
+                  "grid_options": {
+                    "columns": "full"
+                  },
+                  "layout": {
+                    "grid-template-columns": "repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
+                    "grid-gap": "12px",
+                    "width": "100%",
+                    "max-width": "1024px",
+                    "margin": "0 auto",
+                    "padding": 0
+                  },
+                  "cards": [
+                    {
+                      "type": "custom:button-card",
+                      "template": "wc_group_card",
+                      "variables": {
+                        "group": "A",
+                        "favorite_team": "NED"
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "template": "wc_group_card",
+                      "variables": {
+                        "group": "B",
+                        "favorite_team": "NED"
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "template": "wc_group_card",
+                      "variables": {
+                        "group": "C",
+                        "favorite_team": "NED"
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "template": "wc_group_card",
+                      "variables": {
+                        "group": "D",
+                        "favorite_team": "NED"
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "template": "wc_group_card",
+                      "variables": {
+                        "group": "E",
+                        "favorite_team": "NED"
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "template": "wc_group_card",
+                      "variables": {
+                        "group": "F",
+                        "favorite_team": "NED"
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "template": "wc_group_card",
+                      "variables": {
+                        "group": "G",
+                        "favorite_team": "NED"
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "template": "wc_group_card",
+                      "variables": {
+                        "group": "H",
+                        "favorite_team": "NED"
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "template": "wc_group_card",
+                      "variables": {
+                        "group": "I",
+                        "favorite_team": "NED"
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "template": "wc_group_card",
+                      "variables": {
+                        "group": "J",
+                        "favorite_team": "NED"
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "template": "wc_group_card",
+                      "variables": {
+                        "group": "K",
+                        "favorite_team": "NED"
+                      }
+                    },
+                    {
+                      "type": "custom:button-card",
+                      "template": "wc_group_card",
+                      "variables": {
+                        "group": "L",
+                        "favorite_team": "NED"
+                      }
+                    }
+                  ],
+                  "view_layout": {
+                    "grid-column": "1 / -1"
+                  }
+                }
+              ],
+              "column_span": 4,
+              "visibility": [
+                {
+                  "condition": "state",
+                  "entity": "input_boolean.wc_show_groups",
+                  "state": "on"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "icon": "mdi:tournament",
+                  "heading": "Knockout Stage",
+                  "heading_style": "title"
+                },
+                {
+                  "type": "custom:button-card",
+                  "entity": "sensor.world_cup_schedule",
+                  "triggers_update": [
+                    "sensor.world_cup_schedule",
+                    "sensor.world_cup_standings",
+                    "sensor.world_cup_scoreboard"
+                  ],
+                  "show_icon": false,
+                  "show_name": false,
+                  "show_state": false,
+                  "show_label": false,
+                  "tap_action": {
+                    "action": "none"
+                  },
+                  "variables": {
+                    "favorite_team": "NED"
+                  },
+                  "custom_fields": {
+                    "content": "[[[\n  const sch = states['sensor.world_cup_schedule'];\n  const stn = states['sensor.world_cup_standings'];\n  const all = (sch && sch.attributes && sch.attributes.matches) || [];\n  const groups = (stn && stn.attributes && stn.attributes.children) || [];\n\n  const esc = s => (s == null ? '' : String(s));\n  const FAV = String(variables.favorite_team || 'NED').toUpperCase();\n\n  // Desktop bracket settings\n  const desktopMinWidth = 1500;\n  const desktopFullBleedMargin = 190;\n\n  // List mode settings\n  const listSwitchWidth = 800;\n\n  const calendarIcon = `\n    <svg class=\"wc-meta-svg\" viewBox=\"0 0 24 24\" aria-hidden=\"true\">\n      <path d=\"M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1.5A2.5 2.5 0 0 1 22 6.5v12A2.5 2.5 0 0 1 19.5 21h-15A2.5 2.5 0 0 1 2 18.5v-12A2.5 2.5 0 0 1 4.5 4H6V3a1 1 0 0 1 1-1Zm12.5 8h-15v8.5a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5V10ZM5 6a.5.5 0 0 0-.5.5V8h15V6.5A.5.5 0 0 0 19 6H5Z\"/>\n    </svg>\n  `;\n\n  const locationIcon = `\n    <svg class=\"wc-meta-svg\" viewBox=\"0 0 24 24\" aria-hidden=\"true\">\n      <path d=\"M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z\"/>\n    </svg>\n  `;\n\n  const flag = u => u\n    ? `<img src=\"${u}\" class=\"wc-flag\">`\n    : '';\n\n  function scoreValue(raw) {\n    if (raw == null || raw === '') return '';\n\n    if (typeof raw === 'object') {\n      return raw.displayValue ?? raw.value ?? raw.score ?? '';\n    }\n\n    return raw;\n  }\n\n  function scoreNumber(raw) {\n    const val = scoreValue(raw);\n\n    if (val === '') return null;\n\n    const n = Number(val);\n\n    return Number.isFinite(n) ? n : null;\n  }\n\n  function penaltyValue(raw) {\n    const val = scoreValue(raw);\n  \n    if (val === '') return '';\n  \n    return val;\n  }\n  \n  function penaltyScore(m, side) {\n    if (!m) return '';\n  \n    if (side === 'a') {\n      return penaltyValue(\n        m.aps ??\n        m.ap ??\n        m.awayPenaltyScore ??\n        m.awayPenalties ??\n        m.awayShootoutScore\n      );\n    }\n  \n    return penaltyValue(\n      m.hps ??\n      m.hp ??\n      m.homePenaltyScore ??\n      m.homePenalties ??\n      m.homeShootoutScore\n    );\n  }\n  \n  function hasPens(m) {\n    return penaltyScore(m, 'a') !== '' || penaltyScore(m, 'h') !== '';\n  }\n\n  function resultInfo(m) {\n    if (!m || m.s !== 'post') {\n      return {\n        result: 'none',\n        awayClass: '',\n        homeClass: ''\n      };\n    }\n  \n    const awayScore = scoreNumber(m.as);\n    const homeScore = scoreNumber(m.hs);\n  \n    const awayPens = scoreNumber(penaltyScore(m, 'a'));\n    const homePens = scoreNumber(penaltyScore(m, 'h'));\n  \n    if (awayPens !== null && homePens !== null && awayPens !== homePens) {\n      if (awayPens > homePens) {\n        return {\n          result: 'away-win',\n          awayClass: 'wc-team-row-win',\n          homeClass: 'wc-team-row-lose'\n        };\n      }\n  \n      return {\n        result: 'home-win',\n        awayClass: 'wc-team-row-lose',\n        homeClass: 'wc-team-row-win'\n      };\n    }\n  \n    if (awayScore === null || homeScore === null) {\n      return {\n        result: 'none',\n        awayClass: '',\n        homeClass: ''\n      };\n    }\n  \n    if (awayScore === homeScore) {\n      return {\n        result: 'draw',\n        awayClass: 'wc-team-row-draw',\n        homeClass: 'wc-team-row-draw'\n      };\n    }\n  \n    if (awayScore > homeScore) {\n      return {\n        result: 'away-win',\n        awayClass: 'wc-team-row-win',\n        homeClass: 'wc-team-row-lose'\n      };\n    }\n  \n    return {\n      result: 'home-win',\n      awayClass: 'wc-team-row-lose',\n      homeClass: 'wc-team-row-win'\n    };\n  }\n\n  const gp = {};\n\n  groups.forEach(g => {\n    const L = (g.name || '').trim().slice(-1);\n    gp[L] = {};\n\n    ((g.standings && g.standings.entries) || []).forEach(en => {\n      let rk = 99;\n\n      for (const s of (en.stats || [])) {\n        if (s.name === 'rank') rk = parseInt(s.value);\n      }\n\n      gp[L][rk] = {\n        ab: en.team.abbreviation,\n        fl: (en.team.logos && en.team.logos[0] ? en.team.logos[0].href : '')\n      };\n    });\n  });\n\n  function project(ab) {\n    const m = (ab || '').match(/^([12])([A-L])$/);\n\n    if (m) {\n      const t = gp[m[2]] && gp[m[2]][+m[1]];\n      if (t && t.ab) return t;\n    }\n\n    return null;\n  }\n\n  function slot(ab, nm) {\n    if (/^([12])([A-L])$/.test(ab || '')) return ab;\n    if (ab === '3RD') return '3rd place';\n\n    const m = (nm || '').match(/Round of (\\d+) (\\d+) Winner/);\n    if (m) return 'R' + m[1] + ' W' + m[2];\n\n    return ab || nm || 'TBD';\n  }\n\n  function statusInfo(m) {\n    if (!m) {\n      return {\n        cls: 'scheduled',\n        label: 'TBD'\n      };\n    }\n  \n    if (m.s === 'in') {\n      return {\n        cls: 'live',\n        label: 'LIVE'\n      };\n    }\n  \n    if (m.s === 'post') {\n      const ri = resultInfo(m);\n      const det = String(m.det || m.detail || m.shortDetail || '').toUpperCase();\n  \n      if (hasPens(m)) {\n        return {\n          cls: 'pens',\n          label: 'PENS'\n        };\n      }\n  \n      if (det.includes('AET')) {\n        return {\n          cls: 'aet',\n          label: 'AET'\n        };\n      }\n  \n      if (ri.result === 'draw') {\n        return {\n          cls: 'draw',\n          label: 'DRAW'\n        };\n      }\n  \n      return {\n        cls: 'finished',\n        label: 'FINISHED'\n      };\n    }\n  \n    return {\n      cls: 'scheduled',\n      label: 'SCHEDULED'\n    };\n  }\n\n  function venueLine(m) {\n    if (!m) return '';\n\n    const comp = (m.competitions && m.competitions[0]) || {};\n    const rawVenue = m.venue || m.v || comp.venue || {};\n\n    let venueName = '';\n    let city = '';\n    let country = '';\n\n    if (typeof rawVenue === 'string') {\n      venueName = rawVenue;\n    } else if (rawVenue && typeof rawVenue === 'object') {\n      const address = rawVenue.address || {};\n\n      venueName =\n        rawVenue.fullName ||\n        rawVenue.name ||\n        rawVenue.displayName ||\n        rawVenue.shortName ||\n        '';\n\n      city =\n        address.city ||\n        rawVenue.city ||\n        rawVenue.venueCity ||\n        '';\n\n      country =\n        address.country ||\n        rawVenue.country ||\n        rawVenue.venueCountry ||\n        '';\n    }\n\n    venueName =\n      venueName ||\n      m.venueName ||\n      m.venue_name ||\n      m.stadium ||\n      m.stadiumName ||\n      m.location ||\n      m.vname ||\n      '';\n\n    city =\n      city ||\n      m.city ||\n      m.venueCity ||\n      m.venue_city ||\n      '';\n\n    country =\n      country ||\n      m.country ||\n      m.venueCountry ||\n      m.venue_country ||\n      '';\n\n    return [\n      venueName,\n      city,\n      country\n    ].filter(x => x && String(x).trim()).join(', ');\n  }\n\n  const byR = {};\n\n  all.forEach(m => {\n    if (m.rnd && m.rnd !== 'group-stage') {\n      (byR[m.rnd] = byR[m.rnd] || []).push(m);\n    }\n  });\n\n  Object.values(byR).forEach(a =>\n    a.sort((x, y) => x.d < y.d ? -1 : (x.d > y.d ? 1 : 0))\n  );\n\n  function teamRow(m, side, mode) {\n    const isList = mode === 'list';\n\n    if (!m) {\n      return `\n        <div class=\"wc-team-row ${isList ? 'wc-team-row-list' : ''}\">\n          <span class=\"wc-team-label wc-tbd-label\">TBD</span>\n          <span class=\"wc-team-score\"></span>\n        </div>\n      `;\n    }\n\n    const ri = resultInfo(m);\n\n    const ab = side === 'a' ? m.a : m.h;\n    const nm = side === 'a' ? m.an : m.hn;\n    const fl = side === 'a' ? m.af : m.hf;\n    const sc = side === 'a' ? m.as : m.hs;\n    const penSc = penaltyScore(m, side);\n    const resultClass = side === 'a' ? ri.awayClass : ri.homeClass;\n    \n    const showScore = m.s !== 'pre' && sc != null;\n    const showPenScore = m.s === 'post' && penSc !== '';\n\n    const fav = String(ab || label || '').toUpperCase() === FAV;\n\n    const favStar = fav\n      ? `<span class=\"wc-fav-star wc-fav-star-bracket\" title=\"Favorite team\">★</span>`\n      : '';\n\n    let fh = '';\n    let label = '';\n    let projected = false;\n    let tbd = false;\n\n    if (fl) {\n      fh = flag(fl);\n      label = ab || nm;\n    } else {\n      const pr = project(ab);\n\n      if (pr) {\n        fh = flag(pr.fl);\n        label = pr.ab;\n        projected = true;\n      } else {\n        label = slot(ab, nm);\n        tbd = true;\n      }\n    }\n\n    return `\n      <div class=\"\n        wc-team-row\n        ${isList ? 'wc-team-row-list' : ''}\n        ${resultClass}\n      \">\n        <span class=\"\n          wc-team-label\n          ${projected ? 'wc-projected-label' : ''}\n          ${tbd ? 'wc-tbd-label' : ''}\n        \">\n          ${fh}${esc(label)}${favStar}\n        </span>\n\n        <span class=\"wc-team-score\">\n          ${showScore ? esc(scoreValue(sc)) : ''}\n          ${showPenScore ? `<span class=\"wc-team-pen-score\">(${esc(penSc)})</span>` : ''}\n        </span>\n      </div>\n    `;\n  }\n\n  function metaLine(m, mode) {\n    const isList = mode === 'list';\n\n    if (!m || !m.d) {\n      return `\n        <div class=\"wc-meta-block ${isList ? 'wc-meta-block-list' : ''}\">\n          <div class=\"wc-meta-row\">\n            ${calendarIcon}\n            <span class=\"wc-meta-text\">TBD</span>\n          </div>\n        </div>\n      `;\n    }\n\n    let dt;\n\n    try {\n      dt = new Date(m.d).toLocaleString([], {\n        day: 'numeric',\n        month: 'short',\n        hour: '2-digit',\n        minute: '2-digit'\n      });\n    } catch(e) {\n      dt = m.d;\n    }\n\n    const info = statusInfo(m);\n    const showPill = info.cls === 'live' || info.cls === 'finished' || info.cls === 'draw';\n    const venue = venueLine(m);\n\n    return `\n      <div class=\"wc-meta-block ${isList ? 'wc-meta-block-list' : ''}\">\n        <div class=\"wc-meta-row\">\n          ${showPill ? `<span class=\"wc-status-pill wc-status-${info.cls}\">${info.label}</span>` : ''}\n          ${calendarIcon}\n          <span class=\"wc-meta-text\">${esc(dt)}</span>\n        </div>\n\n        ${venue ? `\n          <div class=\"wc-meta-row wc-location-row\">\n            ${locationIcon}\n            <span class=\"wc-meta-text\">${esc(venue)}</span>\n          </div>\n        ` : ''}\n      </div>\n    `;\n  }\n\n  function box(m) {\n    const info = statusInfo(m);\n\n    return `\n      <div class=\"wc-match-box wc-match-${info.cls}\">\n        ${teamRow(m, 'a', 'bracket')}\n        <div class=\"wc-team-divider\"></div>\n        ${teamRow(m, 'h', 'bracket')}\n        ${metaLine(m, 'bracket')}\n      </div>\n    `;\n  }\n\n  function listBox(m) {\n    const info = statusInfo(m);\n\n    return `\n      <div class=\"wc-list-outer\">\n        <div class=\"wc-match-box wc-list-box wc-match-${info.cls}\">\n          ${teamRow(m, 'a', 'list')}\n          <div class=\"wc-team-divider\"></div>\n          ${teamRow(m, 'h', 'list')}\n          ${metaLine(m, 'list')}\n        </div>\n      </div>\n    `;\n  }\n\n  function col(round, side, per) {\n    const data = byR[round] || [];\n    const half = Math.ceil(data.length / 2);\n\n    const slots = side === 'c'\n      ? data.slice(0, per)\n      : (side === 'l' ? data.slice(0, half) : data.slice(half));\n\n    let b = '';\n\n    for (let i = 0; i < per; i++) {\n      b += box(slots[i]);\n    }\n\n    return `\n      <div class=\"wc-round-column\">\n        ${b}\n      </div>\n    `;\n  }\n\n  const hdr = t => `\n    <div class=\"wc-round-label\">\n      ${t}\n    </div>\n  `;\n\n  const cw = (l, i) => `\n    <div class=\"wc-round-wrap\">\n      ${hdr(l)}\n      ${i}\n    </div>\n  `;\n\n  const finalM = (byR['final'] || [])[0];\n\n  let champion = `\n    <div class=\"wc-champion-trophy\">🏆</div>\n    <div class=\"wc-champion-name\">TBD</div>\n  `;\n\n  if (finalM && finalM.s === 'post') {\n    const aw = scoreNumber(finalM.as);\n    const hw = scoreNumber(finalM.hs);\n  \n    const w = aw > hw\n      ? { f: finalM.af, n: finalM.a }\n      : (hw > aw ? { f: finalM.hf, n: finalM.h } : null);\n  \n    if (w) {\n      champion = `\n        ${w.f ? `<img src=\"${w.f}\" class=\"wc-champion-flag\">` : '<div class=\"wc-champion-trophy\">🏆</div>'}\n        <div class=\"wc-champion-name\">${esc(w.n)}</div>\n      `;\n    }\n  }\n\n  const left =\n    cw('R32', col('round-of-32', 'l', 8)) +\n    cw('R16', col('round-of-16', 'l', 4)) +\n    cw('QF', col('quarterfinals', 'l', 2)) +\n    cw('SF', col('semifinals', 'l', 1));\n\n  const right =\n    cw('SF', col('semifinals', 'r', 1)) +\n    cw('QF', col('quarterfinals', 'r', 2)) +\n    cw('R16', col('round-of-16', 'r', 4)) +\n    cw('R32', col('round-of-32', 'r', 8));\n\n  const center = `\n    <div class=\"wc-center-column\">\n      ${hdr('FINAL MATCH')}\n      ${box(finalM)}\n\n      <div class=\"wc-champion-card\">\n        <div class=\"wc-champion-label\">CHAMPION</div>\n        <div class=\"wc-champion-body\">\n          ${champion}\n        </div>\n      </div>\n    </div>\n  `;\n\n  const roundMap = [\n    ['Round of 32', byR['round-of-32'] || []],\n    ['Round of 16', byR['round-of-16'] || []],\n    ['Quarterfinals', byR['quarterfinals'] || []],\n    ['Semifinals', byR['semifinals'] || []],\n    ['Final Match', byR['final'] || []]\n  ];\n\n  const mobileList = roundMap.map(([title, matches]) => {\n    const items = matches.length\n      ? matches.map(m => listBox(m)).join('')\n      : '<div class=\"wc-mobile-empty\">No matches yet.</div>';\n\n    return `\n      <div class=\"wc-mobile-round\">\n        <div class=\"wc-mobile-round-title\">\n          ${title}\n        </div>\n\n        <div class=\"wc-mobile-round-grid\">\n          ${items}\n        </div>\n      </div>\n    `;\n  }).join('');\n\n  return `\n    <style>\n      @keyframes wcLivePulse {\n        0% {\n          box-shadow: 0 0 8px rgba(239,68,68,.22);\n        }\n\n        50% {\n          box-shadow: 0 0 18px rgba(239,68,68,.52);\n        }\n\n        100% {\n          box-shadow: 0 0 8px rgba(239,68,68,.22);\n        }\n      }\n\n      .wc-bracket-scroll {\n        position: relative;\n        left: 50%;\n        transform: translateX(-50%);\n        width: calc(100vw - ${desktopFullBleedMargin}px);\n        max-width: calc(100vw - ${desktopFullBleedMargin}px);\n        overflow-x: auto;\n        overflow-y: visible;\n        padding: 6px 16px 44px 16px;\n        box-sizing: border-box;\n        scrollbar-width: thin;\n      }\n\n      .wc-bracket-scroll::-webkit-scrollbar {\n        height: 10px;\n      }\n\n      .wc-bracket-scroll::-webkit-scrollbar-thumb {\n        background: rgba(148,163,184,.45);\n        border-radius: 999px;\n      }\n\n      .wc-bracket-scroll::-webkit-scrollbar-track {\n        background: rgba(255,255,255,.06);\n        border-radius: 999px;\n      }\n\n      .wc-desktop-bracket {\n        display: grid;\n        grid-template-columns:\n          minmax(180px, 1.45fr)\n          minmax(155px, 1.12fr)\n          minmax(135px, .95fr)\n          minmax(115px, .78fr)\n          minmax(145px, .92fr)\n          minmax(115px, .78fr)\n          minmax(135px, .95fr)\n          minmax(155px, 1.12fr)\n          minmax(180px, 1.45fr);\n        gap: clamp(8px, .65vw, 14px);\n        align-items: stretch;\n        width: 100%;\n        min-width: ${desktopMinWidth}px;\n        min-height: clamp(760px, 68vw, 940px);\n        height: auto;\n        box-sizing: border-box;\n        padding-bottom: 16px;\n      }\n\n      .wc-round-wrap {\n        display: flex;\n        flex-direction: column;\n        min-width: 0;\n      }\n\n      .wc-round-label {\n        position: sticky;\n        top: 0;\n        z-index: 5;\n        text-align: center;\n        color: #e2e8f0;\n        font-weight: 900;\n        font-size: 12px;\n        letter-spacing: 1.1px;\n        margin-bottom: 8px;\n        background: rgba(17,19,33,.96);\n        border: 1px solid rgba(255,255,255,.07);\n        border-radius: 999px;\n        padding: 4px 8px;\n        box-shadow: 0 6px 18px rgba(0,0,0,.16);\n      }\n\n      .wc-round-column {\n        display: flex;\n        flex: 1;\n        flex-direction: column;\n        justify-content: space-around;\n        align-items: center;\n        gap: 5px;\n        min-height: 0;\n      }\n\n      .wc-center-column {\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        justify-content: center;\n        min-width: 0;\n      }\n\n      .wc-match-box {\n        background:\n          linear-gradient(180deg, rgba(30,32,46,.86), rgba(16,18,30,.82));\n        border: 1px solid rgba(255,255,255,.12);\n        border-radius: 11px;\n        width: 100%;\n        min-width: 0;\n        overflow: hidden;\n        box-sizing: border-box;\n        box-shadow: 0 8px 18px rgba(0,0,0,.16);\n        backdrop-filter: blur(8px);\n      }\n\n      .wc-match-live {\n        border-color: rgba(239,68,68,.70);\n        box-shadow: 0 0 14px rgba(239,68,68,.28), 0 8px 18px rgba(0,0,0,.16);\n        animation: wcLivePulse 1.6s ease-in-out infinite;\n      }\n\n      .wc-match-finished {\n        border-color: rgba(34,197,94,.34);\n        background:\n          linear-gradient(180deg, rgba(24,34,33,.86), rgba(16,24,27,.82));\n      }\n\n      .wc-match-draw {\n        border-color: rgba(245,158,11,.34);\n        background:\n          linear-gradient(180deg, rgba(42,35,20,.86), rgba(28,24,18,.82));\n      }\n\n      .wc-match-scheduled {\n        border-color: rgba(255,255,255,.11);\n      }\n\n      .wc-team-row {\n        display: flex;\n        align-items: center;\n        justify-content: space-between;\n        padding: 5px 8px;\n        min-width: 0;\n        box-sizing: border-box;\n        border: 1px solid transparent;\n        transition:\n          background .2s ease,\n          border-color .2s ease,\n          color .2s ease,\n          opacity .2s ease,\n          filter .2s ease;\n      }\n\n      .wc-team-row-list {\n        padding: 8px 10px;\n      }\n\n      .wc-team-row-win {\n        background: rgba(34,197,94,.14);\n        border-color: rgba(34,197,94,.22);\n        box-shadow: inset 0 0 12px rgba(34,197,94,.07);\n      }\n\n      .wc-team-row-win .wc-team-label,\n      .wc-team-row-win .wc-team-score {\n        color: #bbf7d0;\n        font-weight: 950;\n      }\n\n      .wc-team-row-lose {\n        background: rgba(127,29,29,.16);\n        border-color: rgba(239,68,68,.15);\n        opacity: .68;\n        filter: saturate(.78) brightness(.88);\n      }\n\n      .wc-team-row-lose .wc-team-label,\n      .wc-team-row-lose .wc-team-score {\n        color: #fecaca;\n      }\n\n      .wc-team-row-draw {\n        background: rgba(245,158,11,.11);\n        border-color: rgba(245,158,11,.20);\n      }\n\n      .wc-team-row-draw .wc-team-label,\n      .wc-team-row-draw .wc-team-score {\n        color: #fde68a;\n        font-weight: 900;\n      }\n\n      .wc-team-label {\n        display: flex;\n        align-items: center;\n        color: #f8fafc;\n        font-size: 12px;\n        font-weight: 750;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n        min-width: 0;\n      }\n\n      .wc-team-row-list .wc-team-label {\n        font-size: 14px;\n      }\n\n      .wc-projected-label {\n        opacity: .78;\n        font-style: italic;\n      }\n\n      .wc-tbd-label {\n        color: #9aa7bd;\n        font-weight: 700;\n      }\n\n      .wc-team-score {\n        color: #e2e8f0;\n        font-size: 12px;\n        font-weight: 900;\n        margin-left: 8px;\n        flex: 0 0 auto;\n      }\n\n      .wc-team-pen-score {\n        color: #cbd5e1;\n        font-size: 9px;\n        font-weight: 850;\n        margin-left: 3px;\n        opacity: .92;\n      }\n      \n      .wc-team-row-list .wc-team-pen-score {\n        font-size: 11px;\n      }\n\n      .wc-team-row-list .wc-team-score {\n        font-size: 14px;\n      }\n\n      .wc-team-divider {\n        height: 1px;\n        background: rgba(255,255,255,.07);\n      }\n\n      .wc-flag {\n        height: 18px;\n        width: auto;\n        border-radius: 3px;\n        margin-right: 6px;\n        vertical-align: middle;\n        flex: 0 0 auto;\n      }\n\n      .wc-list-box .wc-flag {\n        height: 20px;\n      }\n\n      .wc-meta-block {\n        display: flex;\n        flex-direction: column;\n        gap: 2px;\n        color: #9aa7bd;\n        font-size: 10px;\n        padding: 4px 6px;\n        border-top: 1px solid rgba(255,255,255,.07);\n        box-sizing: border-box;\n      }\n\n      .wc-meta-block-list {\n        font-size: 11px;\n        padding: 6px 7px;\n        gap: 3px;\n      }\n\n      .wc-meta-row {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        gap: 5px;\n        min-width: 0;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-location-row {\n        opacity: .85;\n      }\n\n      .wc-meta-svg {\n        width: 12px;\n        height: 12px;\n        fill: currentColor;\n        flex: 0 0 auto;\n        opacity: .78;\n      }\n\n      .wc-meta-text {\n        min-width: 0;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-status-pill {\n        border-radius: 999px;\n        padding: 2px 6px;\n        font-size: 9px;\n        font-weight: 900;\n        letter-spacing: .25px;\n        flex: 0 0 auto;\n      }\n\n      .wc-status-live {\n        color: #fecaca;\n        background: rgba(239,68,68,.16);\n        border: 1px solid rgba(239,68,68,.30);\n      }\n\n      .wc-status-finished {\n        color: #bbf7d0;\n        background: rgba(34,197,94,.12);\n        border: 1px solid rgba(34,197,94,.22);\n      }\n\n      .wc-status-draw {\n        color: #fde68a;\n        background: rgba(245,158,11,.12);\n        border: 1px solid rgba(245,158,11,.24);\n      }\n\n      .wc-status-pens {\n        color: #bbf7d0;\n        background: rgba(34,197,94,.12);\n        border: 1px solid rgba(34,197,94,.22);\n      }\n      \n      .wc-status-aet {\n        color: #bfdbfe;\n        background: rgba(59,130,246,.12);\n        border: 1px solid rgba(59,130,246,.24);\n      } \n\n      .wc-list-outer {\n        background: rgba(24,26,36,.52);\n        border: 1px solid rgba(255,255,255,.08);\n        border-radius: 16px;\n        padding: 8px;\n        backdrop-filter: blur(10px);\n        box-sizing: border-box;\n        width: 100%;\n        min-width: 0;\n        box-shadow: 0 8px 22px rgba(0,0,0,.14);\n      }\n\n      .wc-list-box {\n        border-radius: 11px;\n        box-shadow: none;\n      }\n\n      .wc-champion-card {\n        margin-top: 18px;\n        width: 100%;\n        max-width: 180px;\n        border-radius: 16px;\n        padding: 12px 10px;\n        box-sizing: border-box;\n        text-align: center;\n        background:\n          radial-gradient(circle at top, rgba(250,204,21,.16), transparent 52%),\n          rgba(24,26,36,.68);\n        border: 1px solid rgba(250,204,21,.22);\n        box-shadow: 0 10px 26px rgba(0,0,0,.20);\n        backdrop-filter: blur(10px);\n      }\n\n      .wc-champion-label {\n        color: #fde68a;\n        font-size: 10px;\n        font-weight: 950;\n        letter-spacing: 1.2px;\n        margin-bottom: 7px;\n      }\n\n      .wc-champion-body {\n        color: #fff;\n        font-weight: 900;\n        min-width: 0;\n      }\n\n      .wc-champion-trophy {\n        font-size: 36px;\n        line-height: 1;\n      }\n\n      .wc-champion-flag {\n        height: 42px;\n        max-width: 60px;\n        border-radius: 4px;\n        object-fit: contain;\n      }\n\n      .wc-champion-name {\n        margin-top: 6px;\n        color: #f8fafc;\n        font-size: 13px;\n        font-weight: 950;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n      }\n\n      .wc-mobile-list {\n        display: none;\n        width: 100%;\n        max-width: 100%;\n        overflow-x: hidden;\n        box-sizing: border-box;\n      }\n\n      .wc-mobile-round {\n        margin-bottom: 20px;\n        width: 100%;\n        box-sizing: border-box;\n      }\n\n      .wc-mobile-round-title {\n        color: #e2e8f0;\n        font-weight: 950;\n        font-size: 15px;\n        margin-bottom: 10px;\n        letter-spacing: .2px;\n      }\n\n      .wc-mobile-round-grid {\n        display: grid;\n        grid-template-columns: repeat(3, minmax(0, 1fr));\n        gap: 12px;\n        width: 100%;\n        max-width: 100%;\n        box-sizing: border-box;\n        align-items: stretch;\n      }\n\n      .wc-mobile-empty {\n        color: #94a3b8;\n        font-size: 12px;\n        background: rgba(24,26,36,.48);\n        border: 1px solid rgba(255,255,255,.08);\n        border-radius: 14px;\n        padding: 10px;\n        box-sizing: border-box;\n        grid-column: 1 / -1;\n      }\n\n      .wc-fav-star {\n        display: inline-flex;\n        align-items: center;\n        justify-content: center;\n        margin-left: 5px;\n        color: #fde047;\n        font-size: 11px;\n        font-style: normal;\n        font-weight: 950;\n        line-height: 1;\n        text-shadow: 0 0 8px rgba(250,204,21,.45);\n        flex: 0 0 auto;\n      }\n      \n      .wc-fav-star-bracket {\n        font-size: 10px;\n      }\n      \n      .wc-team-row-list .wc-fav-star-bracket {\n        font-size: 12px;\n      }\n\n      @media (max-width: ${listSwitchWidth}px) {\n        .wc-desktop-bracket {\n          display: none !important;\n        }\n\n        .wc-mobile-list {\n          display: block !important;\n        }\n\n        .wc-bracket-scroll {\n          position: static;\n          left: auto;\n          transform: none;\n          width: 100%;\n          max-width: 100%;\n          overflow-x: hidden;\n          overflow-y: visible;\n          padding: 0;\n          box-sizing: border-box;\n        }\n      }\n\n      @media (max-width: 720px) {\n        .wc-mobile-round-grid {\n          grid-template-columns: repeat(2, minmax(0, 1fr));\n          gap: 10px;\n        }\n      }\n\n      @media (max-width: 440px) {\n        .wc-mobile-round-grid {\n          grid-template-columns: 1fr;\n          gap: 8px;\n        }\n\n        .wc-mobile-round-title {\n          font-size: 14px;\n        }\n      }\n    </style>\n\n    <div class=\"wc-bracket-scroll\">\n      <div class=\"wc-desktop-bracket\">\n        ${left}${center}${right}\n      </div>\n\n      <div class=\"wc-mobile-list\">\n        ${mobileList}\n      </div>\n    </div>\n  `;\n]]]"
+                  },
+                  "styles": {
+                    "card": [
+                      {
+                        "padding": 0
+                      },
+                      {
+                        "background": "transparent"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "border": "none"
+                      },
+                      {
+                        "width": "100%"
+                      },
+                      {
+                        "max-width": "100%"
+                      },
+                      {
+                        "box-sizing": "border-box"
+                      }
+                    ],
+                    "grid": [
+                      {
+                        "justify-items": "stretch"
+                      },
+                      {
+                        "grid-template-areas": "\"content\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "width": "100%"
+                      }
+                    ],
+                    "custom_fields": {
+                      "content": [
+                        {
+                          "display": "block"
+                        },
+                        {
+                          "justify-self": "stretch"
+                        },
+                        {
+                          "width": "100%"
+                        },
+                        {
+                          "max-width": "100%"
+                        },
+                        {
+                          "overflow": "visible"
+                        },
+                        {
+                          "pointer-events": "auto"
+                        }
+                      ]
+                    }
+                  },
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                }
+              ],
+              "column_span": 4,
+              "visibility": [
+                {
+                  "condition": "state",
+                  "entity": "input_boolean.wc_show_knockout",
+                  "state": "on"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "entity": "sensor.world_cup_schedule",
+                  "triggers_update": [
+                    "sensor.world_cup_schedule",
+                    "sensor.world_cup_scoreboard",
+                    "sensor.world_cup_standings"
+                  ],
+                  "show_icon": false,
+                  "show_name": true,
+                  "show_state": false,
+                  "show_label": false,
+                  "tap_action": {
+                    "action": "none"
+                  },
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "name": "[[[\n  const ids = [\n    'sensor.world_cup_schedule',\n    'sensor.world_cup_scoreboard',\n    'sensor.world_cup_standings'\n  ];\n\n  const dates = ids\n    .map(id => states[id])\n    .filter(Boolean)\n    .map(s => new Date(s.last_updated || s.last_changed))\n    .filter(d => !isNaN(d.getTime()))\n    .sort((a, b) => b - a);\n\n  const latest = dates[0];\n\n  const text = latest\n    ? latest.toLocaleString([], {\n        weekday: 'short',\n        month: 'short',\n        day: 'numeric',\n        hour: '2-digit',\n        minute: '2-digit'\n      })\n    : 'Unknown';\n\n  return `Last updated: ${text}`;\n]]]",
+                  "styles": {
+                    "card": [
+                      {
+                        "width": "100%"
+                      },
+                      {
+                        "max-width": "100%"
+                      },
+                      {
+                        "min-width": 0
+                      },
+                      {
+                        "box-sizing": "border-box"
+                      },
+                      {
+                        "padding": "7px 10px"
+                      },
+                      {
+                        "margin": 0
+                      },
+                      {
+                        "border-radius": "12px"
+                      },
+                      {
+                        "background": "rgba(24,26,36,.45)"
+                      },
+                      {
+                        "border": "1px solid rgba(255,255,255,.07)"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "overflow": "hidden"
+                      }
+                    ],
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "width": "100%"
+                      },
+                      {
+                        "min-width": 0
+                      }
+                    ],
+                    "name": [
+                      {
+                        "justify-self": "stretch"
+                      },
+                      {
+                        "width": "100%"
+                      },
+                      {
+                        "min-width": 0
+                      },
+                      {
+                        "text-align": "right"
+                      },
+                      {
+                        "color": "#94a3b8"
+                      },
+                      {
+                        "font-size": "11px"
+                      },
+                      {
+                        "font-weight": 650
+                      },
+                      {
+                        "white-space": "nowrap"
+                      },
+                      {
+                        "overflow": "hidden"
+                      },
+                      {
+                        "text-overflow": "ellipsis"
+                      }
+                    ]
+                  },
+                  "grid_options": {
+                    "columns": "full",
+                    "rows": 1
+                  },
+                  "view_layout": {
+                    "grid-column": "1 / -1"
+                  }
+                }
+              ],
+              "column_span": 4
+            }
+          ],
+          "header": {
+            "card": {
+              "type": "markdown",
+              "content": "# World Cup 2026",
+              "text_only": true
+            },
+            "layout": "responsive",
+            "badges_position": "top",
+            "badges_wrap": "scroll"
+          },
+          "cards": [],
+          "badges": [
+            {
+              "type": "entity",
+              "show_name": false,
+              "show_state": false,
+              "show_icon": true,
+              "entity": "input_boolean.wc_show_focus",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "hold_action": {
+                "action": "more-info"
+              },
+              "show_entity_picture": false
+            },
+            {
+              "type": "entity",
+              "show_name": false,
+              "show_state": false,
+              "show_icon": true,
+              "entity": "input_boolean.wc_show_matches",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "hold_action": {
+                "action": "more-info"
+              }
+            },
+            {
+              "type": "entity",
+              "show_name": false,
+              "show_state": false,
+              "show_icon": true,
+              "entity": "input_boolean.wc_today_matches",
+              "hold_action": {
+                "action": "more-info"
+              },
+              "tap_action": {
+                "action": "toggle"
+              },
+              "visibility": [
+                {
+                  "condition": "state",
+                  "entity": "input_boolean.wc_show_matches",
+                  "state": "on"
+                }
+              ]
+            },
+            {
+              "type": "entity",
+              "show_name": false,
+              "show_state": false,
+              "show_icon": true,
+              "entity": "input_boolean.wc_yesterday_matches",
+              "hold_action": {
+                "action": "more-info"
+              },
+              "tap_action": {
+                "action": "toggle"
+              },
+              "visibility": [
+                {
+                  "condition": "state",
+                  "entity": "input_boolean.wc_show_matches",
+                  "state": "on"
+                }
+              ]
+            },
+            {
+              "type": "entity",
+              "show_name": false,
+              "show_state": false,
+              "show_icon": true,
+              "entity": "input_boolean.wc_upcoming_matches",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "hold_action": {
+                "action": "more-info"
+              },
+              "visibility": [
+                {
+                  "condition": "state",
+                  "entity": "input_boolean.wc_show_matches",
+                  "state": "on"
+                }
+              ]
+            },
+            {
+              "type": "entity",
+              "show_name": false,
+              "show_state": false,
+              "show_icon": true,
+              "entity": "input_boolean.wc_show_groups",
+              "tap_action": {
+                "action": "toggle"
+              },
+              "hold_action": {
+                "action": "more-info"
+              }
+            },
+            {
+              "type": "entity",
+              "show_name": false,
+              "show_state": false,
+              "show_icon": true,
+              "entity": "input_boolean.wc_show_knockout",
+              "hold_action": {
+                "action": "more-info"
+              },
+              "tap_action": {
+                "action": "toggle"
+              }
+            }
+          ]
         },
         {
           "icon": "mdi:lightbulb-group",
@@ -5282,7 +6271,6 @@
               "type": "grid",
               "cards": [
                 {
-                  "type": "custom:calendar-card-pro",
                   "entities": [
                     {
                       "entity": "calendar.joint_calendar",
@@ -5319,32 +6307,53 @@
                     }
                   ],
                   "days_to_show": 7,
-                  "max_events_to_show": 5,
+                  "compact_events_to_show": 5,
                   "split_multiday_events": true,
                   "language": "en",
                   "title": "📅 Calendar",
-                  "today_indicator": "pulse",
-                  "show_progress_bar": true,
-                  "show_location": true,
-                  "show_month": true,
-                  "show_week_numbers": "simple",
-                  "show_current_week_number": true,
                   "first_day_of_week": "monday",
-                  "week_number_font_size": "12px",
-                  "week_number_color": "var(--primary-text-color)",
-                  "week_number_background_color": "#03a9f450",
+                  "show_week_numbers": "simple",
                   "day_separator_width": "1px",
                   "day_separator_color": "#03a9f430",
                   "week_separator_width": "2px",
                   "week_separator_color": "#03a9f480",
                   "month_separator_width": "3px",
                   "month_separator_color": "#03a9f4",
+                  "today_indicator": "pulse",
+                  "show_progress_bar": true,
+                  "weather": {
+                    "position": "date",
+                    "date": {
+                      "show_conditions": true,
+                      "show_high_temp": true,
+                      "show_low_temp": false,
+                      "show_uv_index": false,
+                      "uv_index_threshold": 0,
+                      "icon_size": "14px",
+                      "font_size": "12px",
+                      "color": "var(--primary-text-color)"
+                    },
+                    "event": {
+                      "show_conditions": true,
+                      "show_temp": true,
+                      "show_uv_index": false,
+                      "uv_index_threshold": 0,
+                      "icon_size": "14px",
+                      "font_size": "12px",
+                      "color": "var(--primary-text-color)"
+                    }
+                  },
                   "tap_action": {
                     "action": "expand"
                   },
-                  "refresh_interval": 15
+                  "refresh_interval": 15,
+                  "type": "custom:calendar-card-pro",
+                  "grid_options": {
+                    "columns": "full"
+                  }
                 }
-              ]
+              ],
+              "column_span": 4
             }
           ],
           "visible": [
