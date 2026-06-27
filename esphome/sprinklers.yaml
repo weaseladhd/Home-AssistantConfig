@@ -9,7 +9,8 @@ substitutions:
 esphome:
   name: ${device_name}
   comment: "${device_description}"
-
+  friendly_name: sprinklers
+  area: Outside
 esp8266:
   board: esp01_1m
   # name_add_mac_suffix: true
