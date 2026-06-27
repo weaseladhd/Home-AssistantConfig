@@ -95,8 +95,6 @@ globals:
   - id: stored_decryption_key
     type: char[32]
     restore_value: yes
-
-
     
 dsmr:
   id: dsmr_instance
