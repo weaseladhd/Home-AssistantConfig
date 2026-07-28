@@ -90,11 +90,11 @@ uart:
 globals:
   - id: has_key
     type: bool
-    restore_value: yes
+    restore_value: true
     initial_value: "false"
   - id: stored_decryption_key
     type: char[32]
-    restore_value: yes
+    restore_value: true
 
 dsmr:
   id: dsmr_instance
