@@ -106,6 +106,6 @@
 
 - cal_id: lsb41d1g4m7pien7gasmkau5r6jekove@import.calendar.google.com
   entities:
-  - device_id: swift_h2
-    ignore_availability: true
-    name: Swift H2
+    - device_id: swift_h2
+      ignore_availability: true
+      name: Swift H2

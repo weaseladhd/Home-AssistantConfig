@@ -1,3 +1,4 @@
+---
 rest:
   - resource: https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard
     scan_interval: 60
@@ -85,14 +86,14 @@ automation:
     alias: World Cup - Fast Refresh While USA Live
     description: While a USA match is in progress, force-refresh the ESPN scoreboard every 3 seconds for near real-time scores, the clock ticker and the goal-celebration flash. The normal refresh stays at 60s the rest of the time.
     triggers:
-    - trigger: time_pattern
-      seconds: /3
+      - trigger: time_pattern
+        seconds: /3
     conditions:
-    - condition: state
-      entity_id: binary_sensor.world_cup_us_live
-      state: 'on'
+      - condition: state
+        entity_id: binary_sensor.world_cup_us_live
+        state: 'on'
     actions:
-    - action: homeassistant.update_entity
-      target:
-        entity_id: sensor.world_cup_scoreboard
+      - action: homeassistant.update_entity
+        target:
+          entity_id: sensor.world_cup_scoreboard
     mode: single
