@@ -30,15 +30,6 @@
         "require_admin": false,
         "mode": "storage",
         "url_path": "dashboard-map"
-      },
-      {
-        "id": "world_cup",
-        "show_in_sidebar": true,
-        "icon": "mdi:soccer",
-        "title": "World Cup",
-        "require_admin": false,
-        "mode": "storage",
-        "url_path": "world-cup"
       }
     ]
   }

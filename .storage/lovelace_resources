@@ -52,7 +52,7 @@
       {
         "id": "bc9d042e66ea48cf8dd484c7db476e4f",
         "type": "module",
-        "url": "/hacsfiles/lovelace-xiaomi-vacuum-map-card/xiaomi-vacuum-map-card.js?hacstag=193372044232"
+        "url": "/hacsfiles/lovelace-xiaomi-vacuum-map-card/xiaomi-vacuum-map-card.js?hacstag=193372044241"
       },
       {
         "id": "b2a8e42bf5aa4bc6bde7c5a07a7e8b10",
@@ -87,7 +87,7 @@
       {
         "id": "0201d069300e46a08fd6398102b9bc97",
         "type": "module",
-        "url": "/hacsfiles/scheduler-card/scheduler-card.js?hacstag=2862701574018"
+        "url": "/hacsfiles/scheduler-card/scheduler-card.js?hacstag=2862701574019"
       },
       {
         "url": "/hacsfiles/light-popup-card/light-popup-card.js",
@@ -135,7 +135,7 @@
         "id": "e8fc8aa475b849bd8ae2c78de0eea06b"
       },
       {
-        "url": "/hacsfiles/atomic-calendar-revive/atomic-calendar-revive.js?hacstag=2465497471030",
+        "url": "/hacsfiles/atomic-calendar-revive/atomic-calendar-revive.js?hacstag=2465497471031",
         "type": "module",
         "id": "9874d7ba0319492eb9f016a6a84c1dc6"
       },
@@ -145,7 +145,7 @@
         "id": "b6a57c8aa51e4b509486449f1515c90a"
       },
       {
-        "url": "/hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js?hacstag=178921037451",
+        "url": "/hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js?hacstag=178921037471",
         "type": "module",
         "id": "6e65c1718a3d4f34b955fd71d4260d21"
       },
@@ -160,7 +160,7 @@
         "id": "33ff1afbc2384d21a58e02b0954a7dfe"
       },
       {
-        "url": "/hacsfiles/mini-graph-card/mini-graph-card-bundle.js?hacstag=1512800620130",
+        "url": "/hacsfiles/mini-graph-card/mini-graph-card-bundle.js?hacstag=15128006201401",
         "type": "module",
         "id": "9c1610e75e5f4ee090623cfa372861b2"
       },
@@ -220,7 +220,7 @@
         "id": "27b984e9419549d49552cc05cb26770f"
       },
       {
-        "url": "/hacsfiles/datetime-card/datetime-card.js?hacstag=491303842109",
+        "url": "/hacsfiles/datetime-card/datetime-card.js?hacstag=4913038421010",
         "type": "module",
         "id": "d9afaa3556b444c18ffa591e936c65ce"
       },
@@ -240,12 +240,12 @@
         "id": "4f1c93d8783a4f6a812de03208949fe8"
       },
       {
-        "url": "/browser_mod.js?automatically-added&2.13.5",
+        "url": "/browser_mod.js?automatically-added&3.1.0",
         "type": "module",
         "id": "2a86dd3bc2a242fc91bfb04b8459b866"
       },
       {
-        "url": "/hacsfiles/formulaone-card/formulaone-card.js?hacstag=5459459551146",
+        "url": "/hacsfiles/formulaone-card/formulaone-card.js?hacstag=5459459551148",
         "type": "module",
         "id": "26d5896267ee4681badeb0fbefd23c48"
       },
@@ -271,17 +271,17 @@
       },
       {
         "id": "b808b67ea5c74457a164e5bf5d934231",
-        "url": "/hacsfiles/lovelace-horizon-card/lovelace-horizon-card.js?hacstag=614083491140",
+        "url": "/hacsfiles/lovelace-horizon-card/lovelace-horizon-card.js?hacstag=614083491153",
         "type": "module"
       },
       {
         "id": "948fe9a3c91740cd855d72d2afe6f360",
-        "url": "/hacsfiles/Bubble-Card/bubble-card.js?hacstag=680112919323",
+        "url": "/hacsfiles/Bubble-Card/bubble-card.js?hacstag=680112919325",
         "type": "module"
       },
       {
         "id": "9e71fdbde9994eedb7b7a8ebffd676e4",
-        "url": "/hacsfiles/custom-brand-icons/custom-brand-icons.js?hacstag=3668620312026062",
+        "url": "/hacsfiles/custom-brand-icons/custom-brand-icons.js?hacstag=3668620312026074",
         "type": "module"
       },
       {
@@ -296,7 +296,7 @@
       },
       {
         "id": "3640dd77f200467b94b172f3c8060f07",
-        "url": "/hacsfiles/better-thermostat-ui-card/better-thermostat-ui-card.js?hacstag=439367892312",
+        "url": "/hacsfiles/better-thermostat-ui-card/better-thermostat-ui-card.js?hacstag=439367892323",
         "type": "module"
       },
       {
@@ -317,6 +317,11 @@
       {
         "id": "c9df7aa5d9f4415a818c22c041ee1cf3",
         "url": "/ha-tracker/assets/ha-tracker-card.js?v=0.0.36",
+        "type": "module"
+      },
+      {
+        "id": "46250a9270d6470ab497f84341f4c8aa",
+        "url": "/hacsfiles/Helios/helios.js?hacstag=1233345211202681",
         "type": "module"
       }
     ]

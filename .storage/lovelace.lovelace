@@ -504,88 +504,6 @@
               "type": "grid",
               "cards": [
                 {
-                  "type": "horizontal-stack",
-                  "cards": [
-                    {
-                      "graph": "line",
-                      "hours_to_show": 24,
-                      "type": "sensor",
-                      "entity": "sensor.btc_exchange_rate",
-                      "name": "Bitcoin",
-                      "icon": "mdi:bitcoin",
-                      "unit": "€",
-                      "detail": 2
-                    },
-                    {
-                      "hours_to_show": 24,
-                      "graph": "line",
-                      "type": "sensor",
-                      "entity": "sensor.eth_exchange_rate",
-                      "name": "Ethereum",
-                      "icon": "mdi:ethereum",
-                      "detail": 2,
-                      "unit": "€"
-                    }
-                  ]
-                },
-                {
-                  "type": "custom:weather-card",
-                  "entity": "weather.irosma27",
-                  "number_of_forecasts": "5",
-                  "hourly_forecast": true,
-                  "forecast": true,
-                  "details": true,
-                  "current": true
-                },
-                {
-                  "type": "custom:neerslag-card",
-                  "title": "Rain",
-                  "entities": [
-                    "sensor.neerslag_buienalarm_regen_data",
-                    "sensor.neerslag_buienradar_regen_data"
-                  ]
-                },
-                {
-                  "type": "entities",
-                  "entities": [
-                    {
-                      "entity": "input_boolean.sleep_mode"
-                    },
-                    {
-                      "entity": "input_boolean.guest_mode"
-                    },
-                    {
-                      "entity": "input_boolean.vacation_mode"
-                    }
-                  ],
-                  "show_header_toggle": false,
-                  "state_color": true
-                },
-                {
-                  "type": "custom:mushroom-entity-card",
-                  "entity": "sensor.waze_travel_time_work_wesley",
-                  "name": "Work Wesley"
-                },
-                {
-                  "type": "custom:mushroom-entity-card",
-                  "entity": "sensor.waze_travel_time_parents_wesley",
-                  "name": "Parents Wesley"
-                },
-                {
-                  "type": "custom:mushroom-cover-card",
-                  "entity": "cover.study_roller_shade",
-                  "show_position_control": true,
-                  "show_tilt_position_control": false,
-                  "show_buttons_control": true,
-                  "fill_container": false,
-                  "layout": "horizontal"
-                }
-              ]
-            },
-            {
-              "type": "grid",
-              "cards": [
-                {
                   "cards": [
                     {
                       "graph": "none",
@@ -874,6 +792,115 @@
               "type": "grid",
               "cards": [
                 {
+                  "type": "custom:weather-card",
+                  "entity": "weather.irosma27",
+                  "number_of_forecasts": "5",
+                  "hourly_forecast": true,
+                  "forecast": true,
+                  "details": true,
+                  "current": true
+                },
+                {
+                  "type": "custom:neerslag-card",
+                  "entities": [
+                    "sensor.neerslag_buienradar_regen_data",
+                    "sensor.neerslag_buienalarm_regen_data"
+                  ],
+                  "title": "Rain Forecast",
+                  "autozoom": true
+                },
+                {
+                  "type": "tile",
+                  "grid_options": {
+                    "columns": 4,
+                    "rows": 2
+                  },
+                  "entity": "sensor.kleenex_pollen_radar_lbl_16_weeds_level",
+                  "name": "Weeds",
+                  "vertical": true,
+                  "tap_action": {
+                    "action": "more-info"
+                  },
+                  "features_position": "bottom",
+                  "card_mod": {
+                    "style": ".icon-container {\n  {% set level = states('sensor.pollen_weeds_concentration') %}\n  {% set color = {'Low':'green','Average':'orange','High':'darkorange','Zeer High':'maroon'} %}\n  {% set level_color = color.get(level,'gray') %}\n  {% set circle = {'Low':'25','Average':'50','High':'75','Zeer High':'100'} %}        \n  {% set percentage = circle.get(level,'25') %}\n  border-radius: 24px;\n  background: radial-gradient(var(--card-background-color) 60%,transparent calc(60% + 1px)),\n  conic-gradient({{level_color}} {{percentage}}% 0%,\n  var(--card-background-color) 0% 100%);\n}\nha-tile-icon {\n  {% set level = states('sensor.pollen_weeds_concentration') %}\n  {% set color = {'Low':'green','Average':'orange', 'High':'darkorange','Zeer High':'maroon'} %}              \n  {% set level_color = color.get(level,'gray') %}\n  --tile-color: {{level_color}};\n}\n"
+                  }
+                },
+                {
+                  "type": "tile",
+                  "grid_options": {
+                    "columns": 4,
+                    "rows": 2
+                  },
+                  "entity": "sensor.kleenex_pollen_radar_lbl_16_grass_level",
+                  "name": "Grass",
+                  "vertical": true,
+                  "tap_action": {
+                    "action": "more-info"
+                  },
+                  "features_position": "bottom",
+                  "card_mod": {
+                    "style": ".icon-container {\n  {% set level = states('sensor.pollen_grass_concentration') %}\n  {% set color = {'Low':'green','Average':'orange','High':'darkorange','Zeer High':'maroon'} %}\n  {% set level_color = color.get(level,'gray') %}\n  {% set circle = {'Low':'25','Average':'50','High':'75','Zeer High':'100'} %}        \n  {% set percentage = circle.get(level,'25') %}\n  border-radius: 24px;\n  background: radial-gradient(var(--card-background-color) 60%,transparent calc(60% + 1px)),\n  conic-gradient({{level_color}} {{percentage}}% 0%,\n  var(--card-background-color) 0% 100%)\n}\nha-tile-icon {\n  {% set level = states('sensor.pollen_grass_concentration') %}\n  {% set color = {'Low':'green','Average':'orange','High':'darkorange','Zeer High':'maroon'} %}\n  {% set level_color = color.get(level,'gray') %};\n  --tile-color: {{level_color}};\n}\n"
+                  }
+                },
+                {
+                  "type": "tile",
+                  "grid_options": {
+                    "columns": 4,
+                    "rows": 2
+                  },
+                  "entity": "sensor.kleenex_pollen_radar_lbl_16_trees_level",
+                  "name": "Trees",
+                  "vertical": true,
+                  "tap_action": {
+                    "action": "more-info"
+                  },
+                  "features_position": "bottom",
+                  "card_mod": {
+                    "style": ".icon-container {\n   {% set level = states('sensor.pollen_trees_concentration') %}\n   {% set color = {'Low':'green','Average':'orange','High':'darkorange','Zeer High':'maroon'} %}\n  {% set level_color = color.get(level,'gray') %}\n  {% set circle = {'Low':'25','Average':'50','High':'75','Zeer High':'100'} %}        \n  {% set percentage = circle.get(level,'25') %}\n  border-radius: 24px;\n  background: radial-gradient(var(--card-background-color) 60%,transparent calc(60% + 1px)),\n  conic-gradient({{level_color}} {{percentage}}% 0%,\n  var(--card-background-color) 0% 100%);\n}\nha-tile-icon {\n  {% set level = states('sensor.pollen_trees_concentration') %}\n  {% set color = {'Low':'green','Average':'orange', 'High':'darkorange','Zeer High':'maroon'} %}\n  {% set level_color = color.get(level,'gray') %};\n  --tile-color: {{level_color}};\n}\n"
+                  }
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    {
+                      "entity": "input_boolean.sleep_mode"
+                    },
+                    {
+                      "entity": "input_boolean.guest_mode"
+                    },
+                    {
+                      "entity": "input_boolean.vacation_mode"
+                    }
+                  ],
+                  "show_header_toggle": false,
+                  "state_color": true
+                },
+                {
+                  "type": "custom:mushroom-entity-card",
+                  "entity": "sensor.waze_travel_time_work_wesley",
+                  "name": "Work Wesley"
+                },
+                {
+                  "type": "custom:mushroom-entity-card",
+                  "entity": "sensor.waze_travel_time_parents_wesley",
+                  "name": "Parents Wesley"
+                },
+                {
+                  "type": "custom:mushroom-cover-card",
+                  "entity": "cover.study_roller_shade",
+                  "show_position_control": true,
+                  "show_tilt_position_control": false,
+                  "show_buttons_control": true,
+                  "fill_container": false,
+                  "layout": "horizontal"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
                   "type": "custom:hui-markdown-card",
                   "content": "{{ states('sensor.active_devices') }}\n"
                 },
@@ -992,7 +1019,8 @@
                   "volume_stateless": false,
                   "group": false,
                   "entity": "media_player.nad_m10_v3_living_room",
-                  "artwork": "cover"
+                  "artwork": "material",
+                  "source": "full"
                 },
                 {
                   "show_state": true,
@@ -1003,6 +1031,40 @@
                   "name": "UVC G3 Pro Front",
                   "type": "picture-entity",
                   "entity": "camera.uvc_g3_pro_front_high_resolution_channel"
+                },
+                {
+                  "entity": "sensor.quarantine_meter_wesley",
+                  "max": 100,
+                  "min": 0,
+                  "name": "Wesley",
+                  "severity": {
+                    "green": 0,
+                    "yellow": 75,
+                    "red": 85
+                  },
+                  "type": "gauge",
+                  "needle": true,
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 3
+                  }
+                },
+                {
+                  "entity": "sensor.quarantine_meter_fenne",
+                  "max": 100,
+                  "min": 0,
+                  "name": "Fenne",
+                  "severity": {
+                    "green": 0,
+                    "yellow": 75,
+                    "red": 85
+                  },
+                  "type": "gauge",
+                  "needle": true,
+                  "grid_options": {
+                    "columns": 6,
+                    "rows": 3
+                  }
                 }
               ],
               "column_span": 1
@@ -1111,91 +1173,29 @@
                   }
                 },
                 {
-                  "type": "tile",
-                  "grid_options": {
-                    "columns": 4,
-                    "rows": 2
-                  },
-                  "entity": "sensor.kleenex_pollen_radar_lbl_16_weeds_level",
-                  "name": "Weeds",
-                  "vertical": true,
-                  "tap_action": {
-                    "action": "more-info"
-                  },
-                  "features_position": "bottom",
-                  "card_mod": {
-                    "style": ".icon-container {\n  {% set level = states('sensor.pollen_weeds_concentration') %}\n  {% set color = {'Low':'green','Average':'orange','High':'darkorange','Zeer High':'maroon'} %}\n  {% set level_color = color.get(level,'gray') %}\n  {% set circle = {'Low':'25','Average':'50','High':'75','Zeer High':'100'} %}        \n  {% set percentage = circle.get(level,'25') %}\n  border-radius: 24px;\n  background: radial-gradient(var(--card-background-color) 60%,transparent calc(60% + 1px)),\n  conic-gradient({{level_color}} {{percentage}}% 0%,\n  var(--card-background-color) 0% 100%);\n}\nha-tile-icon {\n  {% set level = states('sensor.pollen_weeds_concentration') %}\n  {% set color = {'Low':'green','Average':'orange', 'High':'darkorange','Zeer High':'maroon'} %}              \n  {% set level_color = color.get(level,'gray') %}\n  --tile-color: {{level_color}};\n}\n"
-                  }
-                },
-                {
-                  "type": "tile",
-                  "grid_options": {
-                    "columns": 4,
-                    "rows": 2
-                  },
-                  "entity": "sensor.kleenex_pollen_radar_lbl_16_grass_level",
-                  "name": "Grass",
-                  "vertical": true,
-                  "tap_action": {
-                    "action": "more-info"
-                  },
-                  "features_position": "bottom",
-                  "card_mod": {
-                    "style": ".icon-container {\n  {% set level = states('sensor.pollen_grass_concentration') %}\n  {% set color = {'Low':'green','Average':'orange','High':'darkorange','Zeer High':'maroon'} %}\n  {% set level_color = color.get(level,'gray') %}\n  {% set circle = {'Low':'25','Average':'50','High':'75','Zeer High':'100'} %}        \n  {% set percentage = circle.get(level,'25') %}\n  border-radius: 24px;\n  background: radial-gradient(var(--card-background-color) 60%,transparent calc(60% + 1px)),\n  conic-gradient({{level_color}} {{percentage}}% 0%,\n  var(--card-background-color) 0% 100%)\n}\nha-tile-icon {\n  {% set level = states('sensor.pollen_grass_concentration') %}\n  {% set color = {'Low':'green','Average':'orange','High':'darkorange','Zeer High':'maroon'} %}\n  {% set level_color = color.get(level,'gray') %};\n  --tile-color: {{level_color}};\n}\n"
-                  }
-                },
-                {
-                  "type": "tile",
-                  "grid_options": {
-                    "columns": 4,
-                    "rows": 2
-                  },
-                  "entity": "sensor.kleenex_pollen_radar_lbl_16_trees_level",
-                  "name": "Trees",
-                  "vertical": true,
-                  "tap_action": {
-                    "action": "more-info"
-                  },
-                  "features_position": "bottom",
-                  "card_mod": {
-                    "style": ".icon-container {\n   {% set level = states('sensor.pollen_trees_concentration') %}\n   {% set color = {'Low':'green','Average':'orange','High':'darkorange','Zeer High':'maroon'} %}\n  {% set level_color = color.get(level,'gray') %}\n  {% set circle = {'Low':'25','Average':'50','High':'75','Zeer High':'100'} %}        \n  {% set percentage = circle.get(level,'25') %}\n  border-radius: 24px;\n  background: radial-gradient(var(--card-background-color) 60%,transparent calc(60% + 1px)),\n  conic-gradient({{level_color}} {{percentage}}% 0%,\n  var(--card-background-color) 0% 100%);\n}\nha-tile-icon {\n  {% set level = states('sensor.pollen_trees_concentration') %}\n  {% set color = {'Low':'green','Average':'orange', 'High':'darkorange','Zeer High':'maroon'} %}\n  {% set level_color = color.get(level,'gray') %};\n  --tile-color: {{level_color}};\n}\n"
-                  }
-                },
-                {
-                  "entity": "sensor.quarantine_meter_wesley",
-                  "max": 100,
-                  "min": 0,
-                  "name": "Wesley",
-                  "severity": {
-                    "green": 0,
-                    "red": 85,
-                    "yellow": 75
-                  },
-                  "theme": "Backend-selected",
-                  "type": "gauge",
-                  "needle": true,
-                  "grid_options": {
-                    "columns": 6,
-                    "rows": 3
-                  }
-                },
-                {
-                  "entity": "sensor.quarantine_meter_fenne",
-                  "max": 100,
-                  "min": 0,
-                  "name": "Fenne",
-                  "severity": {
-                    "green": 0,
-                    "red": 85,
-                    "yellow": 75
-                  },
-                  "theme": "default",
-                  "type": "gauge",
-                  "needle": true,
-                  "grid_options": {
-                    "columns": 6,
-                    "rows": 3
-                  }
+                  "type": "horizontal-stack",
+                  "cards": [
+                    {
+                      "graph": "line",
+                      "hours_to_show": 24,
+                      "type": "sensor",
+                      "entity": "sensor.btc_exchange_rate",
+                      "name": "Bitcoin",
+                      "icon": "mdi:bitcoin",
+                      "unit": "€",
+                      "detail": 2
+                    },
+                    {
+                      "hours_to_show": 24,
+                      "graph": "line",
+                      "type": "sensor",
+                      "entity": "sensor.eth_exchange_rate",
+                      "name": "Ethereum",
+                      "icon": "mdi:ethereum",
+                      "detail": 2,
+                      "unit": "€"
+                    }
+                  ]
                 }
               ]
             }
@@ -6940,6 +6940,23 @@
                     }
                   ],
                   "type": "entities"
+                },
+                {
+                  "type": "custom:helios-card",
+                  "cache-id": "cmrkghmlm6xbv6u",
+                  "auto-rotate-enabled": false,
+                  "auto-hide-ui": false,
+                  "display-update-frequency-per-hour": 4,
+                  "value-decimals": 1,
+                  "power-unit": "kW",
+                  "irradiance-unit": "W/m²",
+                  "battery-sign": "hidden",
+                  "shadows-enabled": true,
+                  "solar-irradiance-entity": "sensor.irosma27_solar_radiation",
+                  "building-cluster-radius": 0,
+                  "show-timeline": true,
+                  "show-detail-panel": true,
+                  "show-sun-times": true
                 }
               ]
             },
