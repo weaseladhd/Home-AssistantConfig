@@ -24,7 +24,7 @@ esphome:
 
   friendly_name: slimmelezer
   area: Server Room
-  
+
 esp8266:
   restore_from_flash: true
   board: d1_mini
@@ -47,7 +47,7 @@ captive_portal:
 # Enable logging
 logger:
   baud_rate: 0
-#  logs: 
+#  logs:
 #    component: ERROR
 
 api:
@@ -95,7 +95,7 @@ globals:
   - id: stored_decryption_key
     type: char[32]
     restore_value: yes
-    
+
 dsmr:
   id: dsmr_instance
   max_telegram_length: 1700

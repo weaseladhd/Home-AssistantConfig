@@ -1,3 +1,4 @@
+---
 # Irrigation Unlimited support file.
 #
 # Filename: irrigation_unlimited_controls.yaml
@@ -51,9 +52,6 @@ automation:
           domain: irrigation_unlimited
           service: list_config
     actions:
-        # Wait 30 seconds after starting HA.
-        # This gives all integrations enough time
-        # to fully load their services in the background.
       - delay: "00:00:30"
       - action: irrigation_unlimited.list_config
         data:
