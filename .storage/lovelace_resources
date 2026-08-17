@@ -42,7 +42,7 @@
       {
         "id": "7559d2bd6e93473e96b04bd896abf905",
         "type": "module",
-        "url": "/hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js?hacstag=142051833101"
+        "url": "/hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js?hacstag=142051833112"
       },
       {
         "id": "23d35c91c3044ed59df8217ec80833f9",
@@ -145,7 +145,7 @@
         "id": "b6a57c8aa51e4b509486449f1515c90a"
       },
       {
-        "url": "/hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js?hacstag=178921037471",
+        "url": "/hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js?hacstag=1789210374102",
         "type": "module",
         "id": "6e65c1718a3d4f34b955fd71d4260d21"
       },
@@ -185,7 +185,7 @@
         "id": "cccc408a603a451cb5fa9c05276e9bd8"
       },
       {
-        "url": "/hacsfiles/lovelace-mushroom/mushroom.js?hacstag=444350375511",
+        "url": "/hacsfiles/lovelace-mushroom/mushroom.js?hacstag=444350375522",
         "type": "module",
         "id": "550d82826c1745bbb4f618f840909189"
       },
@@ -240,7 +240,7 @@
         "id": "4f1c93d8783a4f6a812de03208949fe8"
       },
       {
-        "url": "/browser_mod.js?automatically-added&3.1.0",
+        "url": "/browser_mod.js?automatically-added&3.2.1",
         "type": "module",
         "id": "2a86dd3bc2a242fc91bfb04b8459b866"
       },
@@ -276,12 +276,12 @@
       },
       {
         "id": "948fe9a3c91740cd855d72d2afe6f360",
-        "url": "/hacsfiles/Bubble-Card/bubble-card.js?hacstag=680112919325",
+        "url": "/hacsfiles/Bubble-Card/bubble-card.js?hacstag=6801129193303",
         "type": "module"
       },
       {
         "id": "9e71fdbde9994eedb7b7a8ebffd676e4",
-        "url": "/hacsfiles/custom-brand-icons/custom-brand-icons.js?hacstag=3668620312026074",
+        "url": "/hacsfiles/custom-brand-icons/custom-brand-icons.js?hacstag=3668620312026082",
         "type": "module"
       },
       {
@@ -306,7 +306,7 @@
       },
       {
         "id": "0ea9423015c1478798ba0f34da62ab94",
-        "url": "/hacsfiles/calendar-card-pro/calendar-card-pro.js?hacstag=939311749320",
+        "url": "/hacsfiles/calendar-card-pro/calendar-card-pro.js?hacstag=939311749360",
         "type": "module"
       },
       {
@@ -321,7 +321,7 @@
       },
       {
         "id": "46250a9270d6470ab497f84341f4c8aa",
-        "url": "/hacsfiles/Helios/helios.js?hacstag=1233345211202681",
+        "url": "/hacsfiles/Helios/helios.js?hacstag=1233345211202691",
         "type": "module"
       }
     ]
