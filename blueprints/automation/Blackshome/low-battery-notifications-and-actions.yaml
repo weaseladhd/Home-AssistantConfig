@@ -4,7 +4,7 @@ blueprint:
   description: >
     # 🪫 Low Battery Notifications & Actions
 
-    **Version: 3.4**
+    **Version: 3.5**
     
     
     🚀 Stay Charged, Stay Smart! Let's automate and take charge of your battery maintenance!🔋⚡
@@ -732,28 +732,28 @@ blueprint:
 
             **All Battery Sensors Minus Excluded**
 
-            1 - Use "{{all_sensors}}" for - Battery Low % Level + Low Battery Level + Unavailable + Unknown.
+            1 - Use `"{{all_sensors | default("")}}"` for - Battery Low % Level + Low Battery Level + Unavailable + Unknown.
 
-            2 - Use "{{sensors}}" for - Battery Low % Level & Low Battery Level.
+            2 - Use `"{{sensors | default("")}}"` for - Battery Low % Level & Low Battery Level.
 
-            3 - Use "{{unavailable_sensors}}" for - Unavailable or Unknown Sensors.
+            3 - Use `"{{unavailable_sensors | default("")}}"` for - Unavailable or Unknown Sensors.
 
-            4 - Use "{{sensors_names}}" for - Battery Low % Level & Low Battery Level - Sensor friendly name only.
+            4 - Use `"{{sensors_names | default("")}}"` for - Battery Low % Level & Low Battery Level - Sensor friendly name only.
             
-            5 - Use "{{unavailable_sensors_names}}" for - Unavailable or Unknown Sensors - Sensor friendly name only.
+            5 - Use `"{{unavailable_sensors_names | default("")}}"` for - Unavailable or Unknown Sensors - Sensor friendly name only.
 
 
             **Battery Sensors - Custom Group**
 
-            1 - Use "{{all_sensors_custom_group}}" for - Battery Low % Level + Low Battery Level + Unavailable + Unknown.
+            1 - Use `"{{all_sensors_custom_group | default("")}}"` for - Battery Low % Level + Low Battery Level + Unavailable + Unknown.
 
-            2 - Use "{{sensors_custom_group}}" for - Battery Low % Level & Low Battery Level.
+            2 - Use `"{{sensors_custom_group | default("")}}"` for - Battery Low % Level & Low Battery Level.
 
-            3 - Use "{{unavailable_sensors_custom_group}}" for - Unavailable or Unknown Sensors.
+            3 - Use `"{{unavailable_sensors_custom_group | default("")}}"` for - Unavailable or Unknown Sensors.
 
-            4 - Use "{{sensors_names_custom_group}}" for - Battery Low % Level & Low Battery Level - Sensor friendly name only.
+            4 - Use `"{{sensors_names_custom_group | default("")}}"` for - Battery Low % Level & Low Battery Level - Sensor friendly name only.
             
-            5 - Use "{{unavailable_sensors_names_custom_group}}" for - Unavailable or Unknown Sensors - Sensor friendly name only.
+            5 - Use `"{{unavailable_sensors_names_custom_group | default("")}}"` for - Unavailable or Unknown Sensors - Sensor friendly name only.
 
 
             For more information on how to use these sensors in your actions [Click Here](https://community.home-assistant.io/t/653754/21)
