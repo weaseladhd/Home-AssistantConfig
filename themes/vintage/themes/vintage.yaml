@@ -137,7 +137,6 @@ vintage-classic-modern:
   ha-switch-border-color: "#60806F"
 
   ha-switch-thumb-background-color: "#3C5045"
-  ha-switch-checked-thumb-border-color: "#3C5045"
   ha-color-on-neutral: "#F3F3F3"
 
   # ON
