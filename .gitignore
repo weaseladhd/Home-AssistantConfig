@@ -8,10 +8,8 @@
 !**/.??*.yml
 
 # Track lovelace dashboard configuration files
-!.storage/lovelace
-!.storage/lovelace_dashboards
-!.storage/lovelace_resources
-!.storage/lovelace.*
+# Never commit Home Assistant runtime storage
+.storage/
 
 # Allow directory traversal
 !*/
@@ -25,8 +23,15 @@ secrets.yaml
 # Keep private Google Calendar mappings local
 google_calendars.yaml
 
+# Keep token-bearing notifier configuration local
+entities/notifiers/wesley_ntfy.yaml
+
 # Ignore Zigbee2MQTT configuration backups
 zigbee2mqtt/configuration_backup_*.yaml
+
+# Keep Zigbee2MQTT credentials, keys, and device topology local
+zigbee2mqtt/configuration.yaml
+zigbee2mqtt/devices.yaml
 
 # Ignore CrowdSec runtime data
 .storage/crowdsec/
