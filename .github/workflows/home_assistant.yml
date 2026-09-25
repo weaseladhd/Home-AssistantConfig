@@ -77,64 +77,70 @@ jobs:
       - name: Create empty custom components folder
         run: |
           mkdir -p ./custom_components
+      - name: Pin external custom components
+        run: |
+          clone_at() {
+            git clone --no-checkout "$1" "$3"
+            git -C "$3" checkout --detach "$2"
+          }
+          clone_at https://github.com/metbril/home-assistant-brandstofprijzen.git 654d9e1067b88b453cb9248a275b675a4ec0a040 home-assistant-brandstofprijzen
+          clone_at https://github.com/briis/unifiprotect.git 7ba7cdf52826ea0232facfb89c0df1daf003a345 unifiprotect
+          clone_at https://github.com/thomasloven/hass-browser_mod.git 48ee37e663e9a894141dab2901a2a564149a2623 hass-browser_mod
+          clone_at https://github.com/fondberg/spotcast.git d54c8dcfffc4df31182ccfcd4201dc0e36d30d61 spotcast
+          clone_at https://github.com/xirixiz/homeassistant-afvalwijzer.git f7df20183abf230e70821e95fd5b7adf86e700ad homeassistant-afvalwijzer
+          clone_at https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor.git 62285a755a13a9e1178a8e76f75830bce320eea5 Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
+          clone_at https://github.com/rgc99/irrigation_unlimited.git 05a5eaa7a7d8ad43bf3f903ce194ac7f34ce8 irrigation_unlimited
+          clone_at https://github.com/bramstroker/homeassistant-powercalc.git 22b3365920db3027306e406e56ca20cb31d5547 homeassistant-powercalc
+          clone_at https://github.com/custom-components/sensor.unifigateway.git b6bb00c6580bcf0045929334f37fffbeb1a27 sensor.unifigateway
+          clone_at https://github.com/cytech/Home-Assistant-wundergroundpws.git d89e850bf171e65467b299a8193fd0de63c399f7 Home-Assistant-wundergroundpws
+          clone_at https://github.com/delzear/hass-formulaoneapi.git 2167c51673392d309746480a209eed9e5d817b72 hass-formulaoneapi
+          clone_at https://github.com/1RandomDev/homeassistant-gotify.git 0282865d9531fd8b9da6a9cd2bef35e055f30671 homeassistant-gotify
       - name: Clone custom component Brandstofprijzen
         run: |
-          git clone https://github.com/metbril/home-assistant-brandstofprijzen.git
           rm -rf ./custom_components/brandstofprijzen
           cp -rv home-assistant-brandstofprijzen/custom_components/. ./custom_components/
       - name: Clone custom component Unifi protect
         run: |
-          git clone https://github.com/briis/unifiprotect
           rm -rf ./custom_components/unifiprotect
           cp -rv unifiprotect/custom_components/. ./custom_components/
       - name: Clone custom component Browser mod
         run: |
-          git clone https://github.com/thomasloven/hass-browser_mod
           rm -rf ./custom_components/browser_mod
           cp -rv hass-browser_mod/custom_components/. ./custom_components/
       - name: Clone custom component Spotcast
         run: |
-          git clone https://github.com/fondberg/spotcast
           rm -rf ./custom_components/spotcast
           cp -rv spotcast/custom_components/. ./custom_components/
       - name: Clone custom component Afvalwijzer
         run: |
-          git clone https://github.com/xirixiz/homeassistant-afvalwijzer
           rm -rf ./custom_components/afvalwijzer
           cp -rv homeassistant-afvalwijzer/custom_components/. ./custom_components/
       - name: Clone custom component Xiaomi map cloud extractor
         run: |
-          git clone https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
           rm -rf ./custom_components/xiaomi_cloud_map_extractor
           cp -rv Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor/custom_components/. ./custom_components/
       - name: Clone custom component Irrigation Unlimited
         run: |
-          git clone https://github.com/rgc99/irrigation_unlimited
           rm -rf ./custom_components/irrigation_unlimited
           cp -rv irrigation_unlimited/custom_components/. ./custom_components/
       - name: Clone custom component Powercalc
         run: |
-          git clone https://github.com/bramstroker/homeassistant-powercalc
           rm -rf ./custom_components/powercalc
           cp -rv homeassistant-powercalc/custom_components/. ./custom_components/
       - name: Clone custom component unifigateway
         run: |
-          git clone https://github.com/custom-components/sensor.unifigateway
           rm -rf ./custom_components/unifigateway
           cp -rv sensor.unifigateway/custom_components/. ./custom_components/
       - name: Clone custom component wundergroundpws
         run: |
-          git clone https://github.com/cytech/Home-Assistant-wundergroundpws
           rm -rf ./custom_components/wundergroundpws
           cp -rv Home-Assistant-wundergroundpws/custom_components/. ./custom_components/
       - name: Clone custom component formulaone_api
         run: |
-          git clone https://github.com/delzear/hass-formulaoneapi
           rm -rf ./custom_components/formulaone_api
           cp -rv hass-formulaoneapi/custom_components/. ./custom_components/
       - name: Clone custom component Gotify
         run: |
-          git clone https://github.com/1RandomDev/homeassistant-gotify.git
           rm -rf ./custom_components/gotify
           cp -rv homeassistant-gotify/custom_components/. ./custom_components/
       - name: Check configuration
