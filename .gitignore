@@ -22,5 +22,8 @@
 # Never commit real secrets
 secrets.yaml
 
+# Ignore Zigbee2MQTT configuration backups
+zigbee2mqtt/configuration_backup_*.yaml
+
 # Ignore CrowdSec runtime data
 .storage/crowdsec/
