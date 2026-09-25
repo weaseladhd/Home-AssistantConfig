@@ -369,7 +369,7 @@
     input:
       input_trvs:
       - climate.living_room
-      input_temperature_comfort_static: 19
+      input_temperature_comfort_static: 19.5
       input_temperature_eco_static: 15
       input_temperature_comfort: input_number.comfort_temperature
       input_temperature_eco: input_number.eco_temperature
@@ -461,3 +461,15 @@
       input_mode_outside_temperature: sensor.irosma27_temperature
       input_mode_party:
       - input_boolean.party_mode
+- id: '1787042167677'
+  alias: Low Battery Notifications & Actions
+  description: ''
+  use_blueprint:
+    path: Blackshome/low-battery-notifications-and-actions.yaml
+    input:
+      battery_sensor_report_fields:
+      - friendly_name
+      - floor
+      - area
+      - device
+      - entity_id
