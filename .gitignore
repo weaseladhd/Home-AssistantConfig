@@ -23,9 +23,6 @@ secrets.yaml
 # Keep private Google Calendar mappings local
 google_calendars.yaml
 
-# Keep token-bearing notifier configuration local
-entities/notifiers/wesley_ntfy.yaml
-
 # Ignore Zigbee2MQTT configuration backups
 zigbee2mqtt/configuration_backup_*.yaml
 

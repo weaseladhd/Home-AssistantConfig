@@ -1,3 +1,0 @@
----
-# vacuum
-vacuum: !include_dir_list ../entities/vacuums
