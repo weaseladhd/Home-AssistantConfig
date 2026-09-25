@@ -55,7 +55,7 @@ jobs:
       - name: ⤵️ Check out configuration from GitHub
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Running Remark lint
-        uses: "docker://pipelinecomponents/remark-lint:latest"
+        uses: "docker://pipelinecomponents/remark-lint@sha256:829aa31ff698db32b1c981241de8c72e803712d1b4216b5543ad446bd00d76d5"
         continue-on-error: true
         with:
           args: "remark --no-stdout --color --frail --use preset-lint-recommended ."
@@ -89,9 +89,9 @@ jobs:
           clone_at https://github.com/fondberg/spotcast.git d54c8dcfffc4df31182ccfcd4201dc0e36d30d61 spotcast
           clone_at https://github.com/xirixiz/homeassistant-afvalwijzer.git f7df20183abf230e70821e95fd5b7adf86e700ad homeassistant-afvalwijzer
           clone_at https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor.git 62285a755a13a9e1178a8e76f75830bce320eea5 Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor
-          clone_at https://github.com/rgc99/irrigation_unlimited.git 05a5eaa7a7d8ad43bf3f903ce194ac7f34ce8 irrigation_unlimited
-          clone_at https://github.com/bramstroker/homeassistant-powercalc.git 22b3365920db3027306e406e56ca20cb31d5547 homeassistant-powercalc
-          clone_at https://github.com/custom-components/sensor.unifigateway.git b6bb00c6580bcf0045929334f37fffbeb1a27 sensor.unifigateway
+          clone_at https://github.com/rgc99/irrigation_unlimited.git 05a5eaa7a7d8ad43bf3f903ce19490ac7f34ce8e irrigation_unlimited
+          clone_at https://github.com/bramstroker/homeassistant-powercalc.git 22b3365920dbb3027306e406e56ca20cb31d5547 homeassistant-powercalc
+          clone_at https://github.com/custom-components/sensor.unifigateway.git b6bb00c6580b98bcf0045929334f37fffbeb1a27 sensor.unifigateway
           clone_at https://github.com/cytech/Home-Assistant-wundergroundpws.git d89e850bf171e65467b299a8193fd0de63c399f7 Home-Assistant-wundergroundpws
           clone_at https://github.com/delzear/hass-formulaoneapi.git 2167c51673392d309746480a209eed9e5d817b72 hass-formulaoneapi
           clone_at https://github.com/1RandomDev/homeassistant-gotify.git 0282865d9531fd8b9da6a9cd2bef35e055f30671 homeassistant-gotify
