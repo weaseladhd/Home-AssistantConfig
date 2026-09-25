@@ -8,7 +8,38 @@ on:
   schedule:
     - cron: 0 12 * * *
 
+permissions:
+  contents: read
+
 jobs:
+  secret-scan:
+    name: Scan changed commits for secrets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository history
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Run Gitleaks on changed commits
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          SHA: ${{ github.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            range="$BASE_SHA..$HEAD_SHA"
+          elif [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            range="$BEFORE_SHA..$SHA"
+          else
+            range="$SHA^..$SHA"
+          fi
+          docker run --rm \
+            -v "$PWD:/repo" \
+            zricethezav/gitleaks:v8.28.0 \
+            git --redact --log-opts="$range" /repo
+
   yamllint:
     name: 🧹 yamllint
     runs-on: ubuntu-latest
