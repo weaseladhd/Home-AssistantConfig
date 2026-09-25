@@ -64,7 +64,21 @@ command_line:
          c=e['competitions'][0];cs=c['competitors']
          h=[x for x in cs if x['homeAway']=='home'][0];a=[x for x in cs if x['homeAway']=='away'][0]
          v=c.get('venue',{}) or {};ad=v.get('address',{}) or {}
-         return {'d':e['date'],'rnd':(e.get('season') or {}).get('slug',''),'a':a['team'].get('abbreviation'),'h':h['team'].get('abbreviation'),'an':a['team'].get('displayName'),'hn':h['team'].get('displayName'),'af':a['team'].get('logo') or '','hf':h['team'].get('logo') or '','as':a.get('score'),'hs':h.get('score'),'s':e['status']['type']['state'],'det':e['status']['type']['shortDetail'],'v':', '.join(x for x in [v.get('fullName'),ad.get('city'),ad.get('country')] if x)}
+         return {
+          'd': e['date'],
+          'rnd': (e.get('season') or {}).get('slug', ''),
+          'a': a['team'].get('abbreviation'),
+          'h': h['team'].get('abbreviation'),
+          'an': a['team'].get('displayName'),
+          'hn': h['team'].get('displayName'),
+          'af': a['team'].get('logo') or '',
+          'hf': h['team'].get('logo') or '',
+          'as': a.get('score'),
+          'hs': h.get('score'),
+          's': e['status']['type']['state'],
+          'det': e['status']['type']['shortDetail'],
+          'v': ', '.join(x for x in [v.get('fullName'), ad.get('city'), ad.get('country')] if x),
+         }
         ev=d.get('events',[])
         print(json.dumps({'count':len(ev),'matches':[row(e) for e in ev]}))
         "
@@ -84,7 +98,9 @@ recorder:
 automation:
   - id: '1780630600000'
     alias: World Cup - Fast Refresh While USA Live
-    description: While a USA match is in progress, force-refresh the ESPN scoreboard every 3 seconds for near real-time scores, the clock ticker and the goal-celebration flash. The normal refresh stays at 60s the rest of the time.
+    description: >-
+      While a USA match is in progress, force-refresh the ESPN scoreboard every 3 seconds for near real-time scores,
+      the clock ticker and the goal-celebration flash. The normal refresh stays at 60s the rest of the time.
     triggers:
       - trigger: time_pattern
         seconds: /3

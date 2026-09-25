@@ -20,7 +20,9 @@ esphome:
                 id(dsmr_instance).set_decryption_key(id(stored_decryption_key));
             - logger.log:
                 level: info
-                format: "Not using decryption key. If you need to set a key use Home Assistant service 'ESPHome:  ${device_name}_set_dsmr_key'"
+                format: >-
+                  Not using decryption key. If you need to set a key use Home Assistant service
+                  'ESPHome:  ${device_name}_set_dsmr_key'
 
   friendly_name: slimmelezer
   area: Server Room
